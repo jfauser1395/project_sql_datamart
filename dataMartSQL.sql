@@ -2,7 +2,7 @@
 -- All primary keys are typed CHAR(36) for UUIDs these are generated with UUID() function.
 
 
--- Create a new database named AirBnB_like_Db
+-- Create a new database
 CREATE DATABASE IF NOT EXISTS Airbnb_like_DB;
 
 -- Use the newly created database
@@ -445,66 +445,66 @@ CREATE TABLE PlatformPolicy (
 -- Insert User Data
 INSERT INTO User (user_type, first_name, last_name, email, phone_number, password_hash, profile_picture, creation_date, last_login) 
   VALUES
-    ('admin', 'Maximilian', 'Mueller', 'maximilian.mueller@example.com', '01701234501', SHA2('safePassword41', 256), 'http://example.com/pic/maximilian_mueller.jpg', '2023-01-01 10:00:00', '2025-05-20 10:00:00'),
-    ('admin', 'Sophie', 'Schmidt', 'sophie.schmidt@example.com', '01701234502', SHA2('safePassword42', 256), 'http://example.com/pic/sophie_schmidt.jpg', '2023-01-02 10:00:00', '2025-05-21 10:00:00'),
-    ('admin', 'Alexander', 'Schneider', 'alexander.schneider@example.com', '01701234503', SHA2('safePassword43', 256), 'http://example.com/pic/alexander_schneider.jpg', '2023-01-03 10:00:00', '2025-05-22 10:00:00'),
-    ('admin', 'Marie', 'Fischer', 'marie.fischer@example.com', '01701234504', SHA2('safePassword44', 256), 'http://example.com/pic/marie_fischer.jpg', '2023-01-04 10:00:00', '2025-05-23 10:00:00'),
-    ('admin', 'Paul', 'Weber', 'paul.weber@example.com', '01701234505', SHA2('safePassword45', 256), 'http://example.com/pic/paul_weber.jpg', '2023-01-05 10:00:00', '2025-05-24 10:00:00'),
-    ('admin', 'Emilia', 'Meyer', 'emilia.meyer@example.com', '01701234506', SHA2('safePassword46', 256), 'http://example.com/pic/emilia_meyer.jpg', '2023-01-06 10:00:00', '2025-05-25 10:00:00'),
-    ('admin', 'Leon', 'Wagner', 'leon.wagner@example.com', '01701234507', SHA2('safePassword47', 256), 'http://example.com/pic/leon_wagner.jpg', '2023-01-07 10:00:00', '2025-05-26 10:00:00'),
-    ('admin', 'Anna', 'Becker', 'anna.becker@example.com', '01701234508', SHA2('safePassword48', 256), 'http://example.com/pic/anna_becker.jpg', '2023-01-08 10:00:00', '2025-05-27 10:00:00'),
-    ('admin', 'Felix', 'Schulz', 'felix.schulz@example.com', '01701234509', SHA2('safePassword49', 256), 'http://example.com/pic/felix_schulz.jpg', '2023-01-09 10:00:00', '2025-05-28 10:00:00'),
-    ('admin', 'Mia', 'Hoffmann', 'mia.hoffmann@example.com', '01701234510', SHA2('safePassword50', 256), 'http://example.com/pic/mia_hoffmann.jpg', '2023-01-10 10:00:00', '2025-05-29 10:00:00'),
-    ('admin', 'Lukas', 'Schaefer', 'lukas.schaefer@example.com', '01701234511', SHA2('safePassword51', 256), 'http://example.com/pic/lukas_schaefer.jpg', '2023-01-11 10:00:00', '2025-05-30 10:00:00'),
-    ('admin', 'Lena', 'Koch', 'lena.koch@example.com', '01701234512', SHA2('safePassword52', 256), 'http://example.com/pic/lena_koch.jpg', '2023-01-12 10:00:00', '2025-05-31 10:00:00'),
-    ('admin', 'Elias', 'Bauer', 'elias.bauer@example.com', '01701234513', SHA2('safePassword53', 256), 'http://example.com/pic/elias_bauer.jpg', '2023-01-13 10:00:00', '2025-06-01 10:00:00'),
-    ('admin', 'Laura', 'Richter', 'laura.richter@example.com', '01701234514', SHA2('safePassword54', 256), 'http://example.com/pic/laura_richter.jpg', '2023-01-14 10:00:00', '2025-06-02 10:00:00'),
-    ('admin', 'Jonas', 'Klein', 'jonas.klein@example.com', '01701234515', SHA2('safePassword55', 256), 'http://example.com/pic/jonas_klein.jpg', '2023-01-15 10:00:00', '2025-06-03 10:00:00'),
-    ('admin', 'Hannah', 'Wolf', 'hannah.wolf@example.com', '01701234516', SHA2('safePassword56', 256), 'http://example.com/pic/hannah_wolf.jpg', '2023-01-16 10:00:00', '2025-06-04 10:00:00'),
-    ('admin', 'Finn', 'Neumann', 'finn.neumann@example.com', '01701234517', SHA2('safePassword57', 256), 'http://example.com/pic/finn_neumann.jpg', '2023-01-17 10:00:00', '2025-06-05 10:00:00'),
-    ('admin', 'Lara', 'Schwarz', 'lara.schwarz@example.com', '01701234518', SHA2('safePassword58', 256), 'http://example.com/pic/lara_schwarz.jpg', '2023-01-18 10:00:00', '2025-06-06 10:00:00'),
-    ('admin', 'Luca', 'Zimmermann', 'luca.zimmermann@example.com', '01701234519', SHA2('safePassword59', 256), 'http://example.com/pic/luca_zimmermann.jpg', '2023-01-19 10:00:00', '2025-06-07 10:00:00'),
-    ('admin', 'Sarah', 'Braun', 'sarah.braun@example.com', '01701234520', SHA2('safePassword60', 256), 'http://example.com/pic/sarah_braun.jpg', '2023-01-20 10:00:00', '2025-06-08 10:00:00'),
-    ('guest', 'Niklas', 'Meier', 'niklas.meier@example.com', '01511234521', SHA2('safePassword1', 256), 'http://example.com/pic/niklas_meier.jpg', '2023-01-21 10:00:00', '2025-06-09 10:00:00'),
-    ('guest', 'Charlotte', 'Hofmann', 'charlotte.hofmann@example.com', '01511234522', SHA2('safePassword2', 256), 'http://example.com/pic/charlotte_hofmann.jpg', '2023-01-22 10:00:00', '2025-06-10 10:00:00'),
-    ('guest', 'Ben', 'Hartmann', 'ben.hartmann@example.com', '01511234523', SHA2('safePassword3', 256), 'http://example.com/pic/ben_hartmann.jpg', '2023-01-23 10:00:00', '2025-06-11 10:00:00'),
-    ('guest', 'Johanna', 'Franke', 'johanna.franke@example.com', '01511234524', SHA2('safePassword4', 256), 'http://example.com/pic/johanna_franke.jpg', '2023-01-24 10:00:00', '2025-06-12 10:00:00'),
-    ('guest', 'Tim', 'Walter', 'tim.walter@example.com', '01511234525', SHA2('safePassword5', 256), 'http://example.com/pic/tim_walter.jpg', '2023-01-25 10:00:00', '2025-06-13 10:00:00'),
-    ('guest', 'Amelie', 'Peters', 'amelie.peters@example.com', '01511234526', SHA2('safePassword6', 256), 'http://example.com/pic/amelie_peters.jpg', '2023-01-26 10:00:00', '2025-06-14 10:00:00'),
-    ('guest', 'Moritz', 'Kruse', 'moritz.kruse@example.com', '01511234527', SHA2('safePassword7', 256), 'http://example.com/pic/moritz_kruse.jpg', '2023-01-27 10:00:00', '2025-06-15 10:00:00'),
-    ('guest', 'Clara', 'Brandt', 'clara.brandt@example.com', '01511234528', SHA2('safePassword8', 256), 'http://example.com/pic/clara_brandt.jpg', '2023-01-28 10:00:00', '2025-06-16 10:00:00'),
-    ('guest', 'Noah', 'Schuster', 'noah.schuster@example.com', '01511234529', SHA2('safePassword9', 256), 'http://example.com/pic/noah_schuster.jpg', '2023-01-29 10:00:00', '2025-06-17 10:00:00'),
-    ('guest', 'Luisa', 'Vogel', 'luisa.vogel@example.com', '01511234530', SHA2('safePassword10', 256), 'http://example.com/pic/luisa_vogel.jpg', '2023-01-30 10:00:00', '2025-06-18 10:00:00'),
-    ('guest', 'Julian', 'Seidel', 'julian.seidel@example.com', '01511234531', SHA2('safePassword11', 256), 'http://example.com/pic/julian_seidel.jpg', '2023-01-31 10:00:00', '2025-06-19 10:00:00'),
-    ('guest', 'Marieke', 'Hansen', 'marieke.hansen@example.com', '01511234532', SHA2('safePassword12', 256), 'http://example.com/pic/marieke_hansen.jpg', '2023-02-01 10:00:00', '2025-06-20 10:00:00'),
-    ('guest', 'David', 'Lehmann', 'david.lehmann@example.com', '01511234533', SHA2('safePassword13', 256), 'http://example.com/pic/david_lehmann.jpg', '2023-02-02 10:00:00', '2025-06-21 10:00:00'),
-    ('guest', 'Sophie', 'Koehler', 'sophie.koehler@example.com', '01511234534', SHA2('safePassword14', 256), 'http://example.com/pic/sophie_koehler.jpg', '2023-02-03 10:00:00', '2025-06-22 10:00:00'),
-    ('guest', 'Emil', 'Bergmann', 'emil.bergmann@example.com', '01511234535', SHA2('safePassword15', 256), 'http://example.com/pic/emil_bergmann.jpg', '2023-02-04 10:00:00', '2025-06-23 10:00:00'),
-    ('guest', 'Maja', 'Pohl', 'maja.pohl@example.com', '01511234536', SHA2('safePassword16', 256), 'http://example.com/pic/maja_pohl.jpg', '2023-02-05 10:00:00', '2025-06-24 10:00:00'),
-    ('guest', 'Leo', 'Engel', 'leo.engel@example.com', '01511234537', SHA2('safePassword17', 256), 'http://example.com/pic/leo_engel.jpg', '2023-02-06 10:00:00', '2025-06-25 10:00:00'),
-    ('guest', 'Lena', 'Mayer', 'lena.mayer@example.com', '01511234538', SHA2('safePassword18', 256), 'http://example.com/pic/lena_mayer.jpg', '2023-02-07 10:00:00', '2025-06-26 10:00:00'),
-    ('guest', 'Erik', 'Winkler', 'erik.winkler@example.com', '01511234539', SHA2('safePassword19', 256), 'http://example.com/pic/erik_winkler.jpg', '2023-02-08 10:00:00', '2025-06-27 10:00:00'),
-    ('guest', 'Nele', 'Gross', 'nele.gross@example.com', '01511234540', SHA2('safePassword20', 256), 'http://example.com/pic/nele_gross.jpg', '2023-02-09 10:00:00', '2025-06-28 10:00:00'),
-    ('host', 'Max', 'Mustermann', 'max.mustermann@example.com', '01609876541', SHA2('safePassword21', 256), 'http://example.com/pic/max_mustermann.jpg', '2023-02-10 10:00:00', '2025-06-29 10:00:00'),
-    ('host', 'Lena', 'Schmitt', 'lena.schmitt@example.com', '01609876542', SHA2('safePassword22', 256), 'http://example.com/pic/lena_schmitt.jpg', '2023-02-11 10:00:00', '2025-06-30 10:00:00'),
-    ('host', 'Fabian', 'Huber', 'fabian.huber@example.com', '01609876543', SHA2('safePassword23', 256), 'http://example.com/pic/fabian_huber.jpg', '2023-02-12 10:00:00', '2025-07-01 10:00:00'),
-    ('host', 'Julia', 'Wagner', 'julia.wagner@example.com', '01609876544', SHA2('safePassword24', 256), 'http://example.com/pic/julia_wagner.jpg', '2023-02-13 10:00:00', '2025-07-02 10:00:00'),
-    ('host', 'Tom', 'Becker', 'tom.becker@example.com', '01609876545', SHA2('safePassword25', 256), 'http://example.com/pic/tom_becker.jpg', '2023-02-14 10:00:00', '2025-07-03 10:00:00'),
-    ('host', 'Lea', 'Maier', 'lea.maier@example.com', '01609876546', SHA2('safePassword26', 256), 'http://example.com/pic/lea_maier.jpg', '2023-02-15 10:00:00', '2025-07-04 10:00:00'),
-    ('host', 'Benno', 'Mueller', 'benno.mueller@example.com', '01609876547', SHA2('safePassword27', 256), 'http://example.com/pic/benno_mueller.jpg', '2023-02-16 10:00:00', '2025-07-05 10:00:00'),
-    ('host', 'Hannah', 'Schmidt', 'hannah.schmidt@example.com', '01609876548', SHA2('safePassword28', 256), 'http://example.com/pic/hannah_schmidt.jpg', '2023-02-17 10:00:00', '2025-07-06 10:00:00'),
-    ('host', 'Christian', 'Fischer', 'christian.fischer@example.com', '01609876549', SHA2('safePassword29', 256), 'http://example.com/pic/christian_fischer.jpg', '2023-02-18 10:00:00', '2025-07-07 10:00:00'),
-    ('host', 'Emilia', 'Weber', 'emilia.weber@example.com', '01609876550', SHA2('safePassword30', 256), 'http://example.com/pic/emilia_weber.jpg', '2023-02-19 10:00:00', '2025-07-08 10:00:00'),
-    ('host', 'Vincent', 'Meyer', 'vincent.meyer@example.com', '01609876551', SHA2('safePassword31', 256), 'http://example.com/pic/vincent_meyer.jpg', '2023-02-20 10:00:00', '2025-07-09 10:00:00'),
-    ('host', 'Sophia', 'Wagner', 'sophia.wagner@example.com', '01609876552', SHA2('safePassword32', 256), 'http://example.com/pic/sophia_wagner.jpg', '2023-02-21 10:00:00', '2025-07-10 10:00:00'),
-    ('host', 'Jannes', 'Koch', 'jannes.koch@example.com', '01609876553', SHA2('safePassword33', 256), 'http://example.com/pic/jannes_koch.jpg', '2023-02-22 10:00:00', '2025-07-11 10:00:00'),
-    ('host', 'Alicia', 'Bauer', 'alicia.bauer@example.com', '01609876554', SHA2('safePassword34', 256), 'http://example.com/pic/alicia_bauer.jpg', '2023-02-23 10:00:00', '2025-07-12 10:00:00'),
-    ('host', 'Niklas', 'Richter', 'niklas.richter@example.com', '01609876555', SHA2('safePassword35', 256), 'http://example.com/pic/niklas_richter.jpg', '2023-02-24 10:00:00', '2025-07-13 10:00:00'),
-    ('host', 'Theresa', 'Klein', 'theresa.klein@example.com', '01609876556', SHA2('safePassword36', 256), 'http://example.com/pic/theresa_klein.jpg', '2023-02-25 10:00:00', '2025-07-14 10:00:00'),
-    ('host', 'Johannes', 'Wolf', 'johannes.wolf@example.com', '01609876557', SHA2('safePassword37', 256), 'http://example.com/pic/johannes_wolf.jpg', '2023-02-26 10:00:00', '2025-07-15 10:00:00'),
-    ('host', 'Frida', 'Neumann', 'frida.neumann@example.com', '01609876558', SHA2('safePassword38', 256), 'http://example.com/pic/frida_neumann.jpg', '2023-02-27 10:00:00', '2025-07-16 10:00:00'),
-    ('host', 'Anton', 'Schwarz', 'anton.schwarz@example.com', '01609876559', SHA2('safePassword39', 256), 'http://example.com/pic/anton_schwarz.jpg', '2023-02-28 10:00:00', '2025-07-17 10:00:00'),
-    ('host', 'Clara', 'Zimmermann', 'clara.zimmermann@example.com', '01609876560', SHA2('safePassword40', 256), 'http://example.com/pic/clara_zimmermann.jpg', '2023-03-01 10:00:00', '2025-07-18 10:00:00')
+  ('admin', 'Maximilian', 'Mueller', 'maximilian.mueller@example.com', '01701234501', SHA2('safePassword41', 256), 'http://example.com/pic/maximilian_mueller.jpg', '2023-01-01 10:00:00', '2025-05-20 10:00:00'),
+  ('admin', 'Sophie', 'Schmidt', 'sophie.schmidt@example.com', '01701234502', SHA2('safePassword42', 256), 'http://example.com/pic/sophie_schmidt.jpg', '2023-01-02 10:00:00', '2025-05-21 10:00:00'),
+  ('admin', 'Alexander', 'Schneider', 'alexander.schneider@example.com', '01701234503', SHA2('safePassword43', 256), 'http://example.com/pic/alexander_schneider.jpg', '2023-01-03 10:00:00', '2025-05-22 10:00:00'),
+  ('admin', 'Marie', 'Fischer', 'marie.fischer@example.com', '01701234504', SHA2('safePassword44', 256), 'http://example.com/pic/marie_fischer.jpg', '2023-01-04 10:00:00', '2025-05-23 10:00:00'),
+  ('admin', 'Paul', 'Weber', 'paul.weber@example.com', '01701234505', SHA2('safePassword45', 256), 'http://example.com/pic/paul_weber.jpg', '2023-01-05 10:00:00', '2025-05-24 10:00:00'),
+  ('admin', 'Emilia', 'Meyer', 'emilia.meyer@example.com', '01701234506', SHA2('safePassword46', 256), 'http://example.com/pic/emilia_meyer.jpg', '2023-01-06 10:00:00', '2025-05-25 10:00:00'),
+  ('admin', 'Leon', 'Wagner', 'leon.wagner@example.com', '01701234507', SHA2('safePassword47', 256), 'http://example.com/pic/leon_wagner.jpg', '2023-01-07 10:00:00', '2025-05-26 10:00:00'),
+  ('admin', 'Anna', 'Becker', 'anna.becker@example.com', '01701234508', SHA2('safePassword48', 256), 'http://example.com/pic/anna_becker.jpg', '2023-01-08 10:00:00', '2025-05-27 10:00:00'),
+  ('admin', 'Felix', 'Schulz', 'felix.schulz@example.com', '01701234509', SHA2('safePassword49', 256), 'http://example.com/pic/felix_schulz.jpg', '2023-01-09 10:00:00', '2025-05-28 10:00:00'),
+  ('admin', 'Mia', 'Hoffmann', 'mia.hoffmann@example.com', '01701234510', SHA2('safePassword50', 256), 'http://example.com/pic/mia_hoffmann.jpg', '2023-01-10 10:00:00', '2025-05-29 10:00:00'),
+  ('admin', 'Lukas', 'Schaefer', 'lukas.schaefer@example.com', '01701234511', SHA2('safePassword51', 256), 'http://example.com/pic/lukas_schaefer.jpg', '2023-01-11 10:00:00', '2025-05-30 10:00:00'),
+  ('admin', 'Lena', 'Koch', 'lena.koch@example.com', '01701234512', SHA2('safePassword52', 256), 'http://example.com/pic/lena_koch.jpg', '2023-01-12 10:00:00', '2025-05-31 10:00:00'),
+  ('admin', 'Elias', 'Bauer', 'elias.bauer@example.com', '01701234513', SHA2('safePassword53', 256), 'http://example.com/pic/elias_bauer.jpg', '2023-01-13 10:00:00', '2025-06-01 10:00:00'),
+  ('admin', 'Laura', 'Richter', 'laura.richter@example.com', '01701234514', SHA2('safePassword54', 256), 'http://example.com/pic/laura_richter.jpg', '2023-01-14 10:00:00', '2025-06-02 10:00:00'),
+  ('admin', 'Jonas', 'Klein', 'jonas.klein@example.com', '01701234515', SHA2('safePassword55', 256), 'http://example.com/pic/jonas_klein.jpg', '2023-01-15 10:00:00', '2025-06-03 10:00:00'),
+  ('admin', 'Hannah', 'Wolf', 'hannah.wolf@example.com', '01701234516', SHA2('safePassword56', 256), 'http://example.com/pic/hannah_wolf.jpg', '2023-01-16 10:00:00', '2025-06-04 10:00:00'),
+  ('admin', 'Finn', 'Neumann', 'finn.neumann@example.com', '01701234517', SHA2('safePassword57', 256), 'http://example.com/pic/finn_neumann.jpg', '2023-01-17 10:00:00', '2025-06-05 10:00:00'),
+  ('admin', 'Lara', 'Schwarz', 'lara.schwarz@example.com', '01701234518', SHA2('safePassword58', 256), 'http://example.com/pic/lara_schwarz.jpg', '2023-01-18 10:00:00', '2025-06-06 10:00:00'),
+  ('admin', 'Luca', 'Zimmermann', 'luca.zimmermann@example.com', '01701234519', SHA2('safePassword59', 256), 'http://example.com/pic/luca_zimmermann.jpg', '2023-01-19 10:00:00', '2025-06-07 10:00:00'),
+  ('admin', 'Sarah', 'Braun', 'sarah.braun@example.com', '01701234520', SHA2('safePassword60', 256), 'http://example.com/pic/sarah_braun.jpg', '2023-01-20 10:00:00', '2025-06-08 10:00:00'),
+  ('guest', 'Niklas', 'Meier', 'niklas.meier@example.com', '01511234521', SHA2('safePassword1', 256), 'http://example.com/pic/niklas_meier.jpg', '2023-01-21 10:00:00', '2025-06-09 10:00:00'),
+  ('guest', 'Charlotte', 'Hofmann', 'charlotte.hofmann@example.com', '01511234522', SHA2('safePassword2', 256), 'http://example.com/pic/charlotte_hofmann.jpg', '2023-01-22 10:00:00', '2025-06-10 10:00:00'),
+  ('guest', 'Ben', 'Hartmann', 'ben.hartmann@example.com', '01511234523', SHA2('safePassword3', 256), 'http://example.com/pic/ben_hartmann.jpg', '2023-01-23 10:00:00', '2025-06-11 10:00:00'),
+  ('guest', 'Johanna', 'Franke', 'johanna.franke@example.com', '01511234524', SHA2('safePassword4', 256), 'http://example.com/pic/johanna_franke.jpg', '2023-01-24 10:00:00', '2025-06-12 10:00:00'),
+  ('guest', 'Tim', 'Walter', 'tim.walter@example.com', '01511234525', SHA2('safePassword5', 256), 'http://example.com/pic/tim_walter.jpg', '2023-01-25 10:00:00', '2025-06-13 10:00:00'),
+  ('guest', 'Amelie', 'Peters', 'amelie.peters@example.com', '01511234526', SHA2('safePassword6', 256), 'http://example.com/pic/amelie_peters.jpg', '2023-01-26 10:00:00', '2025-06-14 10:00:00'),
+  ('guest', 'Moritz', 'Kruse', 'moritz.kruse@example.com', '01511234527', SHA2('safePassword7', 256), 'http://example.com/pic/moritz_kruse.jpg', '2023-01-27 10:00:00', '2025-06-15 10:00:00'),
+  ('guest', 'Clara', 'Brandt', 'clara.brandt@example.com', '01511234528', SHA2('safePassword8', 256), 'http://example.com/pic/clara_brandt.jpg', '2023-01-28 10:00:00', '2025-06-16 10:00:00'),
+  ('guest', 'Noah', 'Schuster', 'noah.schuster@example.com', '01511234529', SHA2('safePassword9', 256), 'http://example.com/pic/noah_schuster.jpg', '2023-01-29 10:00:00', '2025-06-17 10:00:00'),
+  ('guest', 'Luisa', 'Vogel', 'luisa.vogel@example.com', '01511234530', SHA2('safePassword10', 256), 'http://example.com/pic/luisa_vogel.jpg', '2023-01-30 10:00:00', '2025-06-18 10:00:00'),
+  ('guest', 'Julian', 'Seidel', 'julian.seidel@example.com', '01511234531', SHA2('safePassword11', 256), 'http://example.com/pic/julian_seidel.jpg', '2023-01-31 10:00:00', '2025-06-19 10:00:00'),
+  ('guest', 'Marieke', 'Hansen', 'marieke.hansen@example.com', '01511234532', SHA2('safePassword12', 256), 'http://example.com/pic/marieke_hansen.jpg', '2023-02-01 10:00:00', '2025-06-20 10:00:00'),
+  ('guest', 'David', 'Lehmann', 'david.lehmann@example.com', '01511234533', SHA2('safePassword13', 256), 'http://example.com/pic/david_lehmann.jpg', '2023-02-02 10:00:00', '2025-06-21 10:00:00'),
+  ('guest', 'Sophie', 'Koehler', 'sophie.koehler@example.com', '01511234534', SHA2('safePassword14', 256), 'http://example.com/pic/sophie_koehler.jpg', '2023-02-03 10:00:00', '2025-06-22 10:00:00'),
+  ('guest', 'Emil', 'Bergmann', 'emil.bergmann@example.com', '01511234535', SHA2('safePassword15', 256), 'http://example.com/pic/emil_bergmann.jpg', '2023-02-04 10:00:00', '2025-06-23 10:00:00'),
+  ('guest', 'Maja', 'Pohl', 'maja.pohl@example.com', '01511234536', SHA2('safePassword16', 256), 'http://example.com/pic/maja_pohl.jpg', '2023-02-05 10:00:00', '2025-06-24 10:00:00'),
+  ('guest', 'Leo', 'Engel', 'leo.engel@example.com', '01511234537', SHA2('safePassword17', 256), 'http://example.com/pic/leo_engel.jpg', '2023-02-06 10:00:00', '2025-06-25 10:00:00'),
+  ('guest', 'Lena', 'Mayer', 'lena.mayer@example.com', '01511234538', SHA2('safePassword18', 256), 'http://example.com/pic/lena_mayer.jpg', '2023-02-07 10:00:00', '2025-06-26 10:00:00'),
+  ('guest', 'Erik', 'Winkler', 'erik.winkler@example.com', '01511234539', SHA2('safePassword19', 256), 'http://example.com/pic/erik_winkler.jpg', '2023-02-08 10:00:00', '2025-06-27 10:00:00'),
+  ('guest', 'Nele', 'Gross', 'nele.gross@example.com', '01511234540', SHA2('safePassword20', 256), 'http://example.com/pic/nele_gross.jpg', '2023-02-09 10:00:00', '2025-06-28 10:00:00'),
+  ('host', 'Max', 'Mustermann', 'max.mustermann@example.com', '01609876541', SHA2('safePassword21', 256), 'http://example.com/pic/max_mustermann.jpg', '2023-02-10 10:00:00', '2025-06-29 10:00:00'),
+  ('host', 'Lena', 'Schmitt', 'lena.schmitt@example.com', '01609876542', SHA2('safePassword22', 256), 'http://example.com/pic/lena_schmitt.jpg', '2023-02-11 10:00:00', '2025-06-30 10:00:00'),
+  ('host', 'Fabian', 'Huber', 'fabian.huber@example.com', '01609876543', SHA2('safePassword23', 256), 'http://example.com/pic/fabian_huber.jpg', '2023-02-12 10:00:00', '2025-07-01 10:00:00'),
+  ('host', 'Julia', 'Wagner', 'julia.wagner@example.com', '01609876544', SHA2('safePassword24', 256), 'http://example.com/pic/julia_wagner.jpg', '2023-02-13 10:00:00', '2025-07-02 10:00:00'),
+  ('host', 'Tom', 'Becker', 'tom.becker@example.com', '01609876545', SHA2('safePassword25', 256), 'http://example.com/pic/tom_becker.jpg', '2023-02-14 10:00:00', '2025-07-03 10:00:00'),
+  ('host', 'Lea', 'Maier', 'lea.maier@example.com', '01609876546', SHA2('safePassword26', 256), 'http://example.com/pic/lea_maier.jpg', '2023-02-15 10:00:00', '2025-07-04 10:00:00'),
+  ('host', 'Benno', 'Mueller', 'benno.mueller@example.com', '01609876547', SHA2('safePassword27', 256), 'http://example.com/pic/benno_mueller.jpg', '2023-02-16 10:00:00', '2025-07-05 10:00:00'),
+  ('host', 'Hannah', 'Schmidt', 'hannah.schmidt@example.com', '01609876548', SHA2('safePassword28', 256), 'http://example.com/pic/hannah_schmidt.jpg', '2023-02-17 10:00:00', '2025-07-06 10:00:00'),
+  ('host', 'Christian', 'Fischer', 'christian.fischer@example.com', '01609876549', SHA2('safePassword29', 256), 'http://example.com/pic/christian_fischer.jpg', '2023-02-18 10:00:00', '2025-07-07 10:00:00'),
+  ('host', 'Emilia', 'Weber', 'emilia.weber@example.com', '01609876550', SHA2('safePassword30', 256), 'http://example.com/pic/emilia_weber.jpg', '2023-02-19 10:00:00', '2025-07-08 10:00:00'),
+  ('host', 'Vincent', 'Meyer', 'vincent.meyer@example.com', '01609876551', SHA2('safePassword31', 256), 'http://example.com/pic/vincent_meyer.jpg', '2023-02-20 10:00:00', '2025-07-09 10:00:00'),
+  ('host', 'Sophia', 'Wagner', 'sophia.wagner@example.com', '01609876552', SHA2('safePassword32', 256), 'http://example.com/pic/sophia_wagner.jpg', '2023-02-21 10:00:00', '2025-07-10 10:00:00'),
+  ('host', 'Jannes', 'Koch', 'jannes.koch@example.com', '01609876553', SHA2('safePassword33', 256), 'http://example.com/pic/jannes_koch.jpg', '2023-02-22 10:00:00', '2025-07-11 10:00:00'),
+  ('host', 'Alicia', 'Bauer', 'alicia.bauer@example.com', '01609876554', SHA2('safePassword34', 256), 'http://example.com/pic/alicia_bauer.jpg', '2023-02-23 10:00:00', '2025-07-12 10:00:00'),
+  ('host', 'Niklas', 'Richter', 'niklas.richter@example.com', '01609876555', SHA2('safePassword35', 256), 'http://example.com/pic/niklas_richter.jpg', '2023-02-24 10:00:00', '2025-07-13 10:00:00'),
+  ('host', 'Theresa', 'Klein', 'theresa.klein@example.com', '01609876556', SHA2('safePassword36', 256), 'http://example.com/pic/theresa_klein.jpg', '2023-02-25 10:00:00', '2025-07-14 10:00:00'),
+  ('host', 'Johannes', 'Wolf', 'johannes.wolf@example.com', '01609876557', SHA2('safePassword37', 256), 'http://example.com/pic/johannes_wolf.jpg', '2023-02-26 10:00:00', '2025-07-15 10:00:00'),
+  ('host', 'Frida', 'Neumann', 'frida.neumann@example.com', '01609876558', SHA2('safePassword38', 256), 'http://example.com/pic/frida_neumann.jpg', '2023-02-27 10:00:00', '2025-07-16 10:00:00'),
+  ('host', 'Anton', 'Schwarz', 'anton.schwarz@example.com', '01609876559', SHA2('safePassword39', 256), 'http://example.com/pic/anton_schwarz.jpg', '2023-02-28 10:00:00', '2025-07-17 10:00:00'),
+  ('host', 'Clara', 'Zimmermann', 'clara.zimmermann@example.com', '01609876560', SHA2('safePassword40', 256), 'http://example.com/pic/clara_zimmermann.jpg', '2023-03-01 10:00:00', '2025-07-18 10:00:00')
 ;
 
 -- Insert Admin Data
@@ -667,110 +667,224 @@ INSERT INTO PropertyAccess (host_id, property_id)
 ;
 
 -- Insert CancellationPolicy Data
+-- This populates all available cancellation policy options for properties
+-- Policies are categorized by flexibility level and special conditions
 INSERT INTO CancellationPolicy (policy_name, description) 
   VALUES
-    ('Flexible - 1 Day', 'Guests can cancel up to 1 day before check-in for a full refund. No refund for later cancellations.'),
-    ('Flexible - Same Day', 'Guests can cancel anytime before the day of check-in for a full refund.'),
-    ('Moderate - 3 Days', 'Guests can cancel up to 3 days before check-in for a full refund. 50% refund if canceled within 3 days.'),
-    ('Moderate - 5 Days', 'Guests can cancel up to 5 days before check-in for a full refund. 50% refund within 5 days.'),
-    ('Strict - 7 Days', 'Guests can cancel up to 7 days before check-in for a 50% refund. No refund for cancellations within 7 days.'),
-    ('Strict - 14 Days', 'Guests can cancel up to 14 days before check-in for a 50% refund. No refund for cancellations within 14 days.'),
-    ('Non-refundable', 'Guests receive no refund, regardless of cancellation time.'),
-    ('Fully Refundable - 48h After Booking', 'Guests can cancel within 48 hours of booking for a full refund, if the check-in date is at least 14 days away.'),
-    ('Custom Host Policy', 'Custom cancellation terms provided by the host. May vary by property.'),
-    ('Business Traveler Policy', 'Full refund up to 24 hours before check-in for business bookings with verified documents.'),
-    ('Event Cancellation Protection', 'Full refund if the guest can prove a canceled event (e.g., trade fair, conference).'),
-    ('Weather Guarantee', 'Full refund if extreme weather prevents travel. Must provide documentation.'),
-    ('Force Majeure', 'Cancellations due to force majeure (e.g. natural disasters, war, pandemic) are fully refundable.'),
-    ('Check-in Day Flex', '50% refund if canceled before 12:00 on the day of check-in. No refund after.'),
-    ('Refund with Rebooking', 'Full refund if the guest rebooks another property within 30 days of cancellation.'),
-    ('Medical Emergency Waiver', 'Full refund if cancellation is due to medical emergency, with proof.'),
-    ('Last-Minute Grace', 'Full refund if canceled within 2 hours of booking and at least 48 hours before check-in.'),
-    ('Holiday Period Strict', 'No refund for holiday bookings (e.g., Christmas, Easter). Exceptions only for emergencies.'),
-    ('Tiered Refund Policy', '75% refund up to 10 days before check-in, 50% up to 5 days, none afterward.'),
-    ('Stay Interrupted', 'Pro-rated refund if stay is cut short due to verifiable issues (e.g., heating failure).')
+  ('Flexible - 1 Day', 'Guests can cancel up to 1 day before check-in for a full refund. No refund for later cancellations.'),
+  ('Flexible - Same Day', 'Guests can cancel anytime before the day of check-in for a full refund.'),
+  ('Moderate - 3 Days', 'Guests can cancel up to 3 days before check-in for a full refund. 50% refund if canceled within 3 days.'),
+  ('Moderate - 5 Days', 'Guests can cancel up to 5 days before check-in for a full refund. 50% refund within 5 days.'),
+  ('Strict - 7 Days', 'Guests can cancel up to 7 days before check-in for a 50% refund. No refund for cancellations within 7 days.'),
+  ('Strict - 14 Days', 'Guests can cancel up to 14 days before check-in for a 50% refund. No refund for cancellations within 14 days.'),
+  ('Non-refundable', 'Guests receive no refund, regardless of cancellation time.'),
+  ('Fully Refundable - 48h After Booking', 'Guests can cancel within 48 hours of booking for a full refund, if the check-in date is at least 14 days away.'),
+  ('Custom Host Policy', 'Custom cancellation terms provided by the host. May vary by property.'),
+  ('Business Traveler Policy', 'Full refund up to 24 hours before check-in for business bookings with verified documents.'),
+  ('Event Cancellation Protection', 'Full refund if the guest can prove a canceled event (e.g., trade fair, conference).'),
+  ('Weather Guarantee', 'Full refund if extreme weather prevents travel. Must provide documentation.'),
+  ('Force Majeure', 'Cancellations due to force majeure (e.g. natural disasters, war, pandemic) are fully refundable.'),
+  ('Check-in Day Flex', '50% refund if canceled before 12:00 on the day of check-in. No refund after.'),
+  ('Refund with Rebooking', 'Full refund if the guest rebooks another property within 30 days of cancellation.'),
+  ('Medical Emergency Waiver', 'Full refund if cancellation is due to medical emergency, with proof.'),
+  ('Last-Minute Grace', 'Full refund if canceled within 2 hours of booking and at least 48 hours before check-in.'),
+  ('Holiday Period Strict', 'No refund for holiday bookings (e.g., Christmas, Easter). Exceptions only for emergencies.'),
+  ('Tiered Refund Policy', '75% refund up to 10 days before check-in, 50% up to 5 days, none afterward.'),
+  ('Stay Interrupted', 'Pro-rated refund if stay is cut short due to verifiable issues (e.g., heating failure).')
 ;
 
 -- Insert Accommodation Data
 INSERT INTO Accommodation (property_id, cancellation_policy_id, accommodation_tier, max_guest_count, description, price_per_night)
   VALUES
-    ((SELECT property_id FROM Property WHERE address = 'Invalidenstrasse 43, Berlin'), 
-   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'), 
-    'prime', 4, 'Modern loft in Berlin-Mitte with balcony overlooking Invalidenpark', 120.00),
+  -- Berlin properties (prime and regular options)
+  ((SELECT property_id FROM Property WHERE address = 'Invalidenstrasse 43, Berlin'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Prime gets flexible policy
+  'prime', 4, 'Modern loft in Berlin-Mitte with balcony overlooking Invalidenpark', 120.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Invalidenstrasse 43, Berlin'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'), 
-    'regular', 2, 'Compact designer studio in historic Berlin building', 75.50),
+  ((SELECT property_id FROM Property WHERE address = 'Invalidenstrasse 43, Berlin'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Regular gets moderate policy
+  'regular', 2, 'Compact designer studio in historic Berlin building', 75.50),
 
-    ((SELECT property_id FROM Property WHERE address = 'Sendlinger Strasse 25, Muenchen'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'), 
-    'prime', 6, 'Bavarian luxury apartment on Munichs premier shopping street', 210.00),
+  -- Munich properties (Bavarian-style accommodations)
+  ((SELECT property_id FROM Property WHERE address = 'Sendlinger Strasse 25, Muenchen'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Prime with strict policy
+  'prime', 6, 'Bavarian luxury apartment on Munichs premier shopping street', 210.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Sendlinger Strasse 25, Muenchen'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'), 
-    'regular', 3, 'Charming Altbau apartment in central Munich location', 95.00),
+  ((SELECT property_id FROM Property WHERE address = 'Sendlinger Strasse 25, Muenchen'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Regular with flexible policy
+  'regular', 3, 'Charming Altbau apartment in central Munich location', 95.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Spitalerstrasse 10, Hamburg'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'), 
-    'prime', 5, 'Stylish urban loft steps from Hamburgs main shopping district', 180.00),
+  -- Hamburg properties (urban style)
+  ((SELECT property_id FROM Property WHERE address = 'Spitalerstrasse 10, Hamburg'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Prime urban loft
+  'prime', 5, 'Stylish urban loft steps from Hamburgs main shopping district', 180.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Spitalerstrasse 10, Hamburg'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'), 
-    'regular', 2, 'Cozy nest in the heart of Hamburg with city views', 85.00),
+  ((SELECT property_id FROM Property WHERE address = 'Spitalerstrasse 10, Hamburg'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Cozy regular option
+ 'regular', 2, 'Cozy nest in the heart of Hamburg with city views', 85.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Zeil 90, Frankfurt am Main'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'), 
-    'prime', 4, 'Executive apartment on Frankfurts famous Zeil shopping street', 150.00),
+  -- Frankfurt properties (business travel focus)
+  ((SELECT property_id FROM Property WHERE address = 'Zeil 90, Frankfurt am Main'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'),  -- Executive prime apartment
+  'prime', 4, 'Executive apartment on Frankfurts famous Zeil shopping street', 150.00),
+  ((SELECT property_id FROM Property WHERE address = 'Zeil 90, Frankfurt am Main'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Business-friendly regular
+  'regular', 3, 'Comfortable city apartment with Main River glimpses', 99.00),
+  -- Schwarzwald properties (mountain/rural focus)
+  ((SELECT property_id FROM Property WHERE address = 'Feldbergstrasse 2, Schwarzwald'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Premium chalet
+  'prime', 8, 'Authentic Black Forest chalet with mountain views and sauna', 250.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Zeil 90, Frankfurt am Main'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'), 
-    'regular', 3, 'Comfortable city apartment with Main River glimpses', 99.00),
+  ((SELECT property_id FROM Property WHERE address = 'Feldbergstrasse 2, Schwarzwald'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Rustic regular cabin
+  'regular', 4, 'Rustic cabin near Feldberg ski slopes', 110.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Feldbergstrasse 2, Schwarzwald'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'), 
-    'prime', 8, 'Authentic Black Forest chalet with mountain views and sauna', 250.00),
+  -- Leipzig properties (historic city)
+  ((SELECT property_id FROM Property WHERE address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Historic prime apartment
+  'prime', 4, 'Historic apartment in Leipzigs trendy Südvorstadt district', 130.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Feldbergstrasse 2, Schwarzwald'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'), 
-    'regular', 4, 'Rustic cabin near Feldberg ski slopes', 110.00),
+  ((SELECT property_id FROM Property WHERE address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Modern regular studio
+  'regular', 2, 'Modern studio near Leipzig Hauptbahnhof', 65.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'), 
-    'prime', 4, 'Historic apartment in Leipzigs trendy Südvorstadt district', 130.00),
+  -- Düsseldorf properties (luxury shopping focus)
+  ((SELECT property_id FROM Property WHERE address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Elegant prime apartment
+  'prime', 4, 'Elegant apartment steps from Königsallee shopping boulevard', 175.00),
+  
+  ((SELECT property_id FROM Property WHERE address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Riverside regular
+  'regular', 3, 'Bright riverside apartment in MedienHafen district', 105.00),
+  
+  -- Stuttgart properties (business/vineyard views)
+  ((SELECT property_id FROM Property WHERE address = 'Rotebuehlstrasse 60, Stuttgart'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'),  -- Luxury penthouse
+  'prime', 5, 'Luxury penthouse with panoramic Stuttgart city views', 225.00),
+  
+  ((SELECT property_id FROM Property WHERE address = 'Rotebuehlstrasse 60, Stuttgart'), 
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Compact urban studio
+  'regular', 2, 'Compact urban studio near Schlossplatz', 80.00),
+  
+  -- Garmisch-Partenkirchen (alpine properties)
+  ((SELECT property_id FROM Property WHERE address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Alpine lodge
+  'prime', 6, 'Alpine lodge with direct Zugspitze mountain views', 195.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'), 
-    'regular', 2, 'Modern studio near Leipzig Hauptbahnhof', 65.00),
+  ((SELECT property_id FROM Property WHERE address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Bavarian guesthouse
+  'regular', 4, 'Traditional Bavarian guesthouse with mountain access', 125.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'), 
-    'prime', 4, 'Elegant apartment steps from Königsallee shopping boulevard', 175.00),
+   -- Cologne properties (cathedral views)
+  ((SELECT property_id FROM Property WHERE address = 'Ehrenstrasse 22, Koeln'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Designer prime apartment
+  'prime', 4, 'Designer apartment with Cologne Cathedral views', 160.00),
 
-    ((SELECT property_id FROM Property WHERE address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'), 
-    'regular', 3, 'Bright riverside apartment in MedienHafen district', 105.00),
+  ((SELECT property_id FROM Property WHERE address = 'Ehrenstrasse 22, Koeln'), 
+  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Trendy regular flat
+  'regular', 2, 'Charming flat in Colognes trendy Belgian Quarter', 90.00)
+;
 
-    ((SELECT property_id FROM Property WHERE address = 'Rotebuehlstrasse 60, Stuttgart'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'), 
-    'prime', 5, 'Luxury penthouse with panoramic Stuttgart city views', 225.00),
-    
-    ((SELECT property_id FROM Property WHERE address = 'Rotebuehlstrasse 60, Stuttgart'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'), 
-    'regular', 2, 'Compact urban studio near Schlossplatz', 80.00),
+-- Insert Booking Data
+INSERT INTO Booking (guest_id, accommodation_id, start_date, end_date, creation_date, booking_status)
+  VALUES
+  -- Premium guest booking prime accommodation in Berlin
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Modern loft in Berlin%' AND accommodation_tier = 'prime'),
+  '2025-07-01 15:00:00', '2025-07-05 11:00:00', '2025-06-01 09:00:00', 'confirmed'),
 
-    ((SELECT property_id FROM Property WHERE address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'), 
-    'prime', 6, 'Alpine lodge with direct Zugspitze mountain views', 195.00),
+  -- Free guest booking regular accommodation in Berlin
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'charlotte.hofmann@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Compact designer studio in historic Ber%' AND accommodation_tier = 'regular'),
+  '2025-12-15 16:00:00', '2025-12-20 10:00:00', '2025-11-01 10:00:00', 'pending'),
 
-    ((SELECT property_id FROM Property WHERE address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'), 
-    'regular', 4, 'Traditional Bavarian guesthouse with mountain access', 125.00),
+  -- Premium guest booking prime accommodation in Munich
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Bavarian luxury apartment%' AND accommodation_tier = 'prime'),
+  '2025-07-10 14:00:00', '2025-07-15 10:00:00', '2025-05-20 11:30:00', 'confirmed'),
 
-    ((SELECT property_id FROM Property WHERE address = 'Ehrenstrasse 22, Koeln'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'), 
-    'prime', 4, 'Designer apartment with Cologne Cathedral views', 160.00),
+  -- Free guest booking regular accommodation in Munich
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'ben.hartmann@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Charming Altbau apartment in central Mun%' AND accommodation_tier = 'regular'),
+  '2025-07-16 14:00:00', '2025-07-19 10:00:00', '2025-05-20 11:30:00', 'confirmed'),
 
-    ((SELECT property_id FROM Property WHERE address = 'Ehrenstrasse 22, Koeln'), 
-    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'), 
-    'regular', 2, 'Charming flat in Cologne\'s trendy Belgian Quarter', 90.00)
+  -- Premium guest booking prime accommodation in Hamburg
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Stylish urban loft steps from Hamburg%' AND accommodation_tier = 'prime'),
+  '2025-08-05 13:00:00', '2025-08-12 11:00:00', '2025-07-01 14:00:00', 'confirmed'),
+
+  -- Free guest booking regular accommodation in Hamburg
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'johanna.franke@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Cozy nest in the heart of Hamburg%' AND accommodation_tier = 'regular'),
+  '2025-08-15 14:00:00', '2025-08-18 11:00:00', '2025-07-10 10:30:00', 'confirmed'),
+
+  -- Premium guest booking prime accommodation in Frankfurt
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'leo.engel@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Executive apartment on Frankfurts%' AND accommodation_tier = 'prime'),
+  '2025-09-03 15:00:00', '2025-09-10 10:00:00', '2025-08-01 12:00:00', 'confirmed'),
+
+  -- Free guest booking regular accommodation in Frankfurt
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'tim.walter@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Comfortable city apartment with Main River%' AND accommodation_tier = 'regular'),
+  '2025-09-15 14:00:00', '2025-09-18 11:00:00', '2025-08-15 15:45:00', 'pending'),
+
+  -- Premium guest booking prime accommodation in Schwarzwald
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'lena.mayer@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Authentic Black Forest chalet%' AND accommodation_tier = 'prime'),
+  '2025-10-01 16:00:00', '2025-10-08 10:00:00', '2025-09-01 09:30:00', 'confirmed'),
+
+  -- Free guest booking regular accommodation in Schwarzwald
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'amelie.peters@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Rustic cabin near Feldberg ski slopes%' AND accommodation_tier = 'regular'),
+  '2025-10-15 15:00:00', '2025-10-20 11:00:00', '2025-09-10 14:20:00', 'confirmed'),
+
+  -- Premium guest booking prime accommodation in Leipzig
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'erik.winkler@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Historic apartment in Leipzigs%' AND accommodation_tier = 'prime'),
+  '2025-11-05 14:00:00', '2025-11-12 10:00:00', '2025-10-01 11:15:00', 'confirmed'),
+
+  -- Free guest booking regular accommodation in Leipzig
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'moritz.kruse@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Modern studio near Leipzig Hauptbahnhof%' AND accommodation_tier = 'regular'),
+  '2025-11-15 13:00:00', '2025-11-18 11:00:00', '2025-10-15 16:30:00', 'confirmed'),
+
+  -- Premium guest booking prime accommodation in Düsseldorf
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'nele.gross@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Elegant apartment steps from Königsallee%' AND accommodation_tier = 'prime'),
+  '2025-12-01 15:00:00', '2025-12-08 10:00:00', '2025-11-01 10:45:00', 'confirmed'),
+
+  -- Free guest booking regular accommodation in Düsseldorf
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'clara.brandt@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Bright riverside apartment in MedienHafen%' AND accommodation_tier = 'regular'),
+  '2025-12-10 14:00:00', '2025-12-15 11:00:00', '2025-11-10 14:10:00', 'pending'),
+
+  -- Premium guest booking prime accommodation in Stuttgart
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Luxury penthouse with panoramic Stuttgart%' AND accommodation_tier = 'prime'),
+  '2026-01-05 16:00:00', '2026-01-12 10:00:00', '2025-12-01 09:20:00', 'confirmed'),
+
+  -- Free guest booking regular accommodation in Stuttgart
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'noah.schuster@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Compact urban studio near Schlossplatz%' AND accommodation_tier = 'regular'),
+  '2026-01-15 14:00:00', '2026-01-18 11:00:00', '2025-12-15 15:30:00', 'confirmed'),
+
+  -- Premium guest booking prime accommodation in Garmisch-Partenkirchen
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Alpine lodge with direct Zugspitze%' AND accommodation_tier = 'prime'),
+  '2026-02-10 15:00:00', '2026-02-17 10:00:00', '2026-01-05 11:40:00', 'confirmed'),
+
+  -- Free guest booking regular accommodation in Garmisch-Partenkirchen
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'luisa.vogel@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Traditional Bavarian guesthouse%' AND accommodation_tier = 'regular'),
+  '2026-02-20 14:00:00', '2026-02-25 11:00:00', '2026-01-15 14:50:00', 'confirmed'),
+
+  -- Premium guest booking prime accommodation in Cologne
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com' AND g.membership_tier = 'premium'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Designer apartment with Cologne Cathedral%' AND accommodation_tier = 'prime'),
+  '2026-03-05 16:00:00', '2026-03-12 10:00:00', '2026-02-01 10:15:00', 'confirmed'),
+
+  -- Free guest booking regular accommodation in Cologne
+  ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'julian.seidel@example.com' AND g.membership_tier = 'free'),
+  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Charming flat in Cologne%' AND accommodation_tier = 'regular'),
+  '2026-03-15 14:00:00', '2026-03-18 11:00:00', '2026-02-10 16:20:00', 'confirmed')
 ;
