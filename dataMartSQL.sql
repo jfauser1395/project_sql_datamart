@@ -3,10 +3,11 @@
 
 
 -- Create a new database named AirBnB_like_Db
-CREATE DATABASE IF NOT EXISTS AirBnB_like_Db;
+CREATE DATABASE IF NOT EXISTS Airbnb_like_DB;
 
 -- Use the newly created database
-USE AirBnB_like_Db;
+USE Airbnb_like_DB;
+;
 
 
 -- Superclass Table: User
@@ -600,7 +601,7 @@ INSERT INTO Property (title, country, state, zip_code, address, square_feet, pro
 ('Charming House near Munich', 'Germany', 'Bavaria', '80331', 'Sendlinger Strasse 25, Muenchen', 2200, 'House'),
 ('Luxury Penthouse in Hamburg', 'Germany', 'Hamburg', '20095', 'Spitalerstrasse 10, Hamburg', 1500, 'Penthouse'),
 ('Office Space in Frankfurt am Main', 'Germany', 'Hesse', '60311', 'Zeil 90, Frankfurt am Main', 3000, 'Commercial'),
-('Rustic Cottage in Black Forest', 'Germany', 'Baden-Wuerttemberg', '79822', 'Feldbergstrasse 2, Titisee-Neustadt', 1200, 'Cottage'),
+('Rustic Cottage in Black Forest', 'Germany', 'Baden-Wuerttemberg', '79822', 'Feldbergstrasse 2, Schwarzwlad', 1200, 'Cottage'),
 ('Student Studio in Leipzig', 'Germany', 'Saxony', '04109', 'Karl-Liebknecht-Strasse 50, Leipzig', 400, 'Studio'),
 ('Warehouse near Düsseldorf', 'Germany', 'North Rhine-Westphalia', '40210', 'Graf-Adolf-Strasse 12, Duesseldorf', 5000, 'Industrial'),
 ('Historic Villa in Dresden', 'Germany', 'Saxony', '01067', 'Koenigstrasse 8, Dresden', 3500, 'Villa'),
@@ -619,11 +620,44 @@ INSERT INTO Property (title, country, state, zip_code, address, square_feet, pro
 
 -- Insert PropertyAccess Data
 INSERT INTO PropertyAccess (host_id, property_id)
+-- Define a temporary table of (email, address) mappings then join to User, Host, and Property to bulk-insert.
+WITH
+ access_pairs (email, address) AS (
+    -- Map each host's email to a property address they should manage
+    SELECT 'max.mustermann@example.com', 'Invalidenstrasse 43, Berlin' UNION ALL
+    SELECT 'max.mustermann@example.com', 'Sendlinger Strasse 25, Muenchen' UNION ALL 
+    SELECT 'max.mustermann@example.com', 'Spitalerstrasse 10, Hamburg' UNION ALL 
+    SELECT 'lena.schmitt@example.com', 'Spitalerstrasse 10, Hamburg' UNION ALL 
+    SELECT 'lena.schmitt@example.com', 'Zeil 90, Frankfurt am Main' UNION ALL 
+    SELECT 'lena.schmitt@example.com', 'Feldbergstrasse 2, Schwarzwlad' UNION ALL 
+    SELECT 'fabian.huber@example.com', 'Karl-Liebknecht-Strasse 50, Leipzig' UNION ALL 
+    SELECT 'julia.wagner@example.com', 'Graf-Adolf-Strasse 12, Duesseldorf' UNION ALL 
+    SELECT 'fabian.huber@example.com', 'Graf-Adolf-Strasse 12, Duesseldorf' UNION ALL 
+    SELECT 'tom.becker@example.com', 'Graf-Adolf-Strasse 12, Duesseldorf' UNION ALL 
+    SELECT 'fabian.huber@example.com', 'Bahnhofstrasse 18, Hannover' UNION ALL 
+    SELECT 'fabian.huber@example.com', 'Koenigstrasse 45, Stuttgart' UNION ALL 
+    SELECT 'benno.mueller@example.com', 'Zugspitzstrasse 1, Garmisch-Partenkirchen' UNION ALL 
+    SELECT 'johannes.wolf@example.com', 'Zugspitzstrasse 1, Garmisch-Partenkirchen' UNION ALL 
+    SELECT 'sophia.wagner@example.com', 'Kaistrasse 16, Kiel' UNION ALL 
+    SELECT 'benno.mueller@example.com', 'Ehrenstrasse 22, Koeln' UNION ALL 
+    SELECT 'benno.mueller@example.com', 'Augustinerstrasse 10, Mainz' UNION ALL 
+    SELECT 'tom.becker@example.com', 'Augustinerstrasse 10, Mainz' UNION ALL 
+    SELECT 'hannah.schmidt@example.com', 'Greiffeneggring 12, Freiburg' UNION ALL 
+    SELECT 'hannah.schmidt@example.com', 'Weserstrasse 5, Bremen' UNION ALL 
+    SELECT 'christian.fischer@example.com', 'Rotebuehlstrasse 60, Stuttgart' UNION ALL 
+    SELECT 'christian.fischer@example.com', 'Seestrasse 18, Prien am Chiemsee' UNION ALL 
+    SELECT 'christian.fischer@example.com', 'Koenigstrasse 1, Nuernberg' UNION ALL 
+    SELECT 'christian.fischer@example.com', 'Wilhelmstrasse 34, Wiesbaden' UNION ALL 
+    SELECT 'jannes.koch@example.com', 'Wilhelmstrasse 34, Wiesbaden'
+  )
 SELECT
-  h.host_id,
-  p.property_id
-FROM User h
-JOIN 
+  h.host_id, -- resolved from Host table via User.user_id
+  p.property_id -- resolved from Property table via address
+FROM access_pairs ap
+JOIN User u ON u.email = ap.email AND u.user_type = 'host'
+JOIN Host h ON h.host_id = u.user_id
+JOIN Property p ON p.address = ap.address
+;
 
 -- Insert CancellationPolicy Data
 INSERT INTO CancellationPolicy (name, description) VALUES
