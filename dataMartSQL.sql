@@ -167,9 +167,8 @@ CREATE TABLE AccommodationImage (
   image_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
   image_url VARCHAR(255) NOT NULL UNIQUE, -- URL of the image
-  caption VARCHAR(255) NULL, -- Optional caption for the image
-  display_order INT NOT NULL DEFAULT 0, -- Order to display the image
-  upload_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the image was uploaded
+  image_description TEXT NULL, -- Optional description of the image
+  display_order INT NOT NULL, -- Order to display the image
   CONSTRAINT pk_accommodationimage PRIMARY KEY (image_id),
   CONSTRAINT fk_accommodationimage_accommodation -- Foreign Key constraint to ensure accommodation_id references Accommodation.accommodation_id
     FOREIGN KEY (accommodation_id)
@@ -891,6 +890,175 @@ INSERT INTO Accommodation (property_id, cancellation_policy_id, accommodation_ti
   ((SELECT property_id FROM Property WHERE property_address = 'Ehrenstrasse 22, Koeln'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Trendy regular flat
   'regular', 2, 'Charming flat in Colognes trendy Belgian Quarter', 90.00)
+;
+
+-- Insert AccommodationImage Data
+INSERT INTO AccommodationImage (accommodation_id, image_url, image_description, display_order)
+  VALUES
+  -- Berlin images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%'), 'https://example.com/images/berlin_loft_1.jpg', 'Spacious living area with balcony view', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%'), 'https://example.com/images/berlin_loft_2.jpg', 'Modern kitchen with dining area', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%'), 'https://example.com/images/berlin_studio_1.jpg', 'Cozy studio with historic charm', '3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%'), 'https://example.com/images/berlin_studio_2.jpg', 'Designer furnishings and decor', '4'),
+
+  -- Munich images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%'), 'https://example.com/images/munich_apartment_1.jpg', 'Elegant living room with Bavarian decor', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%'), 'https://example.com/images/munich_apartment_2.jpg', 'Spacious bedroom with city views', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming Altbau apartment in central Mun%'), 'https://example.com/images/munich_altbau_1.jpg', 'Charming Altbau architecture', '3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming Altbau apartment in central Mun%'), 'https://example.com/images/munich_altbau_2.jpg', 'Cozy living space with vintage touches', '4'),
+
+  -- Hamburg images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft steps from Hamburg%'), 'https://example.com/images/hamburg_loft_1.jpg', 'Urban loft with modern furnishings', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft steps from Hamburg%'), 'https://example.com/images/hamburg_loft_2.jpg', 'View of the city skyline from the loft', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart of Hamburg%'), 'https://example.com/images/hamburg_nest_1.jpg', 'Cozy nest with city views', '3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart of Hamburg%'), 'https://example.com/images/hamburg_nest_2.jpg', 'Warm and inviting living area','4'),
+
+  -- Frankfurt images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Executive apartment on Frankfurts%'), 'https://example.com/images/frankfurt_executive_1.jpg', 'Executive living room with modern decor', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Executive apartment on Frankfurts%'), 'https://example.com/images/frankfurt_executive_2.jpg', 'Stylish bedroom with city views', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Comfortable city apartment with Main River%'), 'https://example.com/images/frankfurt_city_1.jpg', 'Comfortable living area with river view', '3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Comfortable city apartment with Main River%'), 'https://example.com/images/frankfurt_city_2.jpg', 'Modern kitchen and dining space', '4'),
+
+  -- Schwarzwald images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%'), 'https://example.com/images/schwarzwald_chalet_1.jpg', 'Authentic chalet with mountain views', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%'), 'https://example.com/images/schwarzwald_chalet_2.jpg', 'Cozy living area with fireplace', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin near Feldberg ski slopes%'), 'https://example.com/images/schwarzwald_cabin_1.jpg', 'Rustic cabin with ski slope access','3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin near Feldberg ski slopes%'), 'https://example.com/images/schwarzwald_cabin_2.jpg', 'Warm and inviting interior', '4'),
+
+  -- Leipzig images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment in Leipzig%'), 'https://example.com/images/leipzig_historic_1.jpg', 'Historic apartment with vintage charm', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment in Leipzig%'), 'https://example.com/images/leipzig_historic_2.jpg', 'Spacious living area with period features', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern studio near Leipzig Hauptbahnhof%'), 'https://example.com/images/leipzig_modern_1.jpg', 'Modern studio with contemporary design', '3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern studio near Leipzig Hauptbahnhof%'), 'https://example.com/images/leipzig_modern_2.jpg', 'Compact and functional living space', '4'),
+
+  -- Düsseldorf images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps from Königsallee%'), 'https://example.com/images/duesseldorf_elegant_1.jpg', 'Elegant living room with luxury furnishings', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps from Königsallee%'), 'https://example.com/images/duesseldorf_elegant_2.jpg', 'Stylish bedroom with shopping district views', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bright riverside apartment in MedienHafen%'), 'https://example.com/images/duesseldorf_riverside_1.jpg', 'Bright riverside living area', '3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bright riverside apartment in MedienHafen%'), 'https://example.com/images/duesseldorf_riverside_2.jpg', 'Modern kitchen with river views', '4'),
+
+  -- Stuttgart images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse with panoramic Stuttgart%'), 'https://example.com/images/stuttgart_penthouse_1.jpg', 'Luxury penthouse with panoramic views', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse with panoramic Stuttgart%'), 'https://example.com/images/stuttgart_penthouse_2.jpg', 'Spacious terrace overlooking the city', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact urban studio near Schlossplatz%'), 'https://example.com/images/stuttgart_studio_1.jpg', 'Compact studio with modern amenities', '3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact urban studio near Schlossplatz%'), 'https://example.com/images/stuttgart_studio_2.jpg', 'Functional living space in the city center', '4'),
+
+  -- Garmisch-Partenkirchen images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge with direct Zugspitze%'), 'https://example.com/images/garmisch_lodge_1.jpg', 'Alpine lodge with Zugspitze views', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge with direct Zugspitze%'), 'https://example.com/images/garmisch_lodge_2.jpg', 'Cozy interior with rustic charm', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse with mountain access%'), 'https://example.com/images/garmisch_guesthouse_1.jpg', 'Traditional Bavarian guesthouse exterior', '3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse with mountain access%'), 'https://example.com/images/garmisch_guesthouse_2.jpg', 'Warm and inviting guesthouse interior', '4'),
+
+  -- Cologne images
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment with Cologne Cathedral%'), 'https://example.com/images/cologne_designer_1.jpg', 'Designer apartment with cathedral views', '1'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment with Cologne Cathedral%'), 'https://example.com/images/cologne_designer_2.jpg', 'Modern furnishings and decor', '2'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Colognes trendy Belgian Quarter%'), 'https://example.com/images/cologne_charming_1.jpg', 'Charming flat in Belgian Quarter with local art', '3'),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Colognes trendy Belgian Quarter%'), 'https://example.com/images/cologne_charming_2.jpg', 'Cozy living area with local art', '4')
+;
+
+-- Insert Amenity Data
+-- Common amenities for properties and accommodations
+INSERT INTO Amenity (amenity_name, amenity_description)
+  VALUES
+  -- Basic utilities
+  ('WiFi', 'High-speed wireless internet access'),
+  ('Air Conditioning', 'Climate control system'),
+  ('Heating', 'Central heating system'),
+  ('Washer', 'Washing machine available'),
+  ('Dryer', 'Clothes dryer available'),
+  ('Hot Water', 'Reliable hot water supply'),
+
+  -- Kitchen amenities
+  ('Kitchen', 'Fully equipped cooking space'),
+  ('Refrigerator', 'Full-size refrigerator'),
+  ('Microwave', 'Microwave oven'),
+  ('Coffee Maker', 'Coffee brewing equipment'),
+  ('Dishwasher', 'Built-in dishwasher'),
+  ('Cooking Basics', 'Pots, pans, oil, salt & pepper'),
+
+  -- Entertainment
+  ('TV', 'Television with standard channels'),
+  ('Cable TV', 'Premium cable television'),
+  ('Streaming Services', 'Access to Netflix/Amazon Prime etc.'),
+
+  -- Safety & Accessibility
+  ('Smoke Alarm', 'Smoke detection system'),
+  ('First Aid Kit', 'Basic medical supplies'),
+  ('Fire Extinguisher', 'On-site fire safety equipment'),
+  ('Wheelchair Accessible', 'ADA-compliant access features'),
+
+  -- Outdoor & Luxury
+  ('Pool', 'Swimming pool access'),
+  ('Garden', 'Private outdoor garden area'),
+  ('Parking', 'Dedicated parking space'),
+  ('Gym', 'Exercise equipment available'),
+  ('Hot Tub', 'Private jacuzzi/hot tub')
+;
+
+-- Insert AmenityAssignment Data
+-- The amenity assignment is not realistic but is enough to showcase the functionality
+INSERT INTO AmenityAssignment (accommodation_id, amenity_id)
+  VALUES
+  -- Berlin accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Kitchen')),
+
+  -- Munich accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming Altbau apartment in central Mun%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming Altbau apartment in central Mun%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
+
+  -- Hamburg accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft steps from Hamburg%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft steps from Hamburg%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart of Hamburg%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart of Hamburg%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
+
+  -- Frankfurt accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Executive apartment on Frankfurts%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Executive apartment on Frankfurts%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Comfortable city apartment with Main River%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Comfortable city apartment with Main River%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
+
+  -- Schwarzwald accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin near Feldberg ski slopes%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin near Feldberg ski slopes%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
+
+  -- Leipzig accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment in Leipzig%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment in Leipzig%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern studio near Leipzig Hauptbahnhof%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern studio near Leipzig Hauptbahnhof%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
+
+  -- Düsseldorf accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps from Königsallee%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps from Königsallee%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bright riverside apartment in MedienHafen%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bright riverside apartment in MedienHafen%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
+
+  -- Stuttgart accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse with panoramic Stuttgart%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse with panoramic Stuttgart%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact urban studio near Schlossplatz%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact urban studio near Schlossplatz%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
+
+  -- Garmisch-Partenkirchen accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge with direct Zugspitze%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge with direct Zugspitze%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse with mountain access%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse with mountain access%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
+
+  -- Cologne accommodations
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment with Cologne Cathedral%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment with Cologne Cathedral%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Colognes trendy Belgian Quarter%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Colognes trendy Belgian Quarter%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating'))
 ;
 
 -- Insert Booking Data
