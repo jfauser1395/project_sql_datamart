@@ -69,6 +69,29 @@ CREATE TABLE Host (
     ON UPDATE CASCADE -- If a User.user_id is updated, the corresponding Host.user_id is updated
 );
 
+-- UserReferral Table
+-- Tracks user referrals
+CREATE TABLE UserReferral (
+  referral_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  referrer_id CHAR(36) NOT NULL, -- Foreign Key referencing User (The user who referred)
+  referred_id CHAR(36) NOT NULL, -- Foreign Key referencing User (The user who was referred)
+  referral_code VARCHAR(100) NOT NULL UNIQUE, -- Unique code used for the referral
+  referral_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date of the referral
+  referral_expiry_date DATETIME NULL, -- Optional expiry date
+  referral_status ENUM('pending', 'claimed', 'expired') NOT NULL DEFAULT 'pending', -- Status of the referral
+  CONSTRAINT pk_userreferral PRIMARY KEY (referral_id), -- Primary Key constraint
+  CONSTRAINT fk_userreferral_referrer -- Foreign Key constraint to ensure referrer_id references User.user_id
+    FOREIGN KEY (referrer_id)
+    REFERENCES User (user_id)
+    ON DELETE CASCADE -- If referrer is deleted, remove their referral records
+    ON UPDATE CASCADE, -- Update referrer_id in UserReferral if it changes in User
+  CONSTRAINT fk_userreferral_referred -- Foreign Key constraint to ensure referred_id references User.user_id
+    FOREIGN KEY (referred_id)
+    REFERENCES User (user_id)
+    ON DELETE CASCADE -- If referred user is deleted, remove the referral record
+    ON UPDATE CASCADE -- Update referred_id in UserReferral if it changes in User
+);
+
 -- BannedUser Table
 -- Tracks users who have been banned
 CREATE TABLE BannedUser (
@@ -204,6 +227,38 @@ CREATE TABLE AmenityAssignment (
     ON UPDATE CASCADE -- Update amenity_id in AmenityAssignment if it changes in Amenity
 );
 
+-- Wishlist Table
+-- Stores wishlists created by guests
+CREATE TABLE Wishlist (
+  wishlist_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  guest_id CHAR(36) NOT NULL, -- Foreign Key referencing Guest (A wishlist belongs to a guest)
+  wishlist_title VARCHAR(100) NOT NULL, -- Title of the wishlist
+  CONSTRAINT pk_wishlist PRIMARY KEY (wishlist_id), -- Primary Key constraint
+  CONSTRAINT fk_wishlist_guest -- Foreign Key constraint to ensure guest_id references Guest.guest_id
+    FOREIGN KEY (guest_id) 
+    REFERENCES Guest (guest_id)
+    ON DELETE CASCADE -- If a guest is deleted, their wishlists are deleted
+    ON UPDATE CASCADE -- Update guest_id in Wishlist if it changes in Guest
+);
+
+-- WishlistItem Table (Junction Table)
+-- Links Accommodations to Wishlists they are included in
+CREATE TABLE WishlistItem (
+  wishlist_id CHAR(36) NOT NULL, -- Foreign Key referencing Wishlist
+  accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
+  CONSTRAINT pk_wishlistitem PRIMARY KEY (wishlist_id, accommodation_id), -- Composite Primary Key
+  CONSTRAINT fk_wishlistitem_wishlist -- Foreign Key constraint to ensure wishlist_id references Wishlist.wishlist_id
+    FOREIGN KEY (wishlist_id)
+    REFERENCES Wishlist (wishlist_id)
+    ON DELETE CASCADE -- If wishlist deleted, its items are deleted
+    ON UPDATE CASCADE, -- Update wishlist_id in WishlistItem if it changes in Wishlist
+  CONSTRAINT fk_wishlistitem_accommodation -- Foreign Key constraint to ensure accommodation_id references Accommodation.accommodation_id
+    FOREIGN KEY (accommodation_id)
+    REFERENCES Accommodation (accommodation_id)
+    ON DELETE CASCADE -- If accommodation deleted, remove from wishlists
+    ON UPDATE CASCADE -- Update accommodation_id in WishlistItem if it changes in Accommodation
+);
+
 -- Booking Table
 -- Stores details about property bookings
 CREATE TABLE Booking (
@@ -259,11 +314,11 @@ CREATE TABLE Review (
 
 -- Message Table
 -- Stores messages exchanged between users, potentially linked to bookings
-CREATE TABLE Message (
+CREATE TABLE UserMessage (
   message_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   sender_id CHAR(36) NULL, -- Foreign Key referencing User
   recipient_id CHAR(36) NULL, -- Foreign Key referencing User
-  booking_id CHAR(36) NULL, -- Optional Foreign Key linking to a booking
+  booking_id CHAR(36) DEFAULT NULL, -- Optional Foreign Key linking to a booking
   content TEXT NOT NULL, -- The message content
   sent_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the message was sent
   CONSTRAINT pk_message PRIMARY KEY (message_id), -- Primary Key constraint
@@ -282,62 +337,6 @@ CREATE TABLE Message (
     REFERENCES Booking (booking_id)
     ON DELETE SET NULL -- If booking deleted, messages linked to it remain but are unlinked
     ON UPDATE CASCADE -- Update booking_id in Message if it changes in Booking
-);
-
--- Wishlist Table
--- Stores wishlists created by guests
-CREATE TABLE Wishlist (
-  wishlist_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
-  guest_id CHAR(36) NOT NULL, -- Foreign Key referencing Guest (A wishlist belongs to a guest)
-  title VARCHAR(100) NOT NULL, -- Title of the wishlist
-  creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the wishlist was created
-  CONSTRAINT pk_wishlist PRIMARY KEY (wishlist_id), -- Primary Key constraint
-  CONSTRAINT fk_wishlist_guest -- Foreign Key constraint to ensure guest_id references Guest.guest_id
-    FOREIGN KEY (guest_id) 
-    REFERENCES Guest (guest_id)
-    ON DELETE CASCADE -- If a guest is deleted, their wishlists are deleted
-    ON UPDATE CASCADE -- Update guest_id in Wishlist if it changes in Guest
-);
-
--- WishlistItem Table (Junction Table)
--- Links Accommodations to Wishlists they are included in
-CREATE TABLE WishlistItem (
-  wishlist_id CHAR(36) NOT NULL, -- Foreign Key referencing Wishlist
-  accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
-  CONSTRAINT pk_wishlistitem PRIMARY KEY (wishlist_id, accommodation_id), -- Composite Primary Key
-  CONSTRAINT fk_wishlistitem_wishlist -- Foreign Key constraint to ensure wishlist_id references Wishlist.wishlist_id
-    FOREIGN KEY (wishlist_id)
-    REFERENCES Wishlist (wishlist_id)
-    ON DELETE CASCADE -- If wishlist deleted, its items are deleted
-    ON UPDATE CASCADE, -- Update wishlist_id in WishlistItem if it changes in Wishlist
-  CONSTRAINT fk_wishlistitem_accommodation -- Foreign Key constraint to ensure accommodation_id references Accommodation.accommodation_id
-    FOREIGN KEY (accommodation_id)
-    REFERENCES Accommodation (accommodation_id)
-    ON DELETE CASCADE -- If accommodation deleted, remove from wishlists
-    ON UPDATE CASCADE -- Update accommodation_id in WishlistItem if it changes in Accommodation
-);
-
--- UserReferral Table
--- Tracks user referrals
-CREATE TABLE UserReferral (
-  referral_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
-  referrer_id CHAR(36) NOT NULL, -- Foreign Key referencing User (The user who referred)
-  referred_id CHAR(36) NOT NULL, -- Foreign Key referencing User (The user who was referred)
-  referral_code VARCHAR(100) NOT NULL UNIQUE, -- Unique code used for the referral
-  referral_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date of the referral
-  referral_expiry_date DATETIME NULL, -- Optional expiry date
-  referral_status ENUM('pending', 'claimed', 'expired') NOT NULL DEFAULT 'pending', -- Status of the referral
-  CONSTRAINT pk_userreferral PRIMARY KEY (referral_id), -- Primary Key constraint
-  CONSTRAINT fk_userreferral_referrer -- Foreign Key constraint to ensure referrer_id references User.user_id
-    FOREIGN KEY (referrer_id)
-    REFERENCES User (user_id)
-    ON DELETE CASCADE -- If referrer is deleted, remove their referral records
-    ON UPDATE CASCADE, -- Update referrer_id in UserReferral if it changes in User
-  CONSTRAINT fk_userreferral_referred -- Foreign Key constraint to ensure referred_id references User.user_id
-    FOREIGN KEY (referred_id)
-    REFERENCES User (user_id)
-    ON DELETE CASCADE -- If referred user is deleted, remove the referral record
-    ON UPDATE CASCADE -- Update referred_id in UserReferral if it changes in User
 );
 
 -- Payout Table
@@ -625,7 +624,7 @@ INSERT INTO BannedUser (user_id, admin_id, ban_reason, ban_date, unban_date)
   -- Bans by maximilian.mueller@example.com
   ((SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
-  'Repeated policy violations including fraudulent reviews', '2025-06-29 10:00:00', '2026-06-29 10:00:00'),
+  'Repeated platform policy violations including fraudulent reviews', '2025-06-29 10:00:00', '2026-06-29 10:00:00'),
 
   ((SELECT user_id FROM User WHERE email = 'christina.simon@example.com'),
   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
@@ -1289,3 +1288,196 @@ INSERT INTO Review (reviewer_id, reviewee_id, booking_id, rating, comment, revie
   4, 'Great neighborhood with cool bars and restaurants. Flat was comfortable.', '2024-03-19 14:30:00')
 ;
 
+-- Insert UserMessage Data
+-- Notification messages sent by reader-role admins to banned users
+-- All messages sent on the user's ban date with appropriate content
+INSERT INTO UserMessage (sender_id, recipient_id, content, sent_date)
+VALUES
+-- First 5 messages from leon.wagner@example.com
+((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
+(SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
+'Dear Tobias Keller, we are hereby notifying you that your account has been suspended due to repeated platform policy violations. Duration: 1 year.', 
+'2025-06-28 10:05:00'),
+
+((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
+(SELECT user_id FROM User WHERE email = 'christina.simon@example.com'),
+'Dear Christina Simon, your account has been suspended for unauthorized payment methods and chargeback abuse. Duration: 1 year.', 
+'2025-06-29 10:05:00'),
+
+((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
+(SELECT user_id FROM User WHERE email = 'michael.fuchs@example.com'),
+'Dear Michael Fuchs, we have suspended your account due to property damage and refusal to pay compensation. Duration: 1 year.', 
+'2025-06-30 10:05:00'),
+
+((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
+(SELECT user_id FROM User WHERE email = 'katharina.herrmann@example.com'),
+'Dear Katharina Herrmann, your account has been suspended for harassment of property owners. Duration: 1 year.', 
+'2025-07-01 10:05:00'),
+
+((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
+(SELECT user_id FROM User WHERE email = 'florian.lange@example.com'),
+'Dear Florian Lange, we have suspended your account for creating multiple accounts to circumvent restrictions. Duration: 1 year.', 
+'2025-07-02 10:05:00'),
+
+-- Next 5 messages from anna.becker@example.com
+((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
+(SELECT user_id FROM User WHERE email = 'vanessa.busch@example.com'),
+'Dear Vanessa Busch, your account has been suspended for fake booking attempts and credit card testing. Duration: 1 year.', 
+'2025-07-03 11:35:00'),
+
+((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
+(SELECT user_id FROM User WHERE email = 'daniel.kuhn@example.com'),
+'Dear Daniel Kuhn, we have suspended your account due to repeated late cancellations causing host losses. Duration: 1 year.', 
+'2025-07-04 11:35:00'),
+
+((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
+(SELECT user_id FROM User WHERE email = 'kristin.jansen@example.com'),
+'Dear Kristin Jansen, your account has been suspended for misrepresentation of identity and booking purposes. Duration: 1 year.', 
+'2025-07-05 11:35:00'),
+
+((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
+(SELECT user_id FROM User WHERE email = 'philipp.winter@example.com'),
+'Dear Philipp Winter, we have suspended your account for commercial use of personal account without authorization. Duration: 1 year.', 
+'2025-07-06 11:35:00'),
+
+((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
+(SELECT user_id FROM User WHERE email = 'jana.schulte@example.com'),
+'Dear Jana Schulte, your account has been suspended for repeated violations of smoking policies. Duration: 1 year.', 
+'2025-07-07 11:35:00'),
+
+-- Next 5 messages from felix.schulz@example.com
+((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
+(SELECT user_id FROM User WHERE email = 'matthias.koenig@example.com'),
+'Dear Matthias König, we have suspended your account for unauthorized subletting of booked accommodations. Duration: 1 year.', 
+'2025-07-08 14:20:00'),
+
+((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
+(SELECT user_id FROM User WHERE email = 'susanne.albrecht@example.com'),
+'Dear Susanne Albrecht, your account has been suspended for fraudulent damage claims against hosts. Duration: 1 year.', 
+'2025-07-09 14:20:00'),
+
+((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
+(SELECT user_id FROM User WHERE email = 'markus.graf@example.com'),
+'Dear Markus Graf, we have suspended your account due to excessive noise complaints from multiple properties. Duration: 1 year.', 
+'2025-07-10 14:20:00'),
+
+((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
+(SELECT user_id FROM User WHERE email = 'nadine.wild@example.com'),
+'Dear Nadine Wild, your account has been suspended for false reporting of other users. Duration: 1 year.', 
+'2025-07-11 14:20:00'),
+
+((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
+(SELECT user_id FROM User WHERE email = 'stefan.brand@example.com'),
+'Dear Stefan Brand, we have suspended your account for attempting to circumvent payment systems. Duration: 1 year.', 
+'2025-07-12 14:20:00'),
+
+-- Final 5 messages distributed among remaining reader admins
+((SELECT user_id FROM User WHERE email = 'mia.hoffmann@example.com'),
+(SELECT user_id FROM User WHERE email = 'patricia.reich@example.com'),
+'Dear Patricia Reich, your account has been suspended for repeated last-minute cancellations with suspicious patterns. Duration: 1 year.', 
+'2025-07-13 09:50:00'),
+
+((SELECT user_id FROM User WHERE email = 'lukas.schaefer@example.com'),
+(SELECT user_id FROM User WHERE email = 'simon.arnold@example.com'),
+'Dear Simon Arnold, we have suspended your account for verbal abuse of property owners. Duration: 1 year.', 
+'2025-07-14 16:25:00'),
+
+((SELECT user_id FROM User WHERE email = 'lena.koch@example.com'),
+(SELECT user_id FROM User WHERE email = 'christine.vogt@example.com'),
+'Dear Christine Vogt, your account has been suspended for unauthorized parties in booked accommodations. Duration: 1 year.', 
+'2025-07-15 13:15:00'),
+
+((SELECT user_id FROM User WHERE email = 'elias.bauer@example.com'),
+(SELECT user_id FROM User WHERE email = 'andreas.ott@example.com'),
+'Dear Andreas Ott, we have suspended your account for repeated violations of pet policies. Duration: 1 year.', 
+'2025-07-16 09:50:00'),
+
+((SELECT user_id FROM User WHERE email = 'laura.richter@example.com'),
+(SELECT user_id FROM User WHERE email = 'julia.krueger@example.com'),
+'Dear Julia Krüger, your account has been suspended for providing fake identity documents during verification. Duration: 1 year.', 
+'2025-07-17 16:25:00');
+
+-- Insert Wishlist Data
+INSERT INTO Wishlist (guest_id, wishlist_title)
+VALUES
+  ((SELECT user_id FROM User WHERE email = 'niklas.meier@example.com' AND user_type = 'guest'), 'Summer vacation'),
+  ((SELECT user_id FROM User WHERE email = 'charlotte.hofmann@example.com' AND user_type = 'guest'), 'Future Travel Plans'),
+  ((SELECT user_id FROM User WHERE email = 'ben.hartmann@example.com' AND user_type = 'guest'), 'Cozy Winter Getaways'),
+  ((SELECT user_id FROM User WHERE email = 'johanna.franke@example.com' AND user_type = 'guest'), 'Summer Escapes'),
+  ((SELECT user_id FROM User WHERE email = 'tim.walter@example.com' AND user_type = 'guest'), 'City Breaks and Culture Trips'),
+  ((SELECT user_id FROM User WHERE email = 'amelie.peters@example.com' AND user_type = 'guest'), 'Romantic Getaways'),
+  ((SELECT user_id FROM User WHERE email = 'moritz.kruse@example.com' AND user_type = 'guest'), 'Adventure Travel'),
+  ((SELECT user_id FROM User WHERE email = 'clara.brandt@example.com' AND user_type = 'guest'), 'Luxury Resorts'),
+  ((SELECT user_id FROM User WHERE email = 'noah.schuster@example.com' AND user_type = 'guest'), 'Road Trip Ideas'),
+  ((SELECT user_id FROM User WHERE email = 'luisa.vogel@example.com' AND user_type = 'guest'), 'Mountain Retreats'),
+  ((SELECT user_id FROM User WHERE email = 'julian.seidel@example.com' AND user_type = 'guest'), 'Foodie Destinations'),
+  ((SELECT user_id FROM User WHERE email = 'marieke.hansen@example.com' AND user_type = 'guest'), 'Spa and Wellness'),
+  ((SELECT user_id FROM User WHERE email = 'david.lehmann@example.com' AND user_type = 'guest'), 'Historical Sites'),
+  ((SELECT user_id FROM User WHERE email = 'sophie.koehler@example.com' AND user_type = 'guest'), 'Island Hopping'),
+  ((SELECT user_id FROM User WHERE email = 'emil.bergmann@example.com' AND user_type = 'guest'), 'Ski Resorts'),
+  ((SELECT user_id FROM User WHERE email = 'maja.pohl@example.com' AND user_type = 'guest'), 'Family Vacation Spots'),
+  ((SELECT user_id FROM User WHERE email = 'leo.engel@example.com' AND user_type = 'guest'), 'Backpacking Adventures'),
+  ((SELECT user_id FROM User WHERE email = 'lena.mayer@example.com' AND user_type = 'guest'), 'Wine Country Tours'),
+  ((SELECT user_id FROM User WHERE email = 'erik.winkler@example.com' AND user_type = 'guest'), 'National Parks'),
+  ((SELECT user_id FROM User WHERE email = 'nele.gross@example.com' AND user_type = 'guest'), 'Bucket List Destinations')
+;
+
+-- Insert WishlistItem Data
+INSERT INTO WishlistItem (wishlist_id, accommodation_id)
+VALUES
+  -- Summer vacation 
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer vacation'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer vacation'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer vacation'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft%')),
+
+  -- Future Travel Plans
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge%')),
+
+  -- Cozy Winter Getaways 
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Cozy Winter Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Cozy Winter Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Cozy Winter Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%')),
+
+  -- Summer Beach Escapes 
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Beach Escapes'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Beach Escapes'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Beach Escapes'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment%')),
+
+  -- City Breaks and Culture Trips
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'City Breaks and Culture Trips'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'City Breaks and Culture Trips'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'City Breaks and Culture Trips'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps%')),
+
+  -- Romantic Getaways
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Romantic Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Romantic Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Romantic Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment%')),
+
+  -- Adventure Travel
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%'))
+;
