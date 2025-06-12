@@ -345,6 +345,7 @@ CREATE TABLE Payout (
   payout_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   host_id CHAR(36) NOT NULL, -- Foreign Key referencing Host (Payout is made to a host)
   amount DECIMAL(10,2) NOT NULL, -- Payout amount (Increased precision)
+  payout_method ENUM('paypal', 'bank_transfer', 'credit_card', 'crypto') NOT NULL, -- Method of payout (e.g., bank transfer, PayPal)
   payout_status ENUM('pending', 'completed', 'failed') NOT NULL DEFAULT 'pending', -- Payout status
   payout_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the payout was initiated/processed
   CONSTRAINT pk_payout PRIMARY KEY (payout_id), -- Primary Key constraint
@@ -364,7 +365,7 @@ CREATE TABLE Payment (
   booking_id CHAR(36) NOT NULL, -- Optional Foreign Key referencing Booking (Payment for a booking)
   amount DECIMAL(10,2) NOT NULL, -- Payment amount (Increased precision)
   payment_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date of the payment
-  method VARCHAR(50) NOT NULL, -- Payment method
+  payment_method ENUM('paypal', 'bank_transfer', 'credit_card', 'crypto') NOT NULL, -- Payment method
   payment_status ENUM('completed', 'pending', 'failed', 'refunded') NOT NULL DEFAULT 'pending', -- Payment status (Added refunded)
   CONSTRAINT pk_payment PRIMARY KEY (payment_id), -- Primary Key constraint
   CONSTRAINT fk_payment_booking -- Foreign Key constraint to ensure booking_id references Booking.booking_id
@@ -616,9 +617,91 @@ INSERT INTO Host (host_id, host_tier)
   ) h ON u.email = h.email AND u.user_type = 'host'
 ; -- Define the compound condition to match email and user_type
 
+-- Insert UserReferral Data
+INSERT INTO UserReferral (referrer_id, referred_id, referral_code, referral_date, referral_expiry_date, referral_status)
+VALUES
+  ((SELECT user_id FROM User WHERE email = 'moritz.kruse@example.com'),
+   (SELECT user_id FROM User WHERE email = 'luisa.vogel@example.com'),
+   '684932', '2023-03-15 14:30:00', '2023-06-15 14:30:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'charlotte.hofmann@example.com'),
+   (SELECT user_id FROM User WHERE email = 'tim.walter@example.com'),
+   '217845', '2023-04-02 09:15:00', '2023-07-02 09:15:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'ben.hartmann@example.com'),
+   (SELECT user_id FROM User WHERE email = 'johanna.franke@example.com'),
+   '539761', '2023-04-18 16:45:00', '2023-07-18 16:45:00', 'expired'),
+  
+  ((SELECT user_id FROM User WHERE email = 'amelie.peters@example.com'),
+   (SELECT user_id FROM User WHERE email = 'noah.schuster@example.com'),
+   '892345', '2023-05-05 11:20:00', '2023-08-05 11:20:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'clara.brandt@example.com'),
+   (SELECT user_id FROM User WHERE email = 'julian.seidel@example.com'),
+   '456123', '2023-05-22 13:10:00', '2023-08-22 13:10:00', 'pending'),
+  
+  ((SELECT user_id FROM User WHERE email = 'david.lehmann@example.com'),
+   (SELECT user_id FROM User WHERE email = 'marieke.hansen@example.com'),
+   '789012', '2023-06-10 10:50:00', '2023-09-10 10:50:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'sophie.koehler@example.com'),
+   (SELECT user_id FROM User WHERE email = 'emil.bergmann@example.com'),
+   '345678', '2023-06-28 15:30:00', '2023-09-28 15:30:00', 'expired'),
+  
+  ((SELECT user_id FROM User WHERE email = 'maja.pohl@example.com'),
+   (SELECT user_id FROM User WHERE email = 'leo.engel@example.com'),
+   '901234', '2023-07-15 12:00:00', '2023-10-15 12:00:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'lena.mayer@example.com'),
+   (SELECT user_id FROM User WHERE email = 'erik.winkler@example.com'),
+   '567890', '2023-08-01 08:45:00', '2023-11-01 08:45:00', 'pending'),
+  
+  ((SELECT user_id FROM User WHERE email = 'nele.gross@example.com'),
+   (SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
+   '123456', '2023-08-20 17:20:00', '2023-11-20 17:20:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'christina.simon@example.com'),
+   (SELECT user_id FROM User WHERE email = 'michael.fuchs@example.com'),
+   '234567', '2023-09-05 14:15:00', '2023-12-05 14:15:00', 'pending'),
+  
+  ((SELECT user_id FROM User WHERE email = 'katharina.herrmann@example.com'),
+   (SELECT user_id FROM User WHERE email = 'florian.lange@example.com'),
+   '890123', '2023-09-22 10:30:00', '2023-12-22 10:30:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'vanessa.busch@example.com'),
+   (SELECT user_id FROM User WHERE email = 'daniel.kuhn@example.com'),
+   '456789', '2023-10-10 09:00:00', '2024-01-10 09:00:00', 'expired'),
+  
+  ((SELECT user_id FROM User WHERE email = 'kristin.jansen@example.com'),
+   (SELECT user_id FROM User WHERE email = 'philipp.winter@example.com'),
+   '012345', '2023-10-28 16:40:00', '2024-01-28 16:40:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'jana.schulte@example.com'),
+   (SELECT user_id FROM User WHERE email = 'matthias.koenig@example.com'),
+   '678901', '2023-11-15 11:25:00', '2024-02-15 11:25:00', 'pending'),
+  
+  ((SELECT user_id FROM User WHERE email = 'susanne.albrecht@example.com'),
+   (SELECT user_id FROM User WHERE email = 'markus.graf@example.com'),
+   '345012', '2023-12-03 13:50:00', '2024-03-03 13:50:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'nadine.wild@example.com'),
+   (SELECT user_id FROM User WHERE email = 'stefan.brand@example.com'),
+   '789456', '2023-12-20 10:15:00', '2024-03-20 10:15:00', 'expired'),
+  
+  ((SELECT user_id FROM User WHERE email = 'patricia.reich@example.com'),
+   (SELECT user_id FROM User WHERE email = 'simon.arnold@example.com'),
+   '123789', '2024-01-07 15:30:00', '2024-04-07 15:30:00', 'claimed'),
+  
+  ((SELECT user_id FROM User WHERE email = 'christine.vogt@example.com'),
+   (SELECT user_id FROM User WHERE email = 'andreas.ott@example.com'),
+   '456012', '2024-01-25 09:45:00', '2024-04-25 09:45:00', 'pending'),
+  
+  ((SELECT user_id FROM User WHERE email = 'julia.krueger@example.com'),
+   (SELECT user_id FROM User WHERE email = 'niklas.meier@example.com'),
+   '890456', '2024-02-12 14:20:00', '2024-05-12 14:20:00', 'claimed')
+;
+
 -- Insert BannedUser Data
--- Bans for users who violated platform policies, all performed by writer-role admins
--- Each ban lasts exactly 1 year from ban date
 INSERT INTO BannedUser (user_id, admin_id, ban_reason, ban_date, unban_date)
   VALUES
   -- Bans by maximilian.mueller@example.com
@@ -1473,3 +1556,65 @@ VALUES
   ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
    (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%'))
 ;
+
+-- Insert Payout Data
+INSERT INTO Payout (host_id, amount, payout_date, payout_method)
+VALUES
+  -- Max Mustermann (prime)
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   1500.00, '2023-07-10 12:00:00', 'bank_transfer'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   1800.50, '2023-08-15 09:30:00', 'bank_transfer'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   1650.75, '2023-09-12 14:15:00', 'bank_transfer'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   1920.25, '2023-10-18 11:45:00', 'bank_transfer'),
+   
+  -- Lena Schmitt (prime)
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   2200.75, '2023-07-12 14:15:00', 'paypal'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   1950.25, '2023-08-18 11:45:00', 'paypal'),
+   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   2400.50, '2023-09-20 16:30:00', 'bank_transfer'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   2100.00, '2023-10-25 10:20:00', 'bank_transfer'),
+
+  -- Fabian Huber (prime)
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
+   3200.00, '2023-07-15 16:20:00', 'bank_transfer'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
+   2750.80, '2023-08-20 13:10:00', 'bank_transfer'),
+
+  -- Julia Wagner (prime)
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
+   1450.60, '2023-07-18 10:45:00', 'credit_card'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
+   1600.40, '2023-08-22 15:30:00', 'credit_card'),
+
+  -- Tom Becker (prime)
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
+   2300.25, '2023-07-20 11:20:00', 'credit_card'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
+   2100.75, '2023-08-25 14:50:00', 'credit_card'),
+
+  -- Lea Maier (prime)
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lea.maier@example.com'),
+   1750.90, '2023-07-22 09:15:00', 'credit_card'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lea.maier@example.com'),
+   1850.10, '2023-08-28 16:25:00', 'credit_card'),
+
+  -- Benno Mueller (prime)
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
+   2800.50, '2023-07-25 13:40:00', 'crypto'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
+   2950.00, '2023-08-30 10:15:00', 'crypto'),
+
+  -- Hannah Schmidt (prime)
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
+   1950.30, '2023-07-28 15:50:00', 'paypal'),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
+   2050.70, '2023-09-02 12:30:00', 'paypal')
+;
+
+
