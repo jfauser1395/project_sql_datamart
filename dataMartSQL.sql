@@ -32,7 +32,7 @@ CREATE TABLE User (
 -- user_id is both the Primary Key and a Foreign Key referencing User.user_id
 CREATE TABLE Admin (
   admin_id CHAR(36) NOT NULL, -- References User.user_id
-  role ENUM('reader', 'writer') NOT NULL DEFAULT 'reader', -- Admin-specific role
+  admin_role ENUM('reader', 'writer') NOT NULL DEFAULT 'reader', -- Admin-specific role
   CONSTRAINT pk_admin_user PRIMARY KEY (admin_id), -- Primary Key constraint
   CONSTRAINT fk_admin_user -- Foreign Key constraint to ensure admin_id references user_id in User table
     FOREIGN KEY (admin_id) 
@@ -69,15 +69,37 @@ CREATE TABLE Host (
     ON UPDATE CASCADE -- If a User.user_id is updated, the corresponding Host.user_id is updated
 );
 
+-- BannedUser Table
+-- Tracks users who have been banned
+CREATE TABLE BannedUser (
+  ban_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  user_id CHAR(36) NOT NULL UNIQUE, -- Foreign Key referencing User (The user who is banned) (Added UNIQUE as a user is usually banned only once)
+  admin_id CHAR(36) NULL, -- Optional Foreign Key referencing Admin (Admin who issued the ban) (Made NULLable as maybe automated bans exist)
+  ban_reason TEXT NULL, -- Optional reason for the ban (Made NULLable)
+  ban_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the ban was issued
+  unban_date DATETIME NULL, -- Optional date the ban expires or was lifted
+  CONSTRAINT pk_banneduser PRIMARY KEY (ban_id), -- Primary Key constraint
+  CONSTRAINT fk_banneduser_user -- Foreign Key constraint to ensure user_id references User.user_id
+    FOREIGN KEY (user_id)
+    REFERENCES User (user_id)
+    ON DELETE CASCADE -- If the banned user is deleted, the ban record is deleted
+    ON UPDATE CASCADE, -- If user_id is updated, update all bans for that user
+  CONSTRAINT fk_banneduser_admin -- Foreign Key constraint to ensure admin_id references Admin.admin_id
+    FOREIGN KEY (admin_id)
+    REFERENCES Admin (admin_id) -- FK references the Admin table using the admin_id column
+    ON DELETE SET NULL -- If admin deleted, ban record remains but admin link is severed
+    ON UPDATE CASCADE -- If admin_id is updated, update all bans issued by that admin
+);
+
 -- Property Table
 -- Stores general details about a physical property
 CREATE TABLE Property (
   property_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   title VARCHAR(100) NOT NULL, -- Title of the property
   country VARCHAR(100) NOT NULL, -- Country where the property is located
-  state VARCHAR(100) NOT NULL, -- State/Region where the property is located
+  region VARCHAR(100) NOT NULL, -- State/Region where the property is located
   zip_code VARCHAR(50) NOT NULL, -- Zip/Postal code
-  address VARCHAR(255) NOT NULL, -- Full address of the property
+  property_address VARCHAR(255) NOT NULL, -- Full address of the property
   square_feet INT NULL, -- Optional field
   property_type ENUM(
    'Apartment', 'House', 'Penthouse', 'Commercial', 'Cottage',
@@ -110,7 +132,7 @@ CREATE TABLE PropertyAccess (
 CREATE TABLE CancellationPolicy (
   policy_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   policy_name VARCHAR(100) NOT NULL UNIQUE, -- Name of the policy (Unique name)
-  description TEXT NOT NULL, -- Description of the policy
+  policy_description TEXT NOT NULL, -- Description of the policy
   CONSTRAINT pk_cancellationPolicy PRIMARY KEY (policy_id) -- Primary Key constraint
 );
 
@@ -122,7 +144,7 @@ CREATE TABLE Accommodation (
   cancellation_policy_id CHAR(36) NOT NULL, -- Foreign Key referencing CancellationPolicy (Accommodation has a policy)
   accommodation_tier ENUM('regular', 'prime') NOT NULL DEFAULT 'regular', -- Tier of the accommodation
   max_guest_count INT NOT NULL, -- Maximum number of guests allowed
-  description TEXT NULL, -- Optional description of the accommodation
+  unit_description TEXT NULL, -- Optional description of the accommodation
   price_per_night DECIMAL(15,2) NOT NULL, -- Price per night (Increased precision)
   CONSTRAINT pk_accommodation PRIMARY KEY (accommodation_id), -- Primary Key constraint
   CONSTRAINT fk_accommodation_property -- Foreign Key constraint to ensure property_id references Property.property_id
@@ -139,14 +161,58 @@ CREATE TABLE Accommodation (
   CONSTRAINT chk_accommodation_price CHECK (price_per_night >= 0) -- Price must be non-negative
 );
 
+-- AccommodationImage Table
+-- Stores images associated with an Accommodation
+CREATE TABLE AccommodationImage (
+  image_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
+  image_url VARCHAR(255) NOT NULL UNIQUE, -- URL of the image
+  caption VARCHAR(255) NULL, -- Optional caption for the image
+  display_order INT NOT NULL DEFAULT 0, -- Order to display the image
+  upload_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the image was uploaded
+  CONSTRAINT pk_accommodationimage PRIMARY KEY (image_id),
+  CONSTRAINT fk_accommodationimage_accommodation -- Foreign Key constraint to ensure accommodation_id references Accommodation.accommodation_id
+    FOREIGN KEY (accommodation_id)
+    REFERENCES Accommodation (accommodation_id)
+    ON DELETE CASCADE -- If accommodation deleted, its images are deleted
+    ON UPDATE CASCADE -- Update accommodation_id in AccommodationImage if it changes in Accommodation
+);
+
+-- Amenity Table
+-- Stores available amenities (e.g., WiFi, Pool)
+CREATE TABLE Amenity (
+  amenity_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  amenity_name VARCHAR(100) NOT NULL UNIQUE, -- Name of the amenity (Unique name)
+  amenity_description TEXT NULL, -- Optional description
+  CONSTRAINT pk_amenity PRIMARY KEY (amenity_id) -- Primary Key constraint
+);
+
+-- AmenityAssignment Table (Junction Table)
+-- Links Amenities to the Accommodations that offer them
+CREATE TABLE AmenityAssignment (
+  accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
+  amenity_id CHAR(36) NOT NULL, -- Foreign Key referencing Amenity
+  CONSTRAINT pk_amenityassignment PRIMARY KEY (accommodation_id, amenity_id), -- Composite Primary Key
+  CONSTRAINT fk_amenityassignment_accommodation -- Foreign Key constraint to ensure accommodation_id references Accommodation.accommodation_id
+    FOREIGN KEY (accommodation_id)
+    REFERENCES Accommodation (accommodation_id)
+    ON DELETE CASCADE -- If accommodation deleted, remove amenity links
+    ON UPDATE CASCADE, -- Update accommodation_id in AmenityAssignment if it changes in Accommodation
+  CONSTRAINT fk_amenityassignment_amenity -- Foreign Key constraint to ensure amenity_id references Amenity.amenity_id
+    FOREIGN KEY (amenity_id)
+    REFERENCES Amenity (amenity_id)
+    ON DELETE CASCADE -- If amenity deleted, remove links from accommodations
+    ON UPDATE CASCADE -- Update amenity_id in AmenityAssignment if it changes in Amenity
+);
+
 -- Booking Table
 -- Stores details about property bookings
 CREATE TABLE Booking (
   booking_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   guest_id CHAR(36) NOT NULL, -- Foreign Key referencing Guest.guest_id
   accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation.accommodation_id
-  start_date DATETIME NOT NULL, -- Start date of the booking
-  end_date DATETIME NOT NULL, -- End date of the booking
+  check_in_date DATETIME NOT NULL, -- Start date of the booking
+  check_out_date DATETIME NOT NULL, -- End date of the booking
   creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Creation date of the booking
   booking_status ENUM('pending', 'confirmed', 'cancelled', 'expired', 'checked_in', 'no_show', 'checked_out') NOT NULL DEFAULT 'pending', -- Status of the booking
   CONSTRAINT pk_booking PRIMARY KEY (booking_id), -- Primary Key constraint
@@ -160,7 +226,7 @@ CREATE TABLE Booking (
     REFERENCES Accommodation (accommodation_id)
     ON DELETE RESTRICT -- Prevent deleting an accommodation that has been booked
     ON UPDATE CASCADE, -- Update accommodation_id in Booking if it changes in Accommodation
-  CONSTRAINT chk_booking_dates CHECK (start_date < end_date) -- Ensure end date is after start date
+  CONSTRAINT chk_booking_dates CHECK (check_in_date < check_out_date) -- Ensure end date is after start date
 );
 
 -- Review Table
@@ -192,10 +258,37 @@ CREATE TABLE Review (
   CONSTRAINT chk_review_rating CHECK (rating >= 1 AND rating <= 5) -- Ensure rating is within a valid range
 );
 
+-- Message Table
+-- Stores messages exchanged between users, potentially linked to bookings
+CREATE TABLE Message (
+  message_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  sender_id CHAR(36) NULL, -- Foreign Key referencing User
+  recipient_id CHAR(36) NULL, -- Foreign Key referencing User
+  booking_id CHAR(36) NULL, -- Optional Foreign Key linking to a booking
+  content TEXT NOT NULL, -- The message content
+  sent_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the message was sent
+  CONSTRAINT pk_message PRIMARY KEY (message_id), -- Primary Key constraint
+  CONSTRAINT fk_message_sender -- Foreign Key constraint to ensure sender_id references User.user_id
+    FOREIGN KEY (sender_id)
+    REFERENCES User (user_id)
+    ON DELETE SET NULL -- If sender deleted, messages remain but sender is anonymized
+    ON UPDATE CASCADE, -- If sender_id is updated, update all messages
+  CONSTRAINT fk_message_recipient -- Foreign Key constraint to ensure recipient_id references User.user_id
+    FOREIGN KEY (recipient_id)
+    REFERENCES User (user_id)
+    ON DELETE SET NULL -- If recipient deleted, messages remain but recipient is anonymized
+    ON UPDATE CASCADE, -- If recipient_id is updated, update all messages
+  CONSTRAINT fk_message_booking -- Foreign Key constraint to ensure booking_id references Booking.booking_id
+    FOREIGN KEY (booking_id)
+    REFERENCES Booking (booking_id)
+    ON DELETE SET NULL -- If booking deleted, messages linked to it remain but are unlinked
+    ON UPDATE CASCADE -- Update booking_id in Message if it changes in Booking
+);
+
 -- Wishlist Table
 -- Stores wishlists created by guests
 CREATE TABLE Wishlist (
-  wishlist_id CHAR(36) NOT NULL, -- Primary Key
+  wishlist_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   guest_id CHAR(36) NOT NULL, -- Foreign Key referencing Guest (A wishlist belongs to a guest)
   title VARCHAR(100) NOT NULL, -- Title of the wishlist
   creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the wishlist was created
@@ -225,71 +318,10 @@ CREATE TABLE WishlistItem (
     ON UPDATE CASCADE -- Update accommodation_id in WishlistItem if it changes in Accommodation
 );
 
--- Payout Table
--- Stores records of payouts made to hosts
-CREATE TABLE Payout (
-  payout_id CHAR(36) NOT NULL, -- Primary Key
-  host_id CHAR(36) NOT NULL, -- Foreign Key referencing Host (Payout is made to a host)
-  amount DECIMAL(10,2) NOT NULL, -- Payout amount (Increased precision)
-  status ENUM('pending', 'completed', 'failed') NOT NULL DEFAULT 'pending', -- Payout status
-  payout_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the payout was initiated/processed
-  CONSTRAINT pk_payout PRIMARY KEY (payout_id), -- Primary Key constraint
-  CONSTRAINT fk_payout_host -- Foreign Key constraint to ensure host_id references Host.host_id
-    FOREIGN KEY (host_id)
-    REFERENCES Host (host_id)
-    ON DELETE RESTRICT -- Prevent deleting a host if they have payout records
-    ON UPDATE CASCADE, -- Update host_id in Payout if it changes in Host
-  CONSTRAINT chk_payout_amount CHECK (amount >= 0) -- Ensure amount is not negative
-);
-
--- AccommodationImage Table
--- Stores images associated with an Accommodation
-CREATE TABLE AccommodationImage (
-  image_id CHAR(36) NOT NULL, -- Primary Key
-  accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
-  url VARCHAR(255) NOT NULL UNIQUE, -- URL of the image (Should be unique)
-  caption VARCHAR(255) NULL, -- Optional caption for the image
-  display_order INT NOT NULL DEFAULT 0, -- Order to display the image
-  upload_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the image was uploaded
-  CONSTRAINT pk_accommodationimage PRIMARY KEY (image_id),
-  CONSTRAINT fk_accommodationimage_accommodation -- Foreign Key constraint to ensure accommodation_id references Accommodation.accommodation_id
-    FOREIGN KEY (accommodation_id)
-    REFERENCES Accommodation (accommodation_id)
-    ON DELETE CASCADE -- If accommodation deleted, its images are deleted
-    ON UPDATE CASCADE -- Update accommodation_id in AccommodationImage if it changes in Accommodation
-);
-
--- Amenity Table
--- Stores available amenities (e.g., WiFi, Pool)
-CREATE TABLE Amenity (
-  amenity_id CHAR(36) NOT NULL, -- Primary Key
-  amenity_name VARCHAR(100) NOT NULL UNIQUE, -- Name of the amenity (Unique name)
-  description TEXT NULL, -- Optional description
-  CONSTRAINT pk_amenity PRIMARY KEY (amenity_id) -- Primary Key constraint
-);
-
--- AmenityAssignment Table (Junction Table)
--- Links Amenities to the Accommodations that offer them
-CREATE TABLE AmenityAssignment (
-  accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
-  amenity_id CHAR(36) NOT NULL, -- Foreign Key referencing Amenity
-  CONSTRAINT pk_amenityassignment PRIMARY KEY (accommodation_id, amenity_id), -- Composite Primary Key
-  CONSTRAINT fk_amenityassignment_accommodation -- Foreign Key constraint to ensure accommodation_id references Accommodation.accommodation_id
-    FOREIGN KEY (accommodation_id)
-    REFERENCES Accommodation (accommodation_id)
-    ON DELETE CASCADE -- If accommodation deleted, remove amenity links
-    ON UPDATE CASCADE, -- Update accommodation_id in AmenityAssignment if it changes in Accommodation
-  CONSTRAINT fk_amenityassignment_amenity -- Foreign Key constraint to ensure amenity_id references Amenity.amenity_id
-    FOREIGN KEY (amenity_id)
-    REFERENCES Amenity (amenity_id)
-    ON DELETE CASCADE -- If amenity deleted, remove links from accommodations
-    ON UPDATE CASCADE -- Update amenity_id in AmenityAssignment if it changes in Amenity
-);
-
 -- UserReferral Table
 -- Tracks user referrals
 CREATE TABLE UserReferral (
-  referral_id CHAR(36) NOT NULL, -- Primary Key
+  referral_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   referrer_id CHAR(36) NOT NULL, -- Foreign Key referencing User (The user who referred)
   referred_id CHAR(36) NOT NULL, -- Foreign Key referencing User (The user who was referred)
   referral_code VARCHAR(100) NOT NULL UNIQUE, -- Unique code used for the referral
@@ -309,37 +341,27 @@ CREATE TABLE UserReferral (
     ON UPDATE CASCADE -- Update referred_id in UserReferral if it changes in User
 );
 
--- Message Table
--- Stores messages exchanged between users, potentially linked to bookings
-CREATE TABLE Message (
-  message_id CHAR(36) NOT NULL, -- Primary Key
-  sender_id CHAR(36) NULL, -- Foreign Key referencing User
-  recipient_id CHAR(36) NULL, -- Foreign Key referencing User
-  booking_id CHAR(36) NULL, -- Optional Foreign Key linking to a booking
-  content TEXT NOT NULL, -- The message content
-  sent_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the message was sent
-  CONSTRAINT pk_message PRIMARY KEY (message_id), -- Primary Key constraint
-  CONSTRAINT fk_message_sender -- Foreign Key constraint to ensure sender_id references User.user_id
-    FOREIGN KEY (sender_id)
-    REFERENCES User (user_id)
-    ON DELETE SET NULL -- If sender deleted, messages remain but sender is anonymized
-    ON UPDATE CASCADE, -- If sender_id is updated, update all messages
-  CONSTRAINT fk_message_recipient -- Foreign Key constraint to ensure recipient_id references User.user_id
-    FOREIGN KEY (recipient_id)
-    REFERENCES User (user_id)
-    ON DELETE SET NULL -- If recipient deleted, messages remain but recipient is anonymized
-    ON UPDATE CASCADE, -- If recipient_id is updated, update all messages
-  CONSTRAINT fk_message_booking -- Foreign Key constraint to ensure booking_id references Booking.booking_id
-    FOREIGN KEY (booking_id)
-    REFERENCES Booking (booking_id)
-    ON DELETE SET NULL -- If booking deleted, messages linked to it remain but are unlinked
-    ON UPDATE CASCADE -- Update booking_id in Message if it changes in Booking
+-- Payout Table
+-- Stores records of payouts made to hosts
+CREATE TABLE Payout (
+  payout_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  host_id CHAR(36) NOT NULL, -- Foreign Key referencing Host (Payout is made to a host)
+  amount DECIMAL(10,2) NOT NULL, -- Payout amount (Increased precision)
+  payout_status ENUM('pending', 'completed', 'failed') NOT NULL DEFAULT 'pending', -- Payout status
+  payout_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the payout was initiated/processed
+  CONSTRAINT pk_payout PRIMARY KEY (payout_id), -- Primary Key constraint
+  CONSTRAINT fk_payout_host -- Foreign Key constraint to ensure host_id references Host.host_id
+    FOREIGN KEY (host_id)
+    REFERENCES Host (host_id)
+    ON DELETE RESTRICT -- Prevent deleting a host if they have payout records
+    ON UPDATE CASCADE, -- Update host_id in Payout if it changes in Host
+  CONSTRAINT chk_payout_amount CHECK (amount >= 0) -- Ensure amount is not negative
 );
 
 -- Payment Table
 -- Stores payment transactions. Can be linked to bookings or referrals
 CREATE TABLE Payment (
-  payment_id CHAR(36) NOT NULL, -- Primary Key
+  payment_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   referral_id CHAR(36) NULL, -- Optional Foreign Key referencing UserReferral (Payment related to a referral bonus)
   booking_id CHAR(36) NOT NULL, -- Optional Foreign Key referencing Booking (Payment for a booking)
   amount DECIMAL(10,2) NOT NULL, -- Payment amount (Increased precision)
@@ -362,12 +384,12 @@ CREATE TABLE Payment (
 -- SupportTicket Table
 -- Stores support tickets raised by users
 CREATE TABLE SupportTicket (
-  ticket_id CHAR(36) NOT NULL, -- Primary Key
+  ticket_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   user_id CHAR(36) NOT NULL, -- Foreign Key referencing User (User who created the ticket)
   assigned_admin_id CHAR(36) NULL, -- Optional Foreign Key referencing Admin (Admin assigned to the ticket) (Renamed from admin_id for clarity)
-  subject VARCHAR(100) NOT NULL, -- Subject of the ticket
-  description TEXT NOT NULL, -- Description of the issue
-  status ENUM('open', 'in_progress', 'resolved', 'closed') NOT NULL DEFAULT 'open',
+  ticket_subject VARCHAR(100) NOT NULL, -- Subject of the ticket
+  ticket_description TEXT NOT NULL, -- Description of the issue
+  ticket_status ENUM('open', 'in_progress', 'resolved', 'closed') NOT NULL DEFAULT 'open',
   creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the ticket was created
   update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Auto-update on modification
   CONSTRAINT pk_supportticket PRIMARY KEY (ticket_id), -- Primary Key constraint
@@ -385,11 +407,11 @@ CREATE TABLE SupportTicket (
 
 -- Notification Table
 -- Stores notifications sent to users
-CREATE TABLE Notification (
-  notification_id CHAR(36) NOT NULL, -- Primary Key
+CREATE TABLE AppNotification (
+  notification_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   user_id CHAR(36) NOT NULL, -- Foreign Key referencing User (Recipient of the notification)
   notification_type ENUM('booking', 'message', 'review', 'referral', 'payment', 'system') NOT NULL, -- Type of notification (Added system)
-  message TEXT NOT NULL, -- Content of the notification
+  notification_message TEXT NOT NULL, -- Content of the notification
   is_read BOOLEAN NOT NULL DEFAULT FALSE, -- Whether the user has read the notification
   notification_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the notification was created
   CONSTRAINT pk_notification PRIMARY KEY (notification_id),
@@ -400,32 +422,10 @@ CREATE TABLE Notification (
     ON UPDATE CASCADE -- Update user_id in Notification if it changes in User
 );
 
--- BannedUser Table
--- Tracks users who have been banned
-CREATE TABLE BannedUser (
-  ban_id CHAR(36) NOT NULL, -- Primary Key
-  user_id CHAR(36) NOT NULL UNIQUE, -- Foreign Key referencing User (The user who is banned) (Added UNIQUE as a user is usually banned only once)
-  admin_id CHAR(36) NULL, -- Optional Foreign Key referencing Admin (Admin who issued the ban) (Made NULLable as maybe automated bans exist)
-  ban_reason TEXT NULL, -- Optional reason for the ban (Made NULLable)
-  ban_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the ban was issued
-  unban_date DATETIME NULL, -- Optional date the ban expires or was lifted
-  CONSTRAINT pk_banneduser PRIMARY KEY (ban_id), -- Primary Key constraint
-  CONSTRAINT fk_banneduser_user -- Foreign Key constraint to ensure user_id references User.user_id
-    FOREIGN KEY (user_id)
-    REFERENCES User (user_id)
-    ON DELETE CASCADE -- If the banned user is deleted, the ban record is deleted
-    ON UPDATE CASCADE, -- If user_id is updated, update all bans for that user
-  CONSTRAINT fk_banneduser_admin -- Foreign Key constraint to ensure admin_id references Admin.admin_id
-    FOREIGN KEY (admin_id)
-    REFERENCES Admin (admin_id) -- FK references the Admin table using the admin_id column
-    ON DELETE SET NULL -- If admin deleted, ban record remains but admin link is severed
-    ON UPDATE CASCADE -- If admin_id is updated, update all bans issued by that admin
-);
-
 -- PlatformPolicy Table
 -- Stores platform policies and terms
 CREATE TABLE PlatformPolicy (
-  policy_id CHAR(36) NOT NULL, -- Primary Key
+  policy_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   title VARCHAR(100) NOT NULL UNIQUE, -- Title of the policy
   content TEXT NOT NULL, -- Full text content of the policy (Renamed from description)
   created_by_admin_id CHAR(36) NULL, -- Optional Foreign Key referencing Admin (Admin who created the policy) (Made NULLable/Renamed)
@@ -438,7 +438,6 @@ CREATE TABLE PlatformPolicy (
     ON DELETE SET NULL -- If admin deleted, policy remains but link is severed
     ON UPDATE CASCADE -- If admin_id is updated, update all policies created by that admin
 );
-
 
 
 -- Insert User Data
@@ -503,11 +502,31 @@ INSERT INTO User (user_type, first_name, last_name, email, phone_number, passwor
   ('host', 'Johannes', 'Wolf', 'johannes.wolf@example.com', '01609876557', SHA2('safePassword37', 256), 'http://example.com/pic/johannes_wolf.jpg', '2023-02-26 10:00:00', '2025-07-15 10:00:00'),
   ('host', 'Frida', 'Neumann', 'frida.neumann@example.com', '01609876558', SHA2('safePassword38', 256), 'http://example.com/pic/frida_neumann.jpg', '2023-02-27 10:00:00', '2025-07-16 10:00:00'),
   ('host', 'Anton', 'Schwarz', 'anton.schwarz@example.com', '01609876559', SHA2('safePassword39', 256), 'http://example.com/pic/anton_schwarz.jpg', '2023-02-28 10:00:00', '2025-07-17 10:00:00'),
-  ('host', 'Clara', 'Zimmermann', 'clara.zimmermann@example.com', '01609876560', SHA2('safePassword40', 256), 'http://example.com/pic/clara_zimmermann.jpg', '2023-03-01 10:00:00', '2025-07-18 10:00:00')
+  ('host', 'Clara', 'Zimmermann', 'clara.zimmermann@example.com', '01609876560', SHA2('safePassword40', 256), 'http://example.com/pic/clara_zimmermann.jpg', '2023-03-01 10:00:00', '2025-07-18 10:00:00'),
+  ('guest', 'Tobias', 'Keller', 'tobias.keller@example.com', '01511234541', SHA2('safePassword61', 256), 'http://example.com/pic/tobias_keller.jpg', '2023-02-10 10:00:00', '2025-06-29 10:00:00'),
+  ('guest', 'Christina', 'Simon', 'christina.simon@example.com', '01511234542', SHA2('safePassword62', 256), 'http://example.com/pic/christina_simon.jpg', '2023-02-11 10:00:00', '2025-06-30 10:00:00'),
+  ('guest', 'Michael', 'Fuchs', 'michael.fuchs@example.com', '01511234543', SHA2('safePassword63', 256), 'http://example.com/pic/michael_fuchs.jpg', '2023-02-12 10:00:00', '2025-07-01 10:00:00'),
+  ('guest', 'Katharina', 'Herrmann', 'katharina.herrmann@example.com', '01511234544', SHA2('safePassword64', 256), 'http://example.com/pic/katharina_herrmann.jpg', '2023-02-13 10:00:00', '2025-07-02 10:00:00'),
+  ('guest', 'Florian', 'Lange', 'florian.lange@example.com', '01511234545', SHA2('safePassword65', 256), 'http://example.com/pic/florian_lange.jpg', '2023-02-14 10:00:00', '2025-07-03 10:00:00'),
+  ('guest', 'Vanessa', 'Busch', 'vanessa.busch@example.com', '01511234546', SHA2('safePassword66', 256), 'http://example.com/pic/vanessa_busch.jpg', '2023-02-15 10:00:00', '2025-07-04 10:00:00'),
+  ('guest', 'Daniel', 'Kuhn', 'daniel.kuhn@example.com', '01511234547', SHA2('safePassword67', 256), 'http://example.com/pic/daniel_kuhn.jpg', '2023-02-16 10:00:00', '2025-07-05 10:00:00'),
+  ('guest', 'Kristin', 'Jansen', 'kristin.jansen@example.com', '01511234548', SHA2('safePassword68', 256), 'http://example.com/pic/kristin_jansen.jpg', '2023-02-17 10:00:00', '2025-07-06 10:00:00'),
+  ('guest', 'Philipp', 'Winter', 'philipp.winter@example.com', '01511234549', SHA2('safePassword69', 256), 'http://example.com/pic/philipp_winter.jpg', '2023-02-18 10:00:00', '2025-07-07 10:00:00'),
+  ('guest', 'Jana', 'Schulte', 'jana.schulte@example.com', '01511234550', SHA2('safePassword70', 256), 'http://example.com/pic/jana_schulte.jpg', '2023-02-19 10:00:00', '2025-07-08 10:00:00'),
+  ('guest', 'Matthias', 'Koenig', 'matthias.koenig@example.com', '01511234551', SHA2('safePassword71', 256), 'http://example.com/pic/matthias_koenig.jpg', '2023-02-20 10:00:00', '2025-07-09 10:00:00'),
+  ('guest', 'Susanne', 'Albrecht', 'susanne.albrecht@example.com', '01511234552', SHA2('safePassword72', 256), 'http://example.com/pic/susanne_albrecht.jpg', '2023-02-21 10:00:00', '2025-07-10 10:00:00'),
+  ('guest', 'Markus', 'Graf', 'markus.graf@example.com', '01511234553', SHA2('safePassword73', 256), 'http://example.com/pic/markus_graf.jpg', '2023-02-22 10:00:00', '2025-07-11 10:00:00'),
+  ('guest', 'Nadine', 'Wild', 'nadine.wild@example.com', '01511234554', SHA2('safePassword74', 256), 'http://example.com/pic/nadine_wild.jpg', '2023-02-23 10:00:00', '2025-07-12 10:00:00'),
+  ('guest', 'Stefan', 'Brand', 'stefan.brand@example.com', '01511234555', SHA2('safePassword75', 256), 'http://example.com/pic/stefan_brand.jpg', '2023-02-24 10:00:00', '2025-07-13 10:00:00'),
+  ('guest', 'Patricia', 'Reich', 'patricia.reich@example.com', '01511234556', SHA2('safePassword76', 256), 'http://example.com/pic/patricia_reich.jpg', '2023-02-25 10:00:00', '2025-07-14 10:00:00'),
+  ('guest', 'Simon', 'Arnold', 'simon.arnold@example.com', '01511234557', SHA2('safePassword77', 256), 'http://example.com/pic/simon_arnold.jpg', '2023-02-26 10:00:00', '2025-07-15 10:00:00'),
+  ('guest', 'Christine', 'Vogt', 'christine.vogt@example.com', '01511234558', SHA2('safePassword78', 256), 'http://example.com/pic/christine_vogt.jpg', '2023-02-27 10:00:00', '2025-07-16 10:00:00'),
+  ('guest', 'Andreas', 'Ott', 'andreas.ott@example.com', '01511234559', SHA2('safePassword79', 256), 'http://example.com/pic/andreas_ott.jpg', '2023-02-28 10:00:00', '2025-07-17 10:00:00'),
+  ('guest', 'Julia', 'Krueger', 'julia.krueger@example.com', '01511234560', SHA2('safePassword80', 256), 'http://example.com/pic/julia_krueger.jpg', '2023-03-01 10:00:00', '2025-07-18 10:00:00')
 ;
 
 -- Insert Admin Data
-INSERT INTO Admin (admin_id, role)
+INSERT INTO Admin (admin_id, admin_role)
   SELECT
     u.user_id, -- Use user_id from User table
     a.admin_role -- Use admin_role from the subquery
@@ -599,8 +618,16 @@ INSERT INTO Host (host_id, host_tier)
   ) h ON u.email = h.email AND u.user_type = 'host'
 ; -- Define the compound condition to match email and user_type
 
+-- Insert BannedUser Data
+INSERT INTO BannedUser (user_id, admin_id, ban_reason, ban_date, unban_date)
+  VALUES
+  ((SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+  'Verifiable violation of defined platform policies.', '2025-06-29 10:00:00', '2026-06-29 10:00:00') 
+;
+
 -- Insert Property Data
-INSERT INTO Property (title, country, state, zip_code, address, square_feet, property_type)\
+INSERT INTO Property (title, country, region, zip_code, property_address, square_feet, property_type)\
  VALUES
   ('Modern Apartment in Berlin Mitte', 'Germany', 'Berlin', '10115', 'Invalidenstrasse 43, Berlin', 850, 'Apartment'),
   ('Charming House near Munich', 'Germany', 'Bavaria', '80331', 'Sendlinger Strasse 25, Muenchen', 2200, 'House'),
@@ -628,8 +655,8 @@ INSERT INTO Property (title, country, state, zip_code, address, square_feet, pro
 INSERT INTO PropertyAccess (host_id, property_id)
 -- Define a temporary table of (email, address) mappings then join to User, Host, and Property to bulk-insert.
   WITH
-  access_pairs (email, address) AS (
-      -- Map each host's email to a property address they should manage
+  access_pairs (email, property_address) AS (
+      -- Map each host's email to a property property_address they should manage
       SELECT 'max.mustermann@example.com', 'Invalidenstrasse 43, Berlin' UNION ALL
       SELECT 'max.mustermann@example.com', 'Sendlinger Strasse 25, Muenchen' UNION ALL 
       SELECT 'max.mustermann@example.com', 'Spitalerstrasse 10, Hamburg' UNION ALL 
@@ -662,13 +689,13 @@ INSERT INTO PropertyAccess (host_id, property_id)
   FROM access_pairs ap
   JOIN User u ON u.email = ap.email AND u.user_type = 'host'
   JOIN Host h ON h.host_id = u.user_id
-  JOIN Property p ON p.address = ap.address
+  JOIN Property p ON p.property_address = ap.property_address
 ;
 
 -- Insert CancellationPolicy Data
 -- This populates all available cancellation policy options for properties
 -- Policies are categorized by flexibility level and special conditions
-INSERT INTO CancellationPolicy (policy_name, description) 
+INSERT INTO CancellationPolicy (policy_name, policy_description) 
   VALUES
   ('Flexible - 1 Day', 'Guests can cancel up to 1 day before check-in for a full refund. No refund for later cancellations.'),
   ('Flexible - Same Day', 'Guests can cancel anytime before the day of check-in for a full refund.'),
@@ -693,197 +720,197 @@ INSERT INTO CancellationPolicy (policy_name, description)
 ;
 
 -- Insert Accommodation Data
-INSERT INTO Accommodation (property_id, cancellation_policy_id, accommodation_tier, max_guest_count, description, price_per_night)
+INSERT INTO Accommodation (property_id, cancellation_policy_id, accommodation_tier, max_guest_count, unit_description, price_per_night)
   VALUES
   -- Berlin properties (prime and regular options)
-  ((SELECT property_id FROM Property WHERE address = 'Invalidenstrasse 43, Berlin'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Invalidenstrasse 43, Berlin'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Prime gets flexible policy
   'prime', 4, 'Modern loft in Berlin-Mitte with balcony overlooking Invalidenpark', 120.00),
 
-  ((SELECT property_id FROM Property WHERE address = 'Invalidenstrasse 43, Berlin'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Invalidenstrasse 43, Berlin'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Regular gets moderate policy
   'regular', 2, 'Compact designer studio in historic Berlin building', 75.50),
 
   -- Munich properties (Bavarian-style accommodations)
-  ((SELECT property_id FROM Property WHERE address = 'Sendlinger Strasse 25, Muenchen'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Sendlinger Strasse 25, Muenchen'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Prime with strict policy
   'prime', 6, 'Bavarian luxury apartment on Munichs premier shopping street', 210.00),
 
-  ((SELECT property_id FROM Property WHERE address = 'Sendlinger Strasse 25, Muenchen'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Sendlinger Strasse 25, Muenchen'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Regular with flexible policy
   'regular', 3, 'Charming Altbau apartment in central Munich location', 95.00),
 
   -- Hamburg properties (urban style)
-  ((SELECT property_id FROM Property WHERE address = 'Spitalerstrasse 10, Hamburg'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Spitalerstrasse 10, Hamburg'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Prime urban loft
   'prime', 5, 'Stylish urban loft steps from Hamburgs main shopping district', 180.00),
 
-  ((SELECT property_id FROM Property WHERE address = 'Spitalerstrasse 10, Hamburg'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Spitalerstrasse 10, Hamburg'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Cozy regular option
  'regular', 2, 'Cozy nest in the heart of Hamburg with city views', 85.00),
 
   -- Frankfurt properties (business travel focus)
-  ((SELECT property_id FROM Property WHERE address = 'Zeil 90, Frankfurt am Main'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Zeil 90, Frankfurt am Main'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'),  -- Executive prime apartment
   'prime', 4, 'Executive apartment on Frankfurts famous Zeil shopping street', 150.00),
-  ((SELECT property_id FROM Property WHERE address = 'Zeil 90, Frankfurt am Main'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Zeil 90, Frankfurt am Main'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Business-friendly regular
   'regular', 3, 'Comfortable city apartment with Main River glimpses', 99.00),
   -- Schwarzwald properties (mountain/rural focus)
-  ((SELECT property_id FROM Property WHERE address = 'Feldbergstrasse 2, Schwarzwald'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Feldbergstrasse 2, Schwarzwald'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Premium chalet
   'prime', 8, 'Authentic Black Forest chalet with mountain views and sauna', 250.00),
 
-  ((SELECT property_id FROM Property WHERE address = 'Feldbergstrasse 2, Schwarzwald'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Feldbergstrasse 2, Schwarzwald'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Rustic regular cabin
   'regular', 4, 'Rustic cabin near Feldberg ski slopes', 110.00),
 
   -- Leipzig properties (historic city)
-  ((SELECT property_id FROM Property WHERE address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Historic prime apartment
   'prime', 4, 'Historic apartment in Leipzigs trendy Südvorstadt district', 130.00),
 
-  ((SELECT property_id FROM Property WHERE address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Modern regular studio
   'regular', 2, 'Modern studio near Leipzig Hauptbahnhof', 65.00),
 
   -- Düsseldorf properties (luxury shopping focus)
-  ((SELECT property_id FROM Property WHERE address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Elegant prime apartment
   'prime', 4, 'Elegant apartment steps from Königsallee shopping boulevard', 175.00),
   
-  ((SELECT property_id FROM Property WHERE address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Riverside regular
   'regular', 3, 'Bright riverside apartment in MedienHafen district', 105.00),
   
   -- Stuttgart properties (business/vineyard views)
-  ((SELECT property_id FROM Property WHERE address = 'Rotebuehlstrasse 60, Stuttgart'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Rotebuehlstrasse 60, Stuttgart'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'),  -- Luxury penthouse
   'prime', 5, 'Luxury penthouse with panoramic Stuttgart city views', 225.00),
   
-  ((SELECT property_id FROM Property WHERE address = 'Rotebuehlstrasse 60, Stuttgart'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Rotebuehlstrasse 60, Stuttgart'), 
    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Compact urban studio
   'regular', 2, 'Compact urban studio near Schlossplatz', 80.00),
   
   -- Garmisch-Partenkirchen (alpine properties)
-  ((SELECT property_id FROM Property WHERE address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Alpine lodge
   'prime', 6, 'Alpine lodge with direct Zugspitze mountain views', 195.00),
 
-  ((SELECT property_id FROM Property WHERE address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Bavarian guesthouse
   'regular', 4, 'Traditional Bavarian guesthouse with mountain access', 125.00),
 
    -- Cologne properties (cathedral views)
-  ((SELECT property_id FROM Property WHERE address = 'Ehrenstrasse 22, Koeln'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Ehrenstrasse 22, Koeln'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Designer prime apartment
   'prime', 4, 'Designer apartment with Cologne Cathedral views', 160.00),
 
-  ((SELECT property_id FROM Property WHERE address = 'Ehrenstrasse 22, Koeln'), 
+  ((SELECT property_id FROM Property WHERE property_address = 'Ehrenstrasse 22, Koeln'), 
   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Trendy regular flat
   'regular', 2, 'Charming flat in Colognes trendy Belgian Quarter', 90.00)
 ;
 
 -- Insert Booking Data
-INSERT INTO Booking (guest_id, accommodation_id, start_date, end_date, creation_date, booking_status)
+INSERT INTO Booking (guest_id, accommodation_id, check_in_date, check_out_date, creation_date, booking_status)
   VALUES
   -- Premium guest booking prime accommodation in Berlin
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Modern loft in Berlin%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%' AND accommodation_tier = 'prime'),
   '2023-07-01 15:00:00', '2023-07-05 11:00:00', '2023-06-01 09:00:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Berlin
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'charlotte.hofmann@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Compact designer studio in historic Ber%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%' AND accommodation_tier = 'regular'),
   '2023-12-15 16:00:00', '2023-12-20 10:00:00', '2023-11-01 10:00:00', 'pending'),
 
   -- Premium guest booking prime accommodation in Munich
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Bavarian luxury apartment%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%' AND accommodation_tier = 'prime'),
   '2023-07-10 14:00:00', '2023-07-15 10:00:00', '2023-05-20 11:30:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Munich
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'ben.hartmann@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Charming Altbau apartment in central Mun%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming Altbau apartment in central Mun%' AND accommodation_tier = 'regular'),
   '2023-07-16 14:00:00', '2023-07-19 10:00:00', '2023-05-20 11:30:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Hamburg
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Stylish urban loft steps from Hamburg%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft steps from Hamburg%' AND accommodation_tier = 'prime'),
   '2023-08-05 13:00:00', '2023-08-12 11:00:00', '2023-07-01 14:00:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Hamburg
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'johanna.franke@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Cozy nest in the heart of Hamburg%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart of Hamburg%' AND accommodation_tier = 'regular'),
   '2023-08-15 14:00:00', '2023-08-18 11:00:00', '2023-07-10 10:30:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Frankfurt
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'leo.engel@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Executive apartment on Frankfurts%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Executive apartment on Frankfurts%' AND accommodation_tier = 'prime'),
   '2023-09-03 15:00:00', '2023-09-10 10:00:00', '2023-08-01 12:00:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Frankfurt
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'tim.walter@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Comfortable city apartment with Main River%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Comfortable city apartment with Main River%' AND accommodation_tier = 'regular'),
   '2023-09-15 14:00:00', '2023-09-18 11:00:00', '2023-08-15 15:45:00', 'pending'),
   -- Premium guest booking prime accommodation in Schwarzwald
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'lena.mayer@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Authentic Black Forest chalet%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%' AND accommodation_tier = 'prime'),
   '2023-10-01 16:00:00', '2023-10-08 10:00:00', '2023-09-01 09:30:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Schwarzwald
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'amelie.peters@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Rustic cabin near Feldberg ski slopes%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin near Feldberg ski slopes%' AND accommodation_tier = 'regular'),
   '2023-10-15 15:00:00', '2023-10-20 11:00:00', '2023-09-10 14:20:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Leipzig
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'erik.winkler@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Historic apartment in Leipzigs%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment in Leipzigs%' AND accommodation_tier = 'prime'),
   '2024-11-05 14:00:00', '2024-11-12 10:00:00', '2024-10-01 11:15:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Leipzig
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'moritz.kruse@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Modern studio near Leipzig Hauptbahnhof%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern studio near Leipzig Hauptbahnhof%' AND accommodation_tier = 'regular'),
   '2024-11-15 13:00:00', '2024-11-18 11:00:00', '2024-10-15 16:30:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Düsseldorf
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'nele.gross@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Elegant apartment steps from Königsallee%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps from Königsallee%' AND accommodation_tier = 'prime'),
   '2024-12-01 15:00:00', '2024-12-08 10:00:00', '2024-11-01 10:45:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Düsseldorf
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'clara.brandt@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Bright riverside apartment in MedienHafen%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bright riverside apartment in MedienHafen%' AND accommodation_tier = 'regular'),
   '2024-12-10 14:00:00', '2024-12-15 11:00:00', '2024-11-10 14:10:00', 'pending'),
 
   -- Premium guest booking prime accommodation in Stuttgart
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Luxury penthouse with panoramic Stuttgart%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse with panoramic Stuttgart%' AND accommodation_tier = 'prime'),
   '2024-01-05 16:00:00', '2024-01-12 10:00:00', '2023-12-01 09:20:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Stuttgart
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'noah.schuster@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Compact urban studio near Schlossplatz%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact urban studio near Schlossplatz%' AND accommodation_tier = 'regular'),
   '2024-01-15 14:00:00', '2024-01-18 11:00:00', '2023-12-15 15:30:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Garmisch-Partenkirchen
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Alpine lodge with direct Zugspitze%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge with direct Zugspitze%' AND accommodation_tier = 'prime'),
   '2024-02-10 15:00:00', '2024-02-17 10:00:00', '2024-01-05 11:40:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Garmisch-Partenkirchen
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'luisa.vogel@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Traditional Bavarian guesthouse%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse%' AND accommodation_tier = 'regular'),
   '2024-02-20 14:00:00', '2024-02-25 11:00:00', '2024-01-15 14:50:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Cologne
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Designer apartment with Cologne Cathedral%' AND accommodation_tier = 'prime'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment with Cologne Cathedral%' AND accommodation_tier = 'prime'),
   '2024-03-05 16:00:00', '2024-03-12 10:00:00', '2024-02-01 10:15:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Cologne
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'julian.seidel@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE description LIKE '%Charming flat in Cologne%' AND accommodation_tier = 'regular'),
+  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Cologne%' AND accommodation_tier = 'regular'),
   '2024-03-15 14:00:00', '2024-03-18 11:00:00', '2024-02-10 16:20:00', 'confirmed')
 ;
 
@@ -894,120 +921,121 @@ INSERT INTO Review (reviewer_id, reviewee_id, booking_id, rating, comment, revie
   -- Review for Berlin prime accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Modern loft in Berlin%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern loft in Berlin%'),
   4, 'Great stay in central Berlin, nice view, but unfortunately not perfectly clean.', '2023-07-06 11:00:00'),
 
   -- Review for Berlin regular accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'charlotte.hofmann@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Compact designer studio%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact designer studio%'),
   5, 'Perfect little studio for our weekend getaway! Host was very responsive.', '2023-12-21 14:30:00'),
 
   -- Review for Munich prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Bavarian luxury apartment%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bavarian luxury apartment%'),
   5, 'Absolutely stunning apartment in perfect location. Would definitely stay again!', '2023-07-16 09:15:00'),
 
   -- Review for Munich regular accommodation (rating 3)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'ben.hartmann@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Charming Altbau apartment%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming Altbau apartment%'),
   3, 'Good location but apartment was quite noisy at night.', '2023-07-20 16:45:00'),
 
   -- Review for Hamburg prime accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Stylish urban loft%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Stylish urban loft%'),
   4, 'Fantastic views of the harbor! Minor issue with wifi connectivity.', '2023-08-13 10:20:00'),
 
   -- Review for Hamburg regular accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'johanna.franke@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Cozy nest in the heart%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Cozy nest in the heart%'),
   5, 'Cozy indeed! Perfect for our romantic weekend. Everything was spotless.', '2023-08-19 12:00:00'),
 
   -- Review for Frankfurt prime accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'leo.engel@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Executive apartment%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Executive apartment%'),
   4, 'Excellent business stay. Great location for meetings on Zeil.', '2023-09-11 08:30:00'),
 
   -- Review for Frankfurt regular accommodation (rating 2)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'tim.walter@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Comfortable city apartment%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Comfortable city apartment%'),
   2, 'Apartment was smaller than expected and quite warm with no AC.', '2023-09-19 15:10:00'),
 
   -- Review for Schwarzwald prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'lena.mayer@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Authentic Black Forest chalet%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Authentic Black Forest chalet%'),
   5, 'Magical winter getaway! The sauna was perfect after skiing.', '2023-10-09 11:45:00'),
 
   -- Review for Schwarzwald regular accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'amelie.peters@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Rustic cabin%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Rustic cabin%'),
   4, 'Charming cabin with everything we needed. Great hiking nearby.', '2023-10-21 13:20:00'),
 
   -- Review for Leipzig prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'erik.winkler@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Historic apartment%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Historic apartment%'),
   5, 'Beautiful historic building with modern comforts. Host was very helpful!', '2023-11-13 09:30:00'),
 
   -- Review for Leipzig regular accommodation (rating 3)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'moritz.kruse@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Modern studio%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern studio%'),
   3, 'Convenient location but quite noisy from street traffic.', '2023-11-19 14:15:00'),
 
   -- Review for Düsseldorf prime accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'nele.gross@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Elegant apartment steps%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Elegant apartment steps%'),
   4, 'Luxurious apartment in perfect shopping location. Would stay again!', '2023-12-09 10:50:00'),
 
   -- Review for Düsseldorf regular accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'clara.brandt@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Bright riverside apartment%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bright riverside apartment%'),
   4, 'Lovely views of the river. Apartment was clean and well-equipped.', '2023-12-16 12:30:00'),
 
   -- Review for Stuttgart prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'christian.fischer@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Luxury penthouse%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Luxury penthouse%'),
   5, 'Spectacular views of Stuttgart! Everything was perfect.', '2024-01-13 09:00:00'),
 
   -- Review for Stuttgart regular accommodation (rating 3)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'noah.schuster@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'christian.fischer@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Compact urban studio%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact urban studio%'),
   3, 'Small but functional. Good value for money in central location.', '2024-01-19 15:45:00'),
 
   -- Review for Garmisch-Partenkirchen prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'johannes.wolf@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Alpine lodge%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Alpine lodge%'),
   5, 'Breathtaking mountain views! The perfect ski vacation home.', '2024-02-18 11:20:00'),
 
   -- Review for Garmisch-Partenkirchen regular accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'luisa.vogel@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'johannes.wolf@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Traditional Bavarian guesthouse%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Traditional Bavarian guesthouse%'),
   4, 'Authentic Bavarian experience. Very cozy and warm in winter.', '2024-02-26 13:10:00'),
 
   -- Review for Cologne prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Designer apartment%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Designer apartment%'),
   5, 'Waking up to cathedral views was unforgettable! Perfect location.', '2024-03-13 10:00:00'),
 
   -- Review for Cologne regular accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'julian.seidel@example.com'),
   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.description LIKE '%Charming flat%'),
+  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming flat%'),
   4, 'Great neighborhood with cool bars and restaurants. Flat was comfortable.', '2024-03-19 14:30:00')
 ;
+
