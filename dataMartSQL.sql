@@ -619,11 +619,93 @@ INSERT INTO Host (host_id, host_tier)
 ; -- Define the compound condition to match email and user_type
 
 -- Insert BannedUser Data
+-- Bans for users who violated platform policies, all performed by writer-role admins
+-- Each ban lasts exactly 1 year from ban date
 INSERT INTO BannedUser (user_id, admin_id, ban_reason, ban_date, unban_date)
   VALUES
+  -- Bans by maximilian.mueller@example.com
   ((SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
-  'Verifiable violation of defined platform policies.', '2025-06-29 10:00:00', '2026-06-29 10:00:00') 
+  'Repeated policy violations including fraudulent reviews', '2025-06-29 10:00:00', '2026-06-29 10:00:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'christina.simon@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+  'Unauthorized payment methods and chargeback abuse', '2025-06-30 10:00:00', '2026-06-30 10:00:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'michael.fuchs@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+  'Property damage and refusal to pay compensation', '2025-07-01 10:00:00', '2026-07-01 10:00:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'katharina.herrmann@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+  'Harassment of property owners', '2025-07-02 10:00:00', '2026-07-02 10:00:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'florian.lange@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+  'Creating multiple accounts to circumvent restrictions', '2025-07-03 10:00:00', '2026-07-03 10:00:00'),
+
+  -- Bans by sophie.schmidt@example.com
+  ((SELECT user_id FROM User WHERE email = 'vanessa.busch@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+  'Fake booking attempts and credit card testing', '2025-07-04 11:30:00', '2026-07-04 11:30:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'daniel.kuhn@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+  'Repeated late cancellations causing host losses', '2025-07-05 11:30:00', '2026-07-05 11:30:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'kristin.jansen@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+  'Misrepresentation of identity and booking purposes', '2025-07-06 11:30:00', '2026-07-06 11:30:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'philipp.winter@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+  'Commercial use of personal account without authorization', '2025-07-07 11:30:00', '2026-07-07 11:30:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'jana.schulte@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+  'Repeated violations of smoking policies in non-smoking properties', '2025-07-08 11:30:00', '2026-07-08 11:30:00'),
+
+  -- Bans by alexander.schneider@example.com
+  ((SELECT user_id FROM User WHERE email = 'matthias.koenig@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+  'Unauthorized subletting of booked accommodations', '2025-07-09 14:15:00', '2026-07-09 14:15:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'susanne.albrecht@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+  'Fraudulent damage claims against hosts', '2025-07-10 14:15:00', '2026-07-10 14:15:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'markus.graf@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+  'Excessive noise complaints from multiple properties', '2025-07-11 14:15:00', '2026-07-11 14:15:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'nadine.wild@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+  'False reporting of other users', '2025-07-12 14:15:00', '2026-07-12 14:15:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'stefan.brand@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+  'Attempting to circumvent payment systems', '2025-07-13 14:15:00', '2026-07-13 14:15:00'),
+
+  -- Bans from different admins
+  ((SELECT user_id FROM User WHERE email = 'patricia.reich@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
+  'Repeated last-minute cancellations with suspicious patterns', '2025-07-14 09:45:00', '2026-07-14 09:45:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'simon.arnold@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
+  'Verbal abuse of property owners', '2025-07-15 16:20:00', '2026-07-15 16:20:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'christine.vogt@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'emilia.meyer@example.com' AND a.admin_role = 'writer'),
+  'Unauthorized parties in booked accommodations', '2025-07-16 13:10:00', '2026-07-16 13:10:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'andreas.ott@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
+  'Repeated violations of pet policies', '2025-07-17 09:45:00', '2026-07-17 09:45:00'),
+
+  ((SELECT user_id FROM User WHERE email = 'julia.krueger@example.com'),
+  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
+  'Fake identity documents provided during verification', '2025-07-18 16:20:00', '2026-07-18 16:20:00')
 ;
 
 -- Insert Property Data
