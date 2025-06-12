@@ -1560,7 +1560,7 @@ VALUES
 -- Insert Payout Data
 INSERT INTO Payout (host_id, amount, payout_date, payout_method)
 VALUES
-  -- Max Mustermann (prime)
+  -- Payout for Max Mustermann
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
    1500.00, '2023-07-10 12:00:00', 'bank_transfer'),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
@@ -1570,7 +1570,7 @@ VALUES
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
    1920.25, '2023-10-18 11:45:00', 'bank_transfer'),
    
-  -- Lena Schmitt (prime)
+  -- Payout for Lena Schmitt
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
    2200.75, '2023-07-12 14:15:00', 'paypal'),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
@@ -1580,37 +1580,37 @@ VALUES
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
    2100.00, '2023-10-25 10:20:00', 'bank_transfer'),
 
-  -- Fabian Huber (prime)
+  -- Payout for Fabian Huber
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
    3200.00, '2023-07-15 16:20:00', 'bank_transfer'),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
    2750.80, '2023-08-20 13:10:00', 'bank_transfer'),
 
-  -- Julia Wagner (prime)
+  -- Payout for Julia Wagner
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
    1450.60, '2023-07-18 10:45:00', 'credit_card'),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
    1600.40, '2023-08-22 15:30:00', 'credit_card'),
 
-  -- Tom Becker (prime)
+  -- Payout for Tom Becker
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
    2300.25, '2023-07-20 11:20:00', 'credit_card'),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
    2100.75, '2023-08-25 14:50:00', 'credit_card'),
 
-  -- Lea Maier (prime)
+  -- Payout for Lea Maier
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lea.maier@example.com'),
    1750.90, '2023-07-22 09:15:00', 'credit_card'),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lea.maier@example.com'),
    1850.10, '2023-08-28 16:25:00', 'credit_card'),
 
-  -- Benno Mueller (prime)
+  -- Payout for Benno Mueller
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
    2800.50, '2023-07-25 13:40:00', 'crypto'),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
    2950.00, '2023-08-30 10:15:00', 'crypto'),
 
-  -- Hannah Schmidt (prime)
+  -- Payout for Hannah Schmidt
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
    1950.30, '2023-07-28 15:50:00', 'paypal'),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
