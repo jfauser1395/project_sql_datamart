@@ -623,87 +623,87 @@ INSERT INTO BannedUser (user_id, admin_id, ban_reason, ban_date, unban_date)
   VALUES
   -- Bans by maximilian.mueller@example.com
   ((SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
-  'Repeated platform policy violations including fraudulent reviews', '2025-06-29 10:00:00', '2026-06-29 10:00:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   'Repeated platform policy violations including fraudulent reviews', '2025-06-29 10:00:00', '2026-06-29 10:00:00'),
 
   ((SELECT user_id FROM User WHERE email = 'christina.simon@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
-  'Unauthorized payment methods and chargeback abuse', '2025-06-30 10:00:00', '2026-06-30 10:00:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   'Unauthorized payment methods and chargeback abuse', '2025-06-30 10:00:00', '2026-06-30 10:00:00'),
 
   ((SELECT user_id FROM User WHERE email = 'michael.fuchs@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
-  'Property damage and refusal to pay compensation', '2025-07-01 10:00:00', '2026-07-01 10:00:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   'Property damage and refusal to pay compensation', '2025-07-01 10:00:00', '2026-07-01 10:00:00'),
 
   ((SELECT user_id FROM User WHERE email = 'katharina.herrmann@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
-  'Harassment of property owners', '2025-07-02 10:00:00', '2026-07-02 10:00:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   'Harassment of property owners', '2025-07-02 10:00:00', '2026-07-02 10:00:00'),
 
   ((SELECT user_id FROM User WHERE email = 'florian.lange@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
-  'Creating multiple accounts to circumvent restrictions', '2025-07-03 10:00:00', '2026-07-03 10:00:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   'Creating multiple accounts to circumvent restrictions', '2025-07-03 10:00:00', '2026-07-03 10:00:00'),
 
   -- Bans by sophie.schmidt@example.com
   ((SELECT user_id FROM User WHERE email = 'vanessa.busch@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
-  'Fake booking attempts and credit card testing', '2025-07-04 11:30:00', '2026-07-04 11:30:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   'Fake booking attempts and credit card testing', '2025-07-04 11:30:00', '2026-07-04 11:30:00'),
 
   ((SELECT user_id FROM User WHERE email = 'daniel.kuhn@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
-  'Repeated late cancellations causing host losses', '2025-07-05 11:30:00', '2026-07-05 11:30:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   'Repeated late cancellations causing host losses', '2025-07-05 11:30:00', '2026-07-05 11:30:00'),
 
   ((SELECT user_id FROM User WHERE email = 'kristin.jansen@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
-  'Misrepresentation of identity and booking purposes', '2025-07-06 11:30:00', '2026-07-06 11:30:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   'Misrepresentation of identity and booking purposes', '2025-07-06 11:30:00', '2026-07-06 11:30:00'),
 
   ((SELECT user_id FROM User WHERE email = 'philipp.winter@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
-  'Commercial use of personal account without authorization', '2025-07-07 11:30:00', '2026-07-07 11:30:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   'Commercial use of personal account without authorization', '2025-07-07 11:30:00', '2026-07-07 11:30:00'),
 
   ((SELECT user_id FROM User WHERE email = 'jana.schulte@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
-  'Repeated violations of smoking policies in non-smoking properties', '2025-07-08 11:30:00', '2026-07-08 11:30:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   'Repeated violations of smoking policies in non-smoking properties', '2025-07-08 11:30:00', '2026-07-08 11:30:00'),
 
   -- Bans by alexander.schneider@example.com
   ((SELECT user_id FROM User WHERE email = 'matthias.koenig@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
-  'Unauthorized subletting of booked accommodations', '2025-07-09 14:15:00', '2026-07-09 14:15:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   'Unauthorized subletting of booked accommodations', '2025-07-09 14:15:00', '2026-07-09 14:15:00'),
 
   ((SELECT user_id FROM User WHERE email = 'susanne.albrecht@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
-  'Fraudulent damage claims against hosts', '2025-07-10 14:15:00', '2026-07-10 14:15:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   'Fraudulent damage claims against hosts', '2025-07-10 14:15:00', '2026-07-10 14:15:00'),
 
   ((SELECT user_id FROM User WHERE email = 'markus.graf@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
-  'Excessive noise complaints from multiple properties', '2025-07-11 14:15:00', '2026-07-11 14:15:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   'Excessive noise complaints from multiple properties', '2025-07-11 14:15:00', '2026-07-11 14:15:00'),
 
   ((SELECT user_id FROM User WHERE email = 'nadine.wild@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
-  'False reporting of other users', '2025-07-12 14:15:00', '2026-07-12 14:15:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   'False reporting of other users', '2025-07-12 14:15:00', '2026-07-12 14:15:00'),
 
   ((SELECT user_id FROM User WHERE email = 'stefan.brand@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
-  'Attempting to circumvent payment systems', '2025-07-13 14:15:00', '2026-07-13 14:15:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   'Attempting to circumvent payment systems', '2025-07-13 14:15:00', '2026-07-13 14:15:00'),
 
   -- Bans from different admins
   ((SELECT user_id FROM User WHERE email = 'patricia.reich@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
-  'Repeated last-minute cancellations with suspicious patterns', '2025-07-14 09:45:00', '2026-07-14 09:45:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
+   'Repeated last-minute cancellations with suspicious patterns', '2025-07-14 09:45:00', '2026-07-14 09:45:00'),
 
   ((SELECT user_id FROM User WHERE email = 'simon.arnold@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
-  'Verbal abuse of property owners', '2025-07-15 16:20:00', '2026-07-15 16:20:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
+   'Verbal abuse of property owners', '2025-07-15 16:20:00', '2026-07-15 16:20:00'),
 
   ((SELECT user_id FROM User WHERE email = 'christine.vogt@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'emilia.meyer@example.com' AND a.admin_role = 'writer'),
-  'Unauthorized parties in booked accommodations', '2025-07-16 13:10:00', '2026-07-16 13:10:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'emilia.meyer@example.com' AND a.admin_role = 'writer'),
+   'Unauthorized parties in booked accommodations', '2025-07-16 13:10:00', '2026-07-16 13:10:00'),
 
   ((SELECT user_id FROM User WHERE email = 'andreas.ott@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
-  'Repeated violations of pet policies', '2025-07-17 09:45:00', '2026-07-17 09:45:00'),
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
+   'Repeated violations of pet policies', '2025-07-17 09:45:00', '2026-07-17 09:45:00'),
 
   ((SELECT user_id FROM User WHERE email = 'julia.krueger@example.com'),
-  (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
-  'Fake identity documents provided during verification', '2025-07-18 16:20:00', '2026-07-18 16:20:00')
+   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
+   'Fake identity documents provided during verification', '2025-07-18 16:20:00', '2026-07-18 16:20:00')
 ;
 
 -- Insert Property Data
@@ -804,91 +804,83 @@ INSERT INTO Accommodation (property_id, cancellation_policy_id, accommodation_ti
   VALUES
   -- Berlin properties (prime and regular options)
   ((SELECT property_id FROM Property WHERE property_address = 'Invalidenstrasse 43, Berlin'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Prime gets flexible policy
-  'prime', 4, 'Modern loft in Berlin-Mitte with balcony overlooking Invalidenpark', 120.00),
-
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Prime gets flexible policy
+   'prime', 4, 'Modern loft in Berlin-Mitte with balcony overlooking Invalidenpark', 120.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Invalidenstrasse 43, Berlin'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Regular gets moderate policy
-  'regular', 2, 'Compact designer studio in historic Berlin building', 75.50),
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Regular gets moderate policy
+   'regular', 2, 'Compact designer studio in historic Berlin building', 75.50),
 
   -- Munich properties (Bavarian-style accommodations)
   ((SELECT property_id FROM Property WHERE property_address = 'Sendlinger Strasse 25, Muenchen'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Prime with strict policy
-  'prime', 6, 'Bavarian luxury apartment on Munichs premier shopping street', 210.00),
-
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Prime with strict policy
+   'prime', 6, 'Bavarian luxury apartment on Munichs premier shopping street', 210.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Sendlinger Strasse 25, Muenchen'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Regular with flexible policy
-  'regular', 3, 'Charming Altbau apartment in central Munich location', 95.00),
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Regular with flexible policy
+   'regular', 3, 'Charming Altbau apartment in central Munich location', 95.00),
 
   -- Hamburg properties (urban style)
   ((SELECT property_id FROM Property WHERE property_address = 'Spitalerstrasse 10, Hamburg'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Prime urban loft
-  'prime', 5, 'Stylish urban loft steps from Hamburgs main shopping district', 180.00),
-
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Prime urban loft
+   'prime', 5, 'Stylish urban loft steps from Hamburgs main shopping district', 180.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Spitalerstrasse 10, Hamburg'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Cozy regular option
- 'regular', 2, 'Cozy nest in the heart of Hamburg with city views', 85.00),
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Cozy regular option
+   'regular', 2, 'Cozy nest in the heart of Hamburg with city views', 85.00),
 
   -- Frankfurt properties (business travel focus)
   ((SELECT property_id FROM Property WHERE property_address = 'Zeil 90, Frankfurt am Main'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'),  -- Executive prime apartment
-  'prime', 4, 'Executive apartment on Frankfurts famous Zeil shopping street', 150.00),
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'),  -- Executive prime apartment
+   'prime', 4, 'Executive apartment on Frankfurts famous Zeil shopping street', 150.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Zeil 90, Frankfurt am Main'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Business-friendly regular
-  'regular', 3, 'Comfortable city apartment with Main River glimpses', 99.00),
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Business-friendly regular
+   'regular', 3, 'Comfortable city apartment with Main River glimpses', 99.00),
+
   -- Schwarzwald properties (mountain/rural focus)
   ((SELECT property_id FROM Property WHERE property_address = 'Feldbergstrasse 2, Schwarzwald'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Premium chalet
-  'prime', 8, 'Authentic Black Forest chalet with mountain views and sauna', 250.00),
-
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Premium chalet
+   'prime', 8, 'Authentic Black Forest chalet with mountain views and sauna', 250.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Feldbergstrasse 2, Schwarzwald'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Rustic regular cabin
-  'regular', 4, 'Rustic cabin near Feldberg ski slopes', 110.00),
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Rustic regular cabin
+   'regular', 4, 'Rustic cabin near Feldberg ski slopes', 110.00),
 
   -- Leipzig properties (historic city)
   ((SELECT property_id FROM Property WHERE property_address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Historic prime apartment
-  'prime', 4, 'Historic apartment in Leipzigs trendy Südvorstadt district', 130.00),
-
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Historic prime apartment
+   'prime', 4, 'Historic apartment in Leipzigs trendy Südvorstadt district', 130.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Karl-Liebknecht-Strasse 50, Leipzig'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Modern regular studio
-  'regular', 2, 'Modern studio near Leipzig Hauptbahnhof', 65.00),
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Modern regular studio
+   'regular', 2, 'Modern studio near Leipzig Hauptbahnhof', 65.00),
 
   -- Düsseldorf properties (luxury shopping focus)
   ((SELECT property_id FROM Property WHERE property_address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Elegant prime apartment
-  'prime', 4, 'Elegant apartment steps from Königsallee shopping boulevard', 175.00),
-  
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Elegant prime apartment
+   'prime', 4, 'Elegant apartment steps from Königsallee shopping boulevard', 175.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Graf-Adolf-Strasse 12, Duesseldorf'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Riverside regular
-  'regular', 3, 'Bright riverside apartment in MedienHafen district', 105.00),
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Riverside regular
+   'regular', 3, 'Bright riverside apartment in MedienHafen district', 105.00),
   
   -- Stuttgart properties (business/vineyard views)
   ((SELECT property_id FROM Property WHERE property_address = 'Rotebuehlstrasse 60, Stuttgart'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'),  -- Luxury penthouse
-  'prime', 5, 'Luxury penthouse with panoramic Stuttgart city views', 225.00),
-  
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 14 Days'),  -- Luxury penthouse
+   'prime', 5, 'Luxury penthouse with panoramic Stuttgart city views', 225.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Rotebuehlstrasse 60, Stuttgart'), 
    (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 3 Days'),  -- Compact urban studio
-  'regular', 2, 'Compact urban studio near Schlossplatz', 80.00),
+   'regular', 2, 'Compact urban studio near Schlossplatz', 80.00),
   
   -- Garmisch-Partenkirchen (alpine properties)
   ((SELECT property_id FROM Property WHERE property_address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Alpine lodge
-  'prime', 6, 'Alpine lodge with direct Zugspitze mountain views', 195.00),
-
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - 1 Day'),  -- Alpine lodge
+   'prime', 6, 'Alpine lodge with direct Zugspitze mountain views', 195.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Zugspitzstrasse 1, Garmisch-Partenkirchen'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Bavarian guesthouse
-  'regular', 4, 'Traditional Bavarian guesthouse with mountain access', 125.00),
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Moderate - 5 Days'),  -- Bavarian guesthouse
+   'regular', 4, 'Traditional Bavarian guesthouse with mountain access', 125.00),
 
    -- Cologne properties (cathedral views)
   ((SELECT property_id FROM Property WHERE property_address = 'Ehrenstrasse 22, Koeln'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Designer prime apartment
-  'prime', 4, 'Designer apartment with Cologne Cathedral views', 160.00),
-
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Strict - 7 Days'),  -- Designer prime apartment
+   'prime', 4, 'Designer apartment with Cologne Cathedral views', 160.00),
   ((SELECT property_id FROM Property WHERE property_address = 'Ehrenstrasse 22, Koeln'), 
-  (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Trendy regular flat
-  'regular', 2, 'Charming flat in Colognes trendy Belgian Quarter', 90.00)
+   (SELECT policy_id FROM CancellationPolicy WHERE policy_name = 'Flexible - Same Day'),  -- Trendy regular flat
+   'regular', 2, 'Charming flat in Colognes trendy Belgian Quarter', 90.00)
 ;
 
 -- Insert AccommodationImage Data
@@ -1065,102 +1057,102 @@ INSERT INTO Booking (guest_id, accommodation_id, check_in_date, check_out_date, 
   VALUES
   -- Premium guest booking prime accommodation in Berlin
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%' AND accommodation_tier = 'prime'),
-  '2023-07-01 15:00:00', '2023-07-05 11:00:00', '2023-06-01 09:00:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%' AND accommodation_tier = 'prime'),
+   '2023-07-01 15:00:00', '2023-07-05 11:00:00', '2023-06-01 09:00:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Berlin
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'charlotte.hofmann@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%' AND accommodation_tier = 'regular'),
-  '2023-12-15 16:00:00', '2023-12-20 10:00:00', '2023-11-01 10:00:00', 'pending'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%' AND accommodation_tier = 'regular'),
+   '2023-12-15 16:00:00', '2023-12-20 10:00:00', '2023-11-01 10:00:00', 'pending'),
 
   -- Premium guest booking prime accommodation in Munich
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%' AND accommodation_tier = 'prime'),
-  '2023-07-10 14:00:00', '2023-07-15 10:00:00', '2023-05-20 11:30:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%' AND accommodation_tier = 'prime'),
+   '2023-07-10 14:00:00', '2023-07-15 10:00:00', '2023-05-20 11:30:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Munich
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'ben.hartmann@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming Altbau apartment in central Mun%' AND accommodation_tier = 'regular'),
-  '2023-07-16 14:00:00', '2023-07-19 10:00:00', '2023-05-20 11:30:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming Altbau apartment in central Mun%' AND accommodation_tier = 'regular'),
+   '2023-07-16 14:00:00', '2023-07-19 10:00:00', '2023-05-20 11:30:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Hamburg
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft steps from Hamburg%' AND accommodation_tier = 'prime'),
-  '2023-08-05 13:00:00', '2023-08-12 11:00:00', '2023-07-01 14:00:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft steps from Hamburg%' AND accommodation_tier = 'prime'),
+   '2023-08-05 13:00:00', '2023-08-12 11:00:00', '2023-07-01 14:00:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Hamburg
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'johanna.franke@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart of Hamburg%' AND accommodation_tier = 'regular'),
-  '2023-08-15 14:00:00', '2023-08-18 11:00:00', '2023-07-10 10:30:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart of Hamburg%' AND accommodation_tier = 'regular'),
+   '2023-08-15 14:00:00', '2023-08-18 11:00:00', '2023-07-10 10:30:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Frankfurt
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'leo.engel@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Executive apartment on Frankfurts%' AND accommodation_tier = 'prime'),
-  '2023-09-03 15:00:00', '2023-09-10 10:00:00', '2023-08-01 12:00:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Executive apartment on Frankfurts%' AND accommodation_tier = 'prime'),
+   '2023-09-03 15:00:00', '2023-09-10 10:00:00', '2023-08-01 12:00:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Frankfurt
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'tim.walter@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Comfortable city apartment with Main River%' AND accommodation_tier = 'regular'),
-  '2023-09-15 14:00:00', '2023-09-18 11:00:00', '2023-08-15 15:45:00', 'pending'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Comfortable city apartment with Main River%' AND accommodation_tier = 'regular'),
+   '2023-09-15 14:00:00', '2023-09-18 11:00:00', '2023-08-15 15:45:00', 'pending'),
   -- Premium guest booking prime accommodation in Schwarzwald
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'lena.mayer@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%' AND accommodation_tier = 'prime'),
-  '2023-10-01 16:00:00', '2023-10-08 10:00:00', '2023-09-01 09:30:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%' AND accommodation_tier = 'prime'),
+   '2023-10-01 16:00:00', '2023-10-08 10:00:00', '2023-09-01 09:30:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Schwarzwald
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'amelie.peters@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin near Feldberg ski slopes%' AND accommodation_tier = 'regular'),
-  '2023-10-15 15:00:00', '2023-10-20 11:00:00', '2023-09-10 14:20:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin near Feldberg ski slopes%' AND accommodation_tier = 'regular'),
+   '2023-10-15 15:00:00', '2023-10-20 11:00:00', '2023-09-10 14:20:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Leipzig
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'erik.winkler@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment in Leipzigs%' AND accommodation_tier = 'prime'),
-  '2024-11-05 14:00:00', '2024-11-12 10:00:00', '2024-10-01 11:15:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment in Leipzigs%' AND accommodation_tier = 'prime'),
+   '2024-11-05 14:00:00', '2024-11-12 10:00:00', '2024-10-01 11:15:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Leipzig
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'moritz.kruse@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern studio near Leipzig Hauptbahnhof%' AND accommodation_tier = 'regular'),
-  '2024-11-15 13:00:00', '2024-11-18 11:00:00', '2024-10-15 16:30:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern studio near Leipzig Hauptbahnhof%' AND accommodation_tier = 'regular'),
+   '2024-11-15 13:00:00', '2024-11-18 11:00:00', '2024-10-15 16:30:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Düsseldorf
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'nele.gross@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps from Königsallee%' AND accommodation_tier = 'prime'),
-  '2024-12-01 15:00:00', '2024-12-08 10:00:00', '2024-11-01 10:45:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps from Königsallee%' AND accommodation_tier = 'prime'),
+   '2024-12-01 15:00:00', '2024-12-08 10:00:00', '2024-11-01 10:45:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Düsseldorf
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'clara.brandt@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bright riverside apartment in MedienHafen%' AND accommodation_tier = 'regular'),
-  '2024-12-10 14:00:00', '2024-12-15 11:00:00', '2024-11-10 14:10:00', 'pending'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bright riverside apartment in MedienHafen%' AND accommodation_tier = 'regular'),
+   '2024-12-10 14:00:00', '2024-12-15 11:00:00', '2024-11-10 14:10:00', 'pending'),
 
   -- Premium guest booking prime accommodation in Stuttgart
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse with panoramic Stuttgart%' AND accommodation_tier = 'prime'),
-  '2024-01-05 16:00:00', '2024-01-12 10:00:00', '2023-12-01 09:20:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse with panoramic Stuttgart%' AND accommodation_tier = 'prime'),
+   '2024-01-05 16:00:00', '2024-01-12 10:00:00', '2023-12-01 09:20:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Stuttgart
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'noah.schuster@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact urban studio near Schlossplatz%' AND accommodation_tier = 'regular'),
-  '2024-01-15 14:00:00', '2024-01-18 11:00:00', '2023-12-15 15:30:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact urban studio near Schlossplatz%' AND accommodation_tier = 'regular'),
+   '2024-01-15 14:00:00', '2024-01-18 11:00:00', '2023-12-15 15:30:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Garmisch-Partenkirchen
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge with direct Zugspitze%' AND accommodation_tier = 'prime'),
-  '2024-02-10 15:00:00', '2024-02-17 10:00:00', '2024-01-05 11:40:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge with direct Zugspitze%' AND accommodation_tier = 'prime'),
+   '2024-02-10 15:00:00', '2024-02-17 10:00:00', '2024-01-05 11:40:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Garmisch-Partenkirchen
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'luisa.vogel@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse%' AND accommodation_tier = 'regular'),
-  '2024-02-20 14:00:00', '2024-02-25 11:00:00', '2024-01-15 14:50:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse%' AND accommodation_tier = 'regular'),
+   '2024-02-20 14:00:00', '2024-02-25 11:00:00', '2024-01-15 14:50:00', 'confirmed'),
 
   -- Premium guest booking prime accommodation in Cologne
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com' AND g.membership_tier = 'premium'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment with Cologne Cathedral%' AND accommodation_tier = 'prime'),
-  '2024-03-05 16:00:00', '2024-03-12 10:00:00', '2024-02-01 10:15:00', 'confirmed'),
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment with Cologne Cathedral%' AND accommodation_tier = 'prime'),
+   '2024-03-05 16:00:00', '2024-03-12 10:00:00', '2024-02-01 10:15:00', 'confirmed'),
 
   -- Free guest booking regular accommodation in Cologne
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'julian.seidel@example.com' AND g.membership_tier = 'free'),
-  (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Cologne%' AND accommodation_tier = 'regular'),
-  '2024-03-15 14:00:00', '2024-03-18 11:00:00', '2024-02-10 16:20:00', 'confirmed')
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Cologne%' AND accommodation_tier = 'regular'),
+   '2024-03-15 14:00:00', '2024-03-18 11:00:00', '2024-02-10 16:20:00', 'confirmed')
 ;
 
 -- Insert Review Data
@@ -1169,123 +1161,123 @@ INSERT INTO Review (reviewer_id, reviewee_id, booking_id, rating, comment, revie
   VALUES
   -- Review for Berlin prime accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern loft in Berlin%'),
-  4, 'Great stay in central Berlin, nice view, but unfortunately not perfectly clean.', '2023-07-06 11:00:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern loft in Berlin%'),
+   4, 'Great stay in central Berlin, nice view, but unfortunately not perfectly clean.', '2023-07-06 11:00:00'),
 
   -- Review for Berlin regular accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'charlotte.hofmann@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact designer studio%'),
-  5, 'Perfect little studio for our weekend getaway! Host was very responsive.', '2023-12-21 14:30:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact designer studio%'),
+   5, 'Perfect little studio for our weekend getaway! Host was very responsive.', '2023-12-21 14:30:00'),
 
   -- Review for Munich prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bavarian luxury apartment%'),
-  5, 'Absolutely stunning apartment in perfect location. Would definitely stay again!', '2023-07-16 09:15:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bavarian luxury apartment%'),
+   5, 'Absolutely stunning apartment in perfect location. Would definitely stay again!', '2023-07-16 09:15:00'),
 
   -- Review for Munich regular accommodation (rating 3)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'ben.hartmann@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming Altbau apartment%'),
-  3, 'Good location but apartment was quite noisy at night.', '2023-07-20 16:45:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming Altbau apartment%'),
+   3, 'Good location but apartment was quite noisy at night.', '2023-07-20 16:45:00'),
 
   -- Review for Hamburg prime accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Stylish urban loft%'),
-  4, 'Fantastic views of the harbor! Minor issue with wifi connectivity.', '2023-08-13 10:20:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Stylish urban loft%'),
+   4, 'Fantastic views of the harbor! Minor issue with wifi connectivity.', '2023-08-13 10:20:00'),
 
   -- Review for Hamburg regular accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'johanna.franke@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Cozy nest in the heart%'),
-  5, 'Cozy indeed! Perfect for our romantic weekend. Everything was spotless.', '2023-08-19 12:00:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Cozy nest in the heart%'),
+   5, 'Cozy indeed! Perfect for our romantic weekend. Everything was spotless.', '2023-08-19 12:00:00'),
 
   -- Review for Frankfurt prime accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'leo.engel@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Executive apartment%'),
-  4, 'Excellent business stay. Great location for meetings on Zeil.', '2023-09-11 08:30:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Executive apartment%'),
+   4, 'Excellent business stay. Great location for meetings on Zeil.', '2023-09-11 08:30:00'),
 
   -- Review for Frankfurt regular accommodation (rating 2)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'tim.walter@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Comfortable city apartment%'),
-  2, 'Apartment was smaller than expected and quite warm with no AC.', '2023-09-19 15:10:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Comfortable city apartment%'),
+   2, 'Apartment was smaller than expected and quite warm with no AC.', '2023-09-19 15:10:00'),
 
   -- Review for Schwarzwald prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'lena.mayer@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Authentic Black Forest chalet%'),
-  5, 'Magical winter getaway! The sauna was perfect after skiing.', '2023-10-09 11:45:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Authentic Black Forest chalet%'),
+   5, 'Magical winter getaway! The sauna was perfect after skiing.', '2023-10-09 11:45:00'),
 
   -- Review for Schwarzwald regular accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'amelie.peters@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Rustic cabin%'),
-  4, 'Charming cabin with everything we needed. Great hiking nearby.', '2023-10-21 13:20:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Rustic cabin%'),
+   4, 'Charming cabin with everything we needed. Great hiking nearby.', '2023-10-21 13:20:00'),
 
   -- Review for Leipzig prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'erik.winkler@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Historic apartment%'),
-  5, 'Beautiful historic building with modern comforts. Host was very helpful!', '2023-11-13 09:30:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Historic apartment%'),
+   5, 'Beautiful historic building with modern comforts. Host was very helpful!', '2023-11-13 09:30:00'),
 
   -- Review for Leipzig regular accommodation (rating 3)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'moritz.kruse@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern studio%'),
-  3, 'Convenient location but quite noisy from street traffic.', '2023-11-19 14:15:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern studio%'),
+   3, 'Convenient location but quite noisy from street traffic.', '2023-11-19 14:15:00'),
 
   -- Review for Düsseldorf prime accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'nele.gross@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Elegant apartment steps%'),
-  4, 'Luxurious apartment in perfect shopping location. Would stay again!', '2023-12-09 10:50:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Elegant apartment steps%'),
+   4, 'Luxurious apartment in perfect shopping location. Would stay again!', '2023-12-09 10:50:00'),
 
   -- Review for Düsseldorf regular accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'clara.brandt@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bright riverside apartment%'),
-  4, 'Lovely views of the river. Apartment was clean and well-equipped.', '2023-12-16 12:30:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bright riverside apartment%'),
+   4, 'Lovely views of the river. Apartment was clean and well-equipped.', '2023-12-16 12:30:00'),
 
   -- Review for Stuttgart prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'sophie.koehler@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'christian.fischer@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Luxury penthouse%'),
-  5, 'Spectacular views of Stuttgart! Everything was perfect.', '2024-01-13 09:00:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'christian.fischer@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Luxury penthouse%'),
+   5, 'Spectacular views of Stuttgart! Everything was perfect.', '2024-01-13 09:00:00'),
 
   -- Review for Stuttgart regular accommodation (rating 3)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'noah.schuster@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'christian.fischer@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact urban studio%'),
-  3, 'Small but functional. Good value for money in central location.', '2024-01-19 15:45:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'christian.fischer@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact urban studio%'),
+   3, 'Small but functional. Good value for money in central location.', '2024-01-19 15:45:00'),
 
   -- Review for Garmisch-Partenkirchen prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'emil.bergmann@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'johannes.wolf@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Alpine lodge%'),
-  5, 'Breathtaking mountain views! The perfect ski vacation home.', '2024-02-18 11:20:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'johannes.wolf@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Alpine lodge%'),
+   5, 'Breathtaking mountain views! The perfect ski vacation home.', '2024-02-18 11:20:00'),
 
   -- Review for Garmisch-Partenkirchen regular accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'luisa.vogel@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'johannes.wolf@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Traditional Bavarian guesthouse%'),
-  4, 'Authentic Bavarian experience. Very cozy and warm in winter.', '2024-02-26 13:10:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'johannes.wolf@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Traditional Bavarian guesthouse%'),
+   4, 'Authentic Bavarian experience. Very cozy and warm in winter.', '2024-02-26 13:10:00'),
 
   -- Review for Cologne prime accommodation (rating 5)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'maja.pohl@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Designer apartment%'),
-  5, 'Waking up to cathedral views was unforgettable! Perfect location.', '2024-03-13 10:00:00'),
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Designer apartment%'),
+   5, 'Waking up to cathedral views was unforgettable! Perfect location.', '2024-03-13 10:00:00'),
 
   -- Review for Cologne regular accommodation (rating 4)
   ((SELECT g.guest_id FROM User u JOIN Guest g ON u.user_id = g.guest_id WHERE u.email = 'julian.seidel@example.com'),
-  (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
-  (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming flat%'),
-  4, 'Great neighborhood with cool bars and restaurants. Flat was comfortable.', '2024-03-19 14:30:00')
+   (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming flat%'),
+   4, 'Great neighborhood with cool bars and restaurants. Flat was comfortable.', '2024-03-19 14:30:00')
 ;
 
 -- Insert UserMessage Data
@@ -1295,105 +1287,105 @@ INSERT INTO UserMessage (sender_id, recipient_id, content, sent_date)
 VALUES
 -- First 5 messages from leon.wagner@example.com
 ((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
-(SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
+ (SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
 'Dear Tobias Keller, we are hereby notifying you that your account has been suspended due to repeated platform policy violations. Duration: 1 year.', 
 '2025-06-28 10:05:00'),
 
 ((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
-(SELECT user_id FROM User WHERE email = 'christina.simon@example.com'),
+ (SELECT user_id FROM User WHERE email = 'christina.simon@example.com'),
 'Dear Christina Simon, your account has been suspended for unauthorized payment methods and chargeback abuse. Duration: 1 year.', 
 '2025-06-29 10:05:00'),
 
 ((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
-(SELECT user_id FROM User WHERE email = 'michael.fuchs@example.com'),
+ (SELECT user_id FROM User WHERE email = 'michael.fuchs@example.com'),
 'Dear Michael Fuchs, we have suspended your account due to property damage and refusal to pay compensation. Duration: 1 year.', 
 '2025-06-30 10:05:00'),
 
 ((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
-(SELECT user_id FROM User WHERE email = 'katharina.herrmann@example.com'),
+ (SELECT user_id FROM User WHERE email = 'katharina.herrmann@example.com'),
 'Dear Katharina Herrmann, your account has been suspended for harassment of property owners. Duration: 1 year.', 
 '2025-07-01 10:05:00'),
 
 ((SELECT user_id FROM User WHERE email = 'leon.wagner@example.com'),
-(SELECT user_id FROM User WHERE email = 'florian.lange@example.com'),
+ (SELECT user_id FROM User WHERE email = 'florian.lange@example.com'),
 'Dear Florian Lange, we have suspended your account for creating multiple accounts to circumvent restrictions. Duration: 1 year.', 
 '2025-07-02 10:05:00'),
 
 -- Next 5 messages from anna.becker@example.com
 ((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
-(SELECT user_id FROM User WHERE email = 'vanessa.busch@example.com'),
+ (SELECT user_id FROM User WHERE email = 'vanessa.busch@example.com'),
 'Dear Vanessa Busch, your account has been suspended for fake booking attempts and credit card testing. Duration: 1 year.', 
 '2025-07-03 11:35:00'),
 
 ((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
-(SELECT user_id FROM User WHERE email = 'daniel.kuhn@example.com'),
+ (SELECT user_id FROM User WHERE email = 'daniel.kuhn@example.com'),
 'Dear Daniel Kuhn, we have suspended your account due to repeated late cancellations causing host losses. Duration: 1 year.', 
 '2025-07-04 11:35:00'),
 
 ((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
-(SELECT user_id FROM User WHERE email = 'kristin.jansen@example.com'),
+ (SELECT user_id FROM User WHERE email = 'kristin.jansen@example.com'),
 'Dear Kristin Jansen, your account has been suspended for misrepresentation of identity and booking purposes. Duration: 1 year.', 
 '2025-07-05 11:35:00'),
 
 ((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
-(SELECT user_id FROM User WHERE email = 'philipp.winter@example.com'),
+ (SELECT user_id FROM User WHERE email = 'philipp.winter@example.com'),
 'Dear Philipp Winter, we have suspended your account for commercial use of personal account without authorization. Duration: 1 year.', 
 '2025-07-06 11:35:00'),
 
 ((SELECT user_id FROM User WHERE email = 'anna.becker@example.com'),
-(SELECT user_id FROM User WHERE email = 'jana.schulte@example.com'),
+ (SELECT user_id FROM User WHERE email = 'jana.schulte@example.com'),
 'Dear Jana Schulte, your account has been suspended for repeated violations of smoking policies. Duration: 1 year.', 
 '2025-07-07 11:35:00'),
 
 -- Next 5 messages from felix.schulz@example.com
 ((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
-(SELECT user_id FROM User WHERE email = 'matthias.koenig@example.com'),
+ (SELECT user_id FROM User WHERE email = 'matthias.koenig@example.com'),
 'Dear Matthias König, we have suspended your account for unauthorized subletting of booked accommodations. Duration: 1 year.', 
 '2025-07-08 14:20:00'),
 
 ((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
-(SELECT user_id FROM User WHERE email = 'susanne.albrecht@example.com'),
+ (SELECT user_id FROM User WHERE email = 'susanne.albrecht@example.com'),
 'Dear Susanne Albrecht, your account has been suspended for fraudulent damage claims against hosts. Duration: 1 year.', 
 '2025-07-09 14:20:00'),
 
 ((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
-(SELECT user_id FROM User WHERE email = 'markus.graf@example.com'),
+ (SELECT user_id FROM User WHERE email = 'markus.graf@example.com'),
 'Dear Markus Graf, we have suspended your account due to excessive noise complaints from multiple properties. Duration: 1 year.', 
 '2025-07-10 14:20:00'),
 
 ((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
-(SELECT user_id FROM User WHERE email = 'nadine.wild@example.com'),
+ (SELECT user_id FROM User WHERE email = 'nadine.wild@example.com'),
 'Dear Nadine Wild, your account has been suspended for false reporting of other users. Duration: 1 year.', 
 '2025-07-11 14:20:00'),
 
 ((SELECT user_id FROM User WHERE email = 'felix.schulz@example.com'),
-(SELECT user_id FROM User WHERE email = 'stefan.brand@example.com'),
+ (SELECT user_id FROM User WHERE email = 'stefan.brand@example.com'),
 'Dear Stefan Brand, we have suspended your account for attempting to circumvent payment systems. Duration: 1 year.', 
 '2025-07-12 14:20:00'),
 
 -- Final 5 messages distributed among remaining reader admins
 ((SELECT user_id FROM User WHERE email = 'mia.hoffmann@example.com'),
-(SELECT user_id FROM User WHERE email = 'patricia.reich@example.com'),
+ (SELECT user_id FROM User WHERE email = 'patricia.reich@example.com'),
 'Dear Patricia Reich, your account has been suspended for repeated last-minute cancellations with suspicious patterns. Duration: 1 year.', 
 '2025-07-13 09:50:00'),
 
 ((SELECT user_id FROM User WHERE email = 'lukas.schaefer@example.com'),
-(SELECT user_id FROM User WHERE email = 'simon.arnold@example.com'),
+ (SELECT user_id FROM User WHERE email = 'simon.arnold@example.com'),
 'Dear Simon Arnold, we have suspended your account for verbal abuse of property owners. Duration: 1 year.', 
 '2025-07-14 16:25:00'),
 
 ((SELECT user_id FROM User WHERE email = 'lena.koch@example.com'),
-(SELECT user_id FROM User WHERE email = 'christine.vogt@example.com'),
+ (SELECT user_id FROM User WHERE email = 'christine.vogt@example.com'),
 'Dear Christine Vogt, your account has been suspended for unauthorized parties in booked accommodations. Duration: 1 year.', 
 '2025-07-15 13:15:00'),
 
 ((SELECT user_id FROM User WHERE email = 'elias.bauer@example.com'),
-(SELECT user_id FROM User WHERE email = 'andreas.ott@example.com'),
+ (SELECT user_id FROM User WHERE email = 'andreas.ott@example.com'),
 'Dear Andreas Ott, we have suspended your account for repeated violations of pet policies. Duration: 1 year.', 
 '2025-07-16 09:50:00'),
 
 ((SELECT user_id FROM User WHERE email = 'laura.richter@example.com'),
-(SELECT user_id FROM User WHERE email = 'julia.krueger@example.com'),
+ (SELECT user_id FROM User WHERE email = 'julia.krueger@example.com'),
 'Dear Julia Krüger, your account has been suspended for providing fake identity documents during verification. Duration: 1 year.', 
 '2025-07-17 16:25:00');
 
@@ -1450,11 +1442,11 @@ VALUES
    (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%')),
 
   -- Summer Beach Escapes 
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Beach Escapes'), 
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Escapes'), 
    (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Beach Escapes'), 
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Escapes'), 
    (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Beach Escapes'), 
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Escapes'), 
    (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment%')),
 
   -- City Breaks and Culture Trips
