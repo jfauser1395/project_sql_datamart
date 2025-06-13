@@ -328,7 +328,7 @@ CREATE TABLE Review (
 CREATE INDEX idx_review_reviewee ON Review(reviewee_id);
 CREATE INDEX idx_review_booking ON Review(booking_id);
 
--- Message Table
+-- UserMessage Table
 -- Stores messages exchanged between users, potentially linked to bookings
 CREATE TABLE UserMessage (
   message_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
@@ -355,13 +355,21 @@ CREATE TABLE UserMessage (
     ON UPDATE CASCADE -- Update booking_id in Message if it changes in Booking
 );
 
+-- PaymentMethod table
+-- Stores different payment methods available for payouts
+CREATE TABLE PaymentMethod (
+  payment_method_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  payment_name VARCHAR(20) UNIQUE, -- Method of payout (e.g., bank transfer, PayPal)
+  CONSTRAINT pk_method PRIMARY KEY (payment_method_id) -- Primary Key constraint
+);
+
 -- Payout Table
 -- Stores records of payouts made to hosts
 CREATE TABLE Payout (
   payout_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   host_id CHAR(36) NOT NULL, -- Foreign Key referencing Host (Payout is made to a host)
+  payment_method_id CHAR(36) NOT NULL, -- Method of payout (e.g., bank transfer, PayPal)
   amount DECIMAL(10,2) NOT NULL, -- Payout amount (Increased precision)
-  payout_method ENUM('paypal', 'bank_transfer', 'credit_card', 'crypto') NOT NULL, -- Method of payout (e.g., bank transfer, PayPal)
   payout_status ENUM('pending', 'completed', 'failed') NOT NULL DEFAULT 'pending', -- Payout status
   payout_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the payout was initiated/processed
   CONSTRAINT pk_payout PRIMARY KEY (payout_id), -- Primary Key constraint
@@ -370,6 +378,11 @@ CREATE TABLE Payout (
     REFERENCES Host (host_id)
     ON DELETE RESTRICT -- Prevent deleting a host if they have payout records
     ON UPDATE CASCADE, -- Update host_id in Payout if it changes in Host
+  CONSTRAINT fk_payout_method -- Foreign Key constraint to ensure payment_method_id references PaymentMethod.payment_method_id
+    FOREIGN KEY (payment_method_id)
+    REFERENCES PaymentMethod (payment_method_id)
+    ON DELETE CASCADE -- If payment method deleted, remove all payouts using it
+    ON UPDATE CASCADE, -- Update payment_method_id in Payout if it changes in PaymentMethod
   CONSTRAINT chk_payout_amount CHECK (amount >= 0) -- Ensure amount is not negative
 );
 
@@ -381,7 +394,7 @@ CREATE TABLE Payment (
   booking_id CHAR(36) NOT NULL, -- Optional Foreign Key referencing Booking (Payment for a booking)
   amount DECIMAL(10,2) NOT NULL, -- Payment amount (Increased precision)
   payment_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date of the payment
-  payment_method ENUM('paypal', 'bank_transfer', 'credit_card', 'crypto') NOT NULL, -- Payment method
+  payment_method_id CHAR(36) NOT NULL, -- Method of payout (e.g., bank transfer, PayPal)
   payment_status ENUM('completed', 'pending', 'failed', 'refunded') NOT NULL DEFAULT 'pending', -- Payment status (Added refunded)
   CONSTRAINT pk_payment PRIMARY KEY (payment_id), -- Primary Key constraint
   CONSTRAINT fk_payment_booking -- Foreign Key constraint to ensure booking_id references Booking.booking_id
@@ -393,7 +406,12 @@ CREATE TABLE Payment (
     FOREIGN KEY (referral_id)
     REFERENCES UserReferral (referral_id)
     ON DELETE CASCADE -- If referral deleted, remove the payment record
-    ON UPDATE CASCADE -- Update referral_id in Payment if it changes in UserReferral
+    ON UPDATE CASCADE, -- Update referral_id in Payment if it changes in UserReferral
+  CONSTRAINT fk_pay_method -- Foreign Key constraint to ensure payment_method_id references PaymentMethod.payment_method_id
+    FOREIGN KEY (payment_method_id)
+    REFERENCES PaymentMethod (payment_method_id)
+    ON DELETE CASCADE -- If payment method deleted, remove all payouts using it
+    ON UPDATE CASCADE -- Update payment_method_id in Payout if it changes in PaymentMethod
 );
 
 -- Indexes for Payment Table
@@ -1578,170 +1596,169 @@ VALUES
    (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%'))
 ;
 
--- Insert Payout Data
-INSERT INTO Payout (host_id, amount, payout_date, payout_method)
+-- Insert PaymentMethod Data
+INSERT INTO PaymentMethod (payment_name)
 VALUES
-  -- Payout for Max Mustermann
-  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
-   1500.00, '2023-07-10 12:00:00', 'bank_transfer'),
-  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
-   1800.50, '2023-08-15 09:30:00', 'bank_transfer'),
-  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
-   1650.75, '2023-09-12 14:15:00', 'bank_transfer'),
-  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
-   1920.25, '2023-10-18 11:45:00', 'bank_transfer'),
-   
-  -- Payout for Lena Schmitt
-  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
-   2200.75, '2023-07-12 14:15:00', 'paypal'),
-  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
-   1950.25, '2023-08-18 11:45:00', 'paypal'),
-   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
-   2400.50, '2023-09-20 16:30:00', 'bank_transfer'),
-  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
-   2100.00, '2023-10-25 10:20:00', 'bank_transfer'),
+   ('Bank Transfer'),
+   ('PayPal'),
+   ('Credit Card'),
+   ('Debit Card'),
+   ('Wire Transfer'),
+   ('SEPA Transfer'),
+   ('ACH Transfer'),
+   ('Apple Pay'),
+   ('Google Pay'),
+   ('Venmo'),
+   ('Cash App'),
+   ('Wise'),
+   ('Revolut'),
+   ('Skrill'),
+   ('Neteller'),
+   ('Payoneer'),
+   ('Stripe'),
+   ('Cryptocurrency'),
+   ('Alipay'),
+   ('WeChat Pay');
 
-  -- Payout for Fabian Huber
+-- Insert Payout Data
+INSERT INTO Payout (host_id, amount, payout_date, payment_method_id)
+VALUES
+  -- Max Mustermann
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   1500.00, '2023-07-10 12:00:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   1800.50, '2023-08-15 09:30:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   1650.75, '2023-09-12 14:15:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
+   1920.25, '2023-10-18 11:45:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
+  
+  -- Lena Schmitt 
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   2200.75, '2023-07-12 14:15:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal')),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   1950.25, '2023-08-18 11:45:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal')),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   2400.50, '2023-09-20 16:30:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
+   2100.00, '2023-10-25 10:20:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
+
+  -- Fabian Huber 
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-   3200.00, '2023-07-15 16:20:00', 'bank_transfer'),
+   3200.00, '2023-07-15 16:20:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
-   2750.80, '2023-08-20 13:10:00', 'bank_transfer'),
+   2750.80, '2023-08-20 13:10:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
 
-  -- Payout for Julia Wagner
+  -- Julia Wagner
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
-   1450.60, '2023-07-18 10:45:00', 'credit_card'),
+   1450.60, '2023-07-18 10:45:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card')),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
-   1600.40, '2023-08-22 15:30:00', 'credit_card'),
+   1600.40, '2023-08-22 15:30:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card')),
 
-  -- Payout for Tom Becker
+  -- Tom Becker
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
-   2300.25, '2023-07-20 11:20:00', 'credit_card'),
+   2300.25, '2023-07-20 11:20:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card')),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
-   2100.75, '2023-08-25 14:50:00', 'credit_card'),
+   2100.75, '2023-08-25 14:50:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card')),
 
-  -- Payout for Lea Maier
+  -- Lea Maier
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lea.maier@example.com'),
-   1750.90, '2023-07-22 09:15:00', 'credit_card'),
+   1750.90, '2023-07-22 09:15:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card')),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lea.maier@example.com'),
-   1850.10, '2023-08-28 16:25:00', 'credit_card'),
+   1850.10, '2023-08-28 16:25:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card')),
 
-  -- Payout for Benno Mueller
+  -- Benno Mueller
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
-   2800.50, '2023-07-25 13:40:00', 'crypto'),
+   2800.50, '2023-07-25 13:40:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency')),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
-   2950.00, '2023-08-30 10:15:00', 'crypto'),
-
-  -- Payout for Hannah Schmidt
-  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
-   1950.30, '2023-07-28 15:50:00', 'paypal'),
-  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'hannah.schmidt@example.com'),
-   2050.70, '2023-09-02 12:30:00', 'paypal')
-;
+   2950.00, '2023-08-30 10:15:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'));
 
 -- Insert Payment Data
-INSERT INTO Payment (referral_id, booking_id, amount, payment_date, payment_method, payment_status)
+INSERT INTO Payment (referral_id, booking_id, amount, payment_date, payment_method_id, payment_status)
 VALUES
-  -- Payment with referral bonus and credit card (completed)
+  -- Credit Card payments
   ((SELECT referral_id FROM UserReferral WHERE referral_code = '684932'), 
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern loft in Berlin%'),
-   200.00, '2023-07-01 10:00:00', 'credit_card', 'completed'),
-
-  -- Booking payment without referral and paypal (completed)
-  (NULL,
-   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact designer studio%'),
-   450.00, '2023-12-15 14:30:00', 'paypal', 'completed'),
-
-  -- Payment with referral bonus and credit card (completed)
+   200.00, '2023-07-01 10:00:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'), 'completed'),
+  
   ((SELECT referral_id FROM UserReferral WHERE referral_code = '217845'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bavarian luxury apartment%'),
-   200.00, '2023-07-10 09:15:00', 'credit_card', 'completed'),
-
-  -- Booking payment without referral, with credit card (failed)
+   200.00, '2023-07-10 09:15:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'), 'completed'),
+  
   (NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming Altbau apartment%'),
-   320.00, '2023-07-18 16:45:00', 'credit_card', 'failed'),
-
-  -- Booking payment without referral, with bank_transaction (refunded)
-  (NULL,
-   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Stylish urban loft%'),
-   580.00, '2023-08-10 10:20:00', 'bank_transfer', 'refunded'),
-
-  -- Payment with referral bonus and credit card (completed)
+   320.00, '2023-07-18 16:45:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'), 'failed'),
+  
   ((SELECT referral_id FROM UserReferral WHERE referral_code = '892345'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Cozy nest in the heart%'),
-   200.00, '2023-08-15 12:00:00', 'credit_card', 'completed'),
-
-  -- Booking payment without referral, with paypal (completed)
-  (NULL,
-   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Executive apartment%'),
-   620.00, '2023-09-05 08:30:00', 'paypal', 'completed'),
-
-  -- Booking payment without referral, with credit card (pending)
+   200.00, '2023-08-15 12:00:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'), 'completed'),
+  
   (NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Comfortable city apartment%'),
-   280.00, '2023-09-15 15:10:00', 'credit_card', 'pending'),
-
-  -- Payment with referral bonus and credit card (completed)
+   280.00, '2023-09-15 15:10:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'), 'pending'),
+  
   ((SELECT referral_id FROM UserReferral WHERE referral_code = '901234'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Authentic Black Forest chalet%'),
-   200.00, '2023-10-05 11:45:00', 'credit_card', 'completed'),
-
-  -- Booking payment without referral, with bank transaction (completed)
-  (NULL,
-   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Rustic cabin%'),
-   380.00, '2023-10-18 13:20:00', 'bank_transfer', 'completed'),
-
-  -- Payment with referral bonus and credit card (completed)
+   200.00, '2023-10-05 11:45:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'), 'completed'),
+  
   ((SELECT referral_id FROM UserReferral WHERE referral_code = '567890'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Historic apartment%'),
-   200.00, '2023-11-10 09:30:00', 'credit_card', 'completed'),
+   200.00, '2023-11-10 09:30:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'), 'completed'),
 
-  -- Booking payment without referral, with paypal(completed)
+  -- PayPal payments
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact designer studio%'),
+   450.00, '2023-12-15 14:30:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'), 'completed'),
+  
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Executive apartment%'),
+   620.00, '2023-09-05 08:30:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'), 'completed'),
+  
   (NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern studio%'),
-   420.00, '2023-11-15 14:15:00', 'paypal', 'completed'),
-
-  -- Payment with referral bonus and credit card (completed)
-  ((SELECT referral_id FROM UserReferral WHERE referral_code = '123456'),
-   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Elegant apartment steps%'),
-   200.00, '2023-12-05 10:50:00', 'credit_card', 'completed'),
-
-  -- Booking payment without referral, with bank transaction (completed)
-  (NULL,
-   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bright riverside apartment%'),
-   510.00, '2023-12-12 12:30:00', 'bank_transfer', 'completed'),
-
-  -- Payment with referral bonus and credit card (completed)
-  ((SELECT referral_id FROM UserReferral WHERE referral_code = '345012'),
-   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Luxury penthouse%'),
-   200.00, '2024-01-10 09:00:00', 'credit_card', 'completed'),
-
-  -- Booking payment without referral, with paypal (completed)
+   420.00, '2023-11-15 14:15:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'), 'completed'),
+  
   (NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact urban studio%'),
-   290.00, '2024-01-15 15:45:00', 'paypal', 'completed'),
+   290.00, '2024-01-15 15:45:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'), 'completed'),
+  
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '123456'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Elegant apartment steps%'),
+   200.00, '2023-12-05 10:50:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'), 'completed'),
 
-  -- Payment with referral bonus and credit card (completed)
-  ((SELECT referral_id FROM UserReferral WHERE referral_code = '789456'),
-   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Alpine lodge%'),
-   200.00, '2024-02-15 11:20:00', 'credit_card', 'completed'),
-
-  -- Booking payment without referral, with bank transaction (completed)
+  -- Bank Transfer payments)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Stylish urban loft%'),
+   580.00, '2023-08-10 10:20:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'), 'refunded'),
+  
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Rustic cabin%'),
+   380.00, '2023-10-18 13:20:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'), 'completed'),
+  
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bright riverside apartment%'),
+   510.00, '2023-12-12 12:30:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'), 'completed'),
+  
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '345012'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Luxury penthouse%'),
+   200.00, '2024-01-10 09:00:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'), 'completed'),
+  
   (NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Traditional Bavarian guesthouse%'),
-   340.00, '2024-02-22 13:10:00', 'bank_transfer', 'completed'),
+   340.00, '2024-02-22 13:10:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'), 'completed'),
 
-  -- Payment with crypto without referral (completed)
+  -- Cryptocurrency payments
   (NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Designer apartment%'),
-   720.00, '2024-03-10 10:00:00', 'crypto', 'completed'),
-
-  -- Booking payment without referral, with credit card (pending)
+   720.00, '2024-03-10 10:00:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'), 'completed'),
+  
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '789456'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Alpine lodge%'),
+   200.00, '2024-02-15 11:20:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'), 'completed'),
+  
   (NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming flat%'),
-   390.00, '2024-03-15 14:30:00', 'credit_card', 'pending')
-;
-
+   390.00, '2024-03-15 14:30:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'), 'pending');
 
 -- Insert SupportTicket Data
 INSERT INTO SupportTicket (user_id, assigned_admin_id, ticket_subject, ticket_description, ticket_status, creation_date, update_date)
