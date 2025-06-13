@@ -92,6 +92,11 @@ CREATE TABLE UserReferral (
     ON UPDATE CASCADE -- Update referred_id in UserReferral if it changes in User
 );
 
+-- Indexes for UserReferral Table
+-- These indexes can help speed up queries filtering by referrer or referred user
+CREATE INDEX idx_referral_referrer ON UserReferral(referrer_id);
+CREATE INDEX idx_referral_referred ON UserReferral(referred_id);
+
 -- BannedUser Table
 -- Tracks users who have been banned
 CREATE TABLE BannedUser (
@@ -283,13 +288,19 @@ CREATE TABLE Booking (
   CONSTRAINT chk_booking_dates CHECK (check_in_date < check_out_date) -- Ensure end date is after start date
 );
 
+-- Indexes for Booking Table
+-- These indexes can help speed up queries filtering by guest, accommodation, or date ranges
+CREATE INDEX idx_booking_guest ON Booking(guest_id);
+CREATE INDEX idx_booking_accommodation ON Booking(accommodation_id);
+CREATE INDEX idx_booking_dates ON Booking(check_in_date, check_out_date);
+
 -- Review Table
 -- Stores reviews left by users about other users or properties/accommodations
 CREATE TABLE Review (
   review_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   reviewer_id CHAR(36) NOT NULL, -- Foreign Key referencing User (the user writing the review)
   reviewee_id CHAR(36) NOT NULL, -- Foreign Key referencing User (the user being reviewed - e.g., host)
-  booking_id CHAR(36) NULL, -- Foreign Key referencing Booking (review might be tied to a booking, but maybe not required for all review types)
+  booking_id CHAR(36) NOT NULL, -- Foreign Key referencing Booking
   rating INT NOT NULL, -- Rating given in the review (e.g., 1-5)
   comment TEXT NULL, -- Optional comment
   review_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the review was created
@@ -307,10 +318,15 @@ CREATE TABLE Review (
   CONSTRAINT fk_review_booking -- Foreign Key constraint to ensure booking_id references Booking.booking_id
     FOREIGN KEY (booking_id) 
     REFERENCES Booking (booking_id)
-    ON DELETE SET NULL -- If a booking is deleted, reviews linked to it are unlinked
+    ON DELETE CASCADE -- If booking deleted, remove the review
     ON UPDATE CASCADE, -- Update booking_id in Review if it changes in Booking
   CONSTRAINT chk_review_rating CHECK (rating >= 1 AND rating <= 5) -- Ensure rating is within a valid range
 );
+
+-- Indexes for Review Table
+-- These indexes can help speed up queries filtering by reviewer, reviewee, or booking
+CREATE INDEX idx_review_reviewee ON Review(reviewee_id);
+CREATE INDEX idx_review_booking ON Review(booking_id);
 
 -- Message Table
 -- Stores messages exchanged between users, potentially linked to bookings
@@ -379,6 +395,11 @@ CREATE TABLE Payment (
     ON DELETE CASCADE -- If referral deleted, remove the payment record
     ON UPDATE CASCADE -- Update referral_id in Payment if it changes in UserReferral
 );
+
+-- Indexes for Payment Table
+-- These indexes can help speed up queries filtering by referral, booking, or status
+CREATE INDEX idx_payment_booking ON Payment(booking_id);
+CREATE INDEX idx_payment_status ON Payment(payment_status);
 
 -- SupportTicket Table
 -- Stores support tickets raised by users
