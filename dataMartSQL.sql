@@ -30,7 +30,7 @@ CREATE TABLE User (
 -- Subclass Table: Admin
 -- Stores attributes specific to Admin users.
 -- user_id is both the Primary Key and a Foreign Key referencing User.user_id
-CREATE TABLE Admin (
+CREATE TABLE Administrator (
   admin_id CHAR(36) NOT NULL, -- References User.user_id
   admin_role ENUM('reader', 'writer') NOT NULL DEFAULT 'reader', -- Admin-specific role
   CONSTRAINT pk_admin_user PRIMARY KEY (admin_id), -- Primary Key constraint
@@ -109,7 +109,7 @@ CREATE TABLE BannedUser (
     ON UPDATE CASCADE, -- If user_id is updated, update all bans for that user
   CONSTRAINT fk_banneduser_admin -- Foreign Key constraint to ensure admin_id references Admin.admin_id
     FOREIGN KEY (admin_id)
-    REFERENCES Admin (admin_id) -- FK references the Admin table using the admin_id column
+    REFERENCES Administrator (admin_id) -- FK references the Admin table using the admin_id column
     ON DELETE SET NULL -- If admin deleted, ban record remains but admin link is severed
     ON UPDATE CASCADE -- If admin_id is updated, update all bans issued by that admin
 );
@@ -399,7 +399,7 @@ CREATE TABLE SupportTicket (
     ON UPDATE CASCADE, -- Update user_id in SupportTicket if it changes in User
   CONSTRAINT fk_supportticket_admin -- FK references the Admin table using the admin_id column
     FOREIGN KEY (assigned_admin_id)
-    REFERENCES Admin (admin_id)
+    REFERENCES Administrator (admin_id)
     ON DELETE SET NULL -- If assigned admin is deleted, unassign them from the ticket
     ON UPDATE CASCADE -- If admin_id is updated, update all tickets assigned to that admin
 );
@@ -409,7 +409,7 @@ CREATE TABLE SupportTicket (
 CREATE TABLE AppNotification (
   notification_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   user_id CHAR(36) NOT NULL, -- Foreign Key referencing User (Recipient of the notification)
-  notification_type ENUM('booking', 'message', 'review', 'referral', 'payment', 'system') NOT NULL, -- Type of notification (Added system)
+  notification_type ENUM('booking', 'message', 'review', 'referral', 'payment', 'system', 'promotion') NOT NULL, -- Type of notification (Added system)
   notification_message TEXT NOT NULL, -- Content of the notification
   is_read BOOLEAN NOT NULL DEFAULT FALSE, -- Whether the user has read the notification
   notification_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the notification was created
@@ -433,7 +433,7 @@ CREATE TABLE PlatformPolicy (
   CONSTRAINT pk_platformpolicy PRIMARY KEY (policy_id), -- Primary Key constraint
   CONSTRAINT fk_platformpolicy_admin -- FK references the Admin table using the admin_id column
     FOREIGN KEY (created_by_admin_id)
-    REFERENCES Admin (admin_id)
+    REFERENCES Administrator (admin_id)
     ON DELETE SET NULL -- If admin deleted, policy remains but link is severed
     ON UPDATE CASCADE -- If admin_id is updated, update all policies created by that admin
 );
@@ -525,7 +525,7 @@ INSERT INTO User (user_type, first_name, last_name, email, phone_number, passwor
 ;
 
 -- Insert Admin Data
-INSERT INTO Admin (admin_id, admin_role)
+INSERT INTO Administrator (admin_id, admin_role)
   SELECT
     u.user_id, -- Use user_id from User table
     a.admin_role -- Use admin_role from the subquery
@@ -706,86 +706,86 @@ INSERT INTO BannedUser (user_id, admin_id, ban_reason, ban_date, unban_date)
   VALUES
   -- Bans by maximilian.mueller@example.com
   ((SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
    'Repeated platform policy violations including fraudulent reviews', '2025-06-29 10:00:00', '2026-06-29 10:00:00'),
 
   ((SELECT user_id FROM User WHERE email = 'christina.simon@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
    'Unauthorized payment methods and chargeback abuse', '2025-06-30 10:00:00', '2026-06-30 10:00:00'),
 
   ((SELECT user_id FROM User WHERE email = 'michael.fuchs@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
    'Property damage and refusal to pay compensation', '2025-07-01 10:00:00', '2026-07-01 10:00:00'),
 
   ((SELECT user_id FROM User WHERE email = 'katharina.herrmann@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
    'Harassment of property owners', '2025-07-02 10:00:00', '2026-07-02 10:00:00'),
 
   ((SELECT user_id FROM User WHERE email = 'florian.lange@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'maximilian.mueller@example.com' AND a.admin_role = 'writer'),
    'Creating multiple accounts to circumvent restrictions', '2025-07-03 10:00:00', '2026-07-03 10:00:00'),
 
   -- Bans by sophie.schmidt@example.com
   ((SELECT user_id FROM User WHERE email = 'vanessa.busch@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
    'Fake booking attempts and credit card testing', '2025-07-04 11:30:00', '2026-07-04 11:30:00'),
 
   ((SELECT user_id FROM User WHERE email = 'daniel.kuhn@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
    'Repeated late cancellations causing host losses', '2025-07-05 11:30:00', '2026-07-05 11:30:00'),
 
   ((SELECT user_id FROM User WHERE email = 'kristin.jansen@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
    'Misrepresentation of identity and booking purposes', '2025-07-06 11:30:00', '2026-07-06 11:30:00'),
 
   ((SELECT user_id FROM User WHERE email = 'philipp.winter@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
    'Commercial use of personal account without authorization', '2025-07-07 11:30:00', '2026-07-07 11:30:00'),
 
   ((SELECT user_id FROM User WHERE email = 'jana.schulte@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'sophie.schmidt@example.com' AND a.admin_role = 'writer'),
    'Repeated violations of smoking policies in non-smoking properties', '2025-07-08 11:30:00', '2026-07-08 11:30:00'),
 
   -- Bans by alexander.schneider@example.com
   ((SELECT user_id FROM User WHERE email = 'matthias.koenig@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
    'Unauthorized subletting of booked accommodations', '2025-07-09 14:15:00', '2026-07-09 14:15:00'),
 
   ((SELECT user_id FROM User WHERE email = 'susanne.albrecht@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
    'Fraudulent damage claims against hosts', '2025-07-10 14:15:00', '2026-07-10 14:15:00'),
 
   ((SELECT user_id FROM User WHERE email = 'markus.graf@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
    'Excessive noise complaints from multiple properties', '2025-07-11 14:15:00', '2026-07-11 14:15:00'),
 
   ((SELECT user_id FROM User WHERE email = 'nadine.wild@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
    'False reporting of other users', '2025-07-12 14:15:00', '2026-07-12 14:15:00'),
 
   ((SELECT user_id FROM User WHERE email = 'stefan.brand@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'alexander.schneider@example.com' AND a.admin_role = 'writer'),
    'Attempting to circumvent payment systems', '2025-07-13 14:15:00', '2026-07-13 14:15:00'),
 
   -- Bans from different admins
   ((SELECT user_id FROM User WHERE email = 'patricia.reich@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
    'Repeated last-minute cancellations with suspicious patterns', '2025-07-14 09:45:00', '2026-07-14 09:45:00'),
 
   ((SELECT user_id FROM User WHERE email = 'simon.arnold@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
    'Verbal abuse of property owners', '2025-07-15 16:20:00', '2026-07-15 16:20:00'),
 
   ((SELECT user_id FROM User WHERE email = 'christine.vogt@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'emilia.meyer@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'emilia.meyer@example.com' AND a.admin_role = 'writer'),
    'Unauthorized parties in booked accommodations', '2025-07-16 13:10:00', '2026-07-16 13:10:00'),
 
   ((SELECT user_id FROM User WHERE email = 'andreas.ott@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'marie.fischer@example.com' AND a.admin_role = 'writer'),
    'Repeated violations of pet policies', '2025-07-17 09:45:00', '2026-07-17 09:45:00'),
 
   ((SELECT user_id FROM User WHERE email = 'julia.krueger@example.com'),
-   (SELECT a.admin_id FROM User u JOIN Admin a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON a.admin_id = u.user_id WHERE u.email = 'paul.weber@example.com' AND a.admin_role = 'writer'),
    'Fake identity documents provided during verification', '2025-07-18 16:20:00', '2026-07-18 16:20:00')
 ;
 
@@ -1617,4 +1617,440 @@ VALUES
    2050.70, '2023-09-02 12:30:00', 'paypal')
 ;
 
+-- Insert Payment Data
+INSERT INTO Payment (referral_id, booking_id, amount, payment_date, payment_method, payment_status)
+VALUES
+  -- Payment with referral bonus and credit card (completed)
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '684932'), 
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern loft in Berlin%'),
+   200.00, '2023-07-01 10:00:00', 'credit_card', 'completed'),
 
+  -- Booking payment without referral and paypal (completed)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact designer studio%'),
+   450.00, '2023-12-15 14:30:00', 'paypal', 'completed'),
+
+  -- Payment with referral bonus and credit card (completed)
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '217845'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bavarian luxury apartment%'),
+   200.00, '2023-07-10 09:15:00', 'credit_card', 'completed'),
+
+  -- Booking payment without referral, with credit card (failed)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming Altbau apartment%'),
+   320.00, '2023-07-18 16:45:00', 'credit_card', 'failed'),
+
+  -- Booking payment without referral, with bank_transaction (refunded)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Stylish urban loft%'),
+   580.00, '2023-08-10 10:20:00', 'bank_transfer', 'refunded'),
+
+  -- Payment with referral bonus and credit card (completed)
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '892345'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Cozy nest in the heart%'),
+   200.00, '2023-08-15 12:00:00', 'credit_card', 'completed'),
+
+  -- Booking payment without referral, with paypal (completed)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Executive apartment%'),
+   620.00, '2023-09-05 08:30:00', 'paypal', 'completed'),
+
+  -- Booking payment without referral, with credit card (pending)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Comfortable city apartment%'),
+   280.00, '2023-09-15 15:10:00', 'credit_card', 'pending'),
+
+  -- Payment with referral bonus and credit card (completed)
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '901234'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Authentic Black Forest chalet%'),
+   200.00, '2023-10-05 11:45:00', 'credit_card', 'completed'),
+
+  -- Booking payment without referral, with bank transaction (completed)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Rustic cabin%'),
+   380.00, '2023-10-18 13:20:00', 'bank_transfer', 'completed'),
+
+  -- Payment with referral bonus and credit card (completed)
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '567890'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Historic apartment%'),
+   200.00, '2023-11-10 09:30:00', 'credit_card', 'completed'),
+
+  -- Booking payment without referral, with paypal(completed)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern studio%'),
+   420.00, '2023-11-15 14:15:00', 'paypal', 'completed'),
+
+  -- Payment with referral bonus and credit card (completed)
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '123456'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Elegant apartment steps%'),
+   200.00, '2023-12-05 10:50:00', 'credit_card', 'completed'),
+
+  -- Booking payment without referral, with bank transaction (completed)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bright riverside apartment%'),
+   510.00, '2023-12-12 12:30:00', 'bank_transfer', 'completed'),
+
+  -- Payment with referral bonus and credit card (completed)
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '345012'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Luxury penthouse%'),
+   200.00, '2024-01-10 09:00:00', 'credit_card', 'completed'),
+
+  -- Booking payment without referral, with paypal (completed)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact urban studio%'),
+   290.00, '2024-01-15 15:45:00', 'paypal', 'completed'),
+
+  -- Payment with referral bonus and credit card (completed)
+  ((SELECT referral_id FROM UserReferral WHERE referral_code = '789456'),
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Alpine lodge%'),
+   200.00, '2024-02-15 11:20:00', 'credit_card', 'completed'),
+
+  -- Booking payment without referral, with bank transaction (completed)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Traditional Bavarian guesthouse%'),
+   340.00, '2024-02-22 13:10:00', 'bank_transfer', 'completed'),
+
+  -- Payment with crypto without referral (completed)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Designer apartment%'),
+   720.00, '2024-03-10 10:00:00', 'crypto', 'completed'),
+
+  -- Booking payment without referral, with credit card (pending)
+  (NULL,
+   (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming flat%'),
+   390.00, '2024-03-15 14:30:00', 'credit_card', 'pending')
+;
+
+
+-- Insert SupportTicket Data
+INSERT INTO SupportTicket (user_id, assigned_admin_id, ticket_subject, ticket_description, ticket_status, creation_date, update_date)
+VALUES
+  -- Tobias Keller (open ticket assigned to reader)
+  ((SELECT user_id FROM User WHERE email = 'tobias.keller@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'leon.wagner@example.com'),
+   'Account Suspension Appeal', 'I would like to appeal my account suspension. I believe it was a misunderstanding regarding my payment method. Please review my case.',
+   'open', '2025-06-28 10:05:00', '2025-06-28 10:05:00'),
+  
+  -- Christina Simon (closed by writer)
+  ((SELECT user_id FROM User WHERE email = 'christina.simon@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'maximilian.mueller@example.com'),
+   'Unauthorized Payment Method', 'My account was suspended for using an unauthorized payment method. I would like to clarify that I was not aware of this policy.',
+   'closed', '2025-06-29 10:05:00', '2025-06-29 14:30:00'),
+  
+  -- Michael Fuchs (in progress with writer)
+  ((SELECT user_id FROM User WHERE email = 'michael.fuchs@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'sophie.schmidt@example.com'),
+   'Booking Refund Request', 'I cancelled my booking within the allowed period but have not received my refund. It is been over 14 business days.',
+   'in_progress', '2025-06-30 11:20:00', '2025-07-01 09:15:00'),
+  
+  -- Katharina Herrmann (resolved by writer)
+  ((SELECT user_id FROM User WHERE email = 'katharina.herrmann@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'alexander.schneider@example.com'),
+   'Host Verification Issue', 'I have submitted all documents for host verification but my status has not been updated for 2 weeks.',
+   'resolved', '2025-07-01 14:45:00', '2025-07-03 16:20:00'),
+  
+  -- Florian Lange (open ticket unassigned)
+  ((SELECT user_id FROM User WHERE email = 'florian.lange@example.com'),
+   NULL,
+   'Security Concern', 'I received a suspicious message from another user asking for personal information. Is this normal?',
+   'open', '2025-07-02 09:30:00', '2025-07-02 09:30:00'),
+  
+  -- Vanessa Busch (closed by writer)
+  ((SELECT user_id FROM User WHERE email = 'vanessa.busch@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'marie.fischer@example.com'),
+   'Payment Dispute', 'I was charged twice for the same booking. Please refund the duplicate charge.',
+   'closed', '2025-07-03 16:10:00', '2025-07-05 11:45:00'),
+  
+  -- Daniel Kuhn (in progress with writer)
+  ((SELECT user_id FROM User WHERE email = 'daniel.kuhn@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'paul.weber@example.com'),
+   'Account Access Problem', 'I can not log in to my account even after resetting my password multiple times.',
+   'in_progress', '2025-07-04 13:25:00', '2025-07-05 10:30:00'),
+  
+  -- Kristin Jansen (resolved by writer)
+  ((SELECT user_id FROM User WHERE email = 'kristin.jansen@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'emilia.meyer@example.com'),
+   'Review Removal Request', 'I believe my recent review was unfairly removed. Can you explain why?',
+   'resolved', '2025-07-05 10:15:00', '2025-07-07 14:00:00'),
+  
+  -- Philipp Winter (open ticket assigned to reader)
+  ((SELECT user_id FROM User WHERE email = 'philipp.winter@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'anna.becker@example.com'),
+   'Listing Accuracy Concern', 'The accommodation I booked did not match the description. What are my options?',
+   'open', '2025-07-06 11:40:00', '2025-07-06 11:40:00'),
+  
+  -- Jana Schulte (closed by writer)
+  ((SELECT user_id FROM User WHERE email = 'jana.schulte@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'maximilian.mueller@example.com'),
+   'Host Communication Issue', 'The host is not responding to my messages about check-in instructions.',
+   'closed', '2025-07-07 15:20:00', '2025-07-09 09:10:00'),
+  
+  -- Matthias Koenig (in progress with writer)
+  ((SELECT user_id FROM User WHERE email = 'matthias.koenig@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'sophie.schmidt@example.com'),
+   'Cancellation Policy Question', 'I need to cancel due to an emergency but I am past the free cancellation period.',
+   'in_progress', '2025-07-08 09:45:00', '2025-07-08 16:30:00'),
+  
+  -- Susanne Albrecht (resolved by writer)
+  ((SELECT user_id FROM User WHERE email = 'susanne.albrecht@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'alexander.schneider@example.com'),
+   'Profile Verification Delay', 'My ID verification has been pending for over 10 days. When will this be completed?',
+   'resolved', '2025-07-09 14:10:00', '2025-07-11 11:15:00'),
+  
+  -- Markus Graf (open ticket unassigned)
+  ((SELECT user_id FROM User WHERE email = 'markus.graf@example.com'),
+   NULL,
+   'Safety Concern', 'I had a concerning experience with another user and want to report it.',
+   'open', '2025-07-10 10:30:00', '2025-07-10 10:30:00'),
+  
+  -- Nadine Wild (closed by writer)
+  ((SELECT user_id FROM User WHERE email = 'nadine.wild@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'marie.fischer@example.com'),
+   'Refund Processing Time', 'How long does it typically take for refunds to appear in my bank account?',
+   'closed', '2025-07-11 13:50:00', '2025-07-12 15:20:00'),
+  
+  -- Stefan Brand (in progress with writer)
+  ((SELECT user_id FROM User WHERE email = 'stefan.brand@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'paul.weber@example.com'),
+   'Listing Photos Problem', 'The photos in my listing are not uploading correctly. Some appear rotated or cropped.',
+   'in_progress', '2025-07-12 16:05:00', '2025-07-13 10:45:00'),
+  
+  -- Patricia Reich (resolved by writer)
+  ((SELECT user_id FROM User WHERE email = 'patricia.reich@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'emilia.meyer@example.com'),
+   'Pricing Display Issue', 'The total price shown during booking did not match the final charge on my card.',
+   'resolved', '2025-07-13 11:25:00', '2025-07-15 14:30:00'),
+  
+  -- Simon Arnold (open ticket assigned to reader)
+  ((SELECT user_id FROM User WHERE email = 'simon.arnold@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'felix.schulz@example.com'),
+   'Account Security Alert', 'I received a login attempt notification from an unknown device.',
+   'open', '2025-07-14 09:15:00', '2025-07-14 09:15:00'),
+  
+  -- Christine Vogt (closed by writer)
+  ((SELECT user_id FROM User WHERE email = 'christine.vogt@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'maximilian.mueller@example.com'),
+   'Host Rating System', 'How does the host rating system work? I had a bad experience but do not see any negative reviews.',
+   'closed', '2025-07-15 14:40:00', '2025-07-17 10:20:00'),
+  
+  -- Andreas Ott (in progress with writer)
+  ((SELECT user_id FROM User WHERE email = 'andreas.ott@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'sophie.schmidt@example.com'),
+   'Payment Method Change', 'I need to update my payment method but the system does not let me add a new card.',
+   'in_progress', '2025-07-16 10:50:00', '2025-07-17 15:10:00'),
+  
+  -- Julia Krueger (resolved by writer)
+  ((SELECT user_id FROM User WHERE email = 'julia.krueger@example.com'),
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'alexander.schneider@example.com'),
+   'Booking Modification Request', 'I need to change the dates of my booking but can not find the option to do so.',
+   'resolved', '2025-07-17 13:30:00', '2025-07-19 11:45:00')
+;
+
+-- Insert AppNotification Data (20 entries)
+INSERT INTO AppNotification (user_id, notification_type, notification_message, is_read, notification_date)
+VALUES
+  -- Niklas Meier
+  ((SELECT user_id FROM User WHERE email = 'niklas.meier@example.com'),
+   'system', 'Your account has been successfully verified. You can now book accommodations.',
+   FALSE, '2025-03-01 10:00:00'),
+  
+  -- Charlotte Hofmann
+  ((SELECT user_id FROM User WHERE email = 'charlotte.hofmann@example.com'),
+   'booking', 'Your booking for "Modern loft in Berlin" has been confirmed for March 15-20, 2025.',
+   TRUE, '2025-03-02 14:30:00'),
+  
+  -- Ben Hartmann
+  ((SELECT user_id FROM User WHERE email = 'ben.hartmann@example.com'),
+   'payment', 'Your payment of €450.00 for booking #32567 has been processed successfully.',
+   TRUE, '2025-03-03 09:15:00'),
+  
+  -- Johanna Franke
+  ((SELECT user_id FROM User WHERE email = 'johanna.franke@example.com'),
+   'promotion', 'Special offer: 15% off all bookings in Munich this spring! Use code SPRING15.',
+   FALSE, '2025-03-05 11:20:00'),
+  
+  -- Tim Walter
+  ((SELECT user_id FROM User WHERE email = 'tim.walter@example.com'),
+   'review', 'Please rate your recent stay at "Cozy nest in the heart of Hamburg".',
+   FALSE, '2025-03-07 16:45:00'),
+  
+  -- Amelie Peters
+  ((SELECT user_id FROM User WHERE email = 'amelie.peters@example.com'),
+   'system', 'We have updated our privacy policy. Please review the changes.',
+   TRUE, '2025-03-08 08:30:00'),
+  
+  -- Moritz Kruse
+  ((SELECT user_id FROM User WHERE email = 'moritz.kruse@example.com'),
+   'booking', 'Reminder: Your stay at "Stylish urban loft" starts in 3 days.',
+   FALSE, '2025-03-10 12:10:00'),
+  
+  -- Clara Brandt
+  ((SELECT user_id FROM User WHERE email = 'clara.brandt@example.com'),
+   'payment', 'Your refund of €320.00 for booking #32568 has been processed.',
+   TRUE, '2025-03-12 15:20:00'),
+  
+  -- Noah Schuster
+  ((SELECT user_id FROM User WHERE email = 'noah.schuster@example.com'),
+   'promotion', 'Exclusive deal: 20% off your next booking if you book by March 15!',
+   FALSE, '2025-03-14 10:45:00'),
+  
+  -- Luisa Vogel
+  ((SELECT user_id FROM User WHERE email = 'luisa.vogel@example.com'),
+   'review', 'Your host has responded to your review of "Bavarian luxury apartment".',
+   TRUE, '2025-03-16 17:30:00'),
+  
+  -- Julian Seidel
+  ((SELECT user_id FROM User WHERE email = 'julian.seidel@example.com'),
+   'system', 'New feature: You can now save your favorite listings to wishlists!',
+   FALSE, '2025-03-18 09:00:00'),
+  
+  -- Marieke Hansen
+  ((SELECT user_id FROM User WHERE email = 'marieke.hansen@example.com'),
+   'booking', 'Your booking request for "Charming Altbau apartment" has been accepted.',
+   TRUE, '2025-03-20 13:15:00'),
+  
+  -- David Lehmann
+  ((SELECT user_id FROM User WHERE email = 'david.lehmann@example.com'),
+   'payment', 'Payment reminder: Your booking for "Executive apartment" will be charged in 24 hours.',
+   FALSE, '2025-03-22 11:50:00'),
+  
+  -- Sophie Koehler
+  ((SELECT user_id FROM User WHERE email = 'sophie.koehler@example.com'),
+   'promotion', 'Weekend special: 10% off all last-minute bookings in Berlin!',
+   TRUE, '2025-03-24 14:05:00'),
+  
+  -- Emil Bergmann
+  ((SELECT user_id FROM User WHERE email = 'emil.bergmann@example.com'),
+   'review', 'You have received a new review from your host at "Authentic Black Forest chalet".',
+   FALSE, '2025-03-26 10:25:00'),
+  
+  -- Maja Pohl
+  ((SELECT user_id FROM User WHERE email = 'maja.pohl@example.com'),
+   'system', 'Maintenance alert: The app will be unavailable for 1 hour on March 28 at 2 AM.',
+   TRUE, '2025-03-27 18:40:00'),
+  
+  -- Leo Engel
+  ((SELECT user_id FROM User WHERE email = 'leo.engel@example.com'),
+   'booking', 'Your saved listing "Historic apartment in Leipzig" has a price drop!',
+   FALSE, '2025-03-29 12:55:00'),
+  
+  -- Lena Mayer
+  ((SELECT user_id FROM User WHERE email = 'lena.mayer@example.com'),
+   'payment', 'Your payment method ending in 4242 will expire soon. Please update it.',
+   TRUE, '2025-03-30 15:10:00'),
+  
+  -- Erik Winkler
+  ((SELECT user_id FROM User WHERE email = 'erik.winkler@example.com'),
+   'promotion', 'Easter special: Free cancellation on all bookings made before April 1!',
+   FALSE, '2025-03-31 09:35:00'),
+  
+  -- Nele Gross
+  ((SELECT user_id FROM User WHERE email = 'nele.gross@example.com'),
+   'review', 'Thank you for your recent review! Your feedback helps us improve our service.',
+   TRUE, '2025-03-31 16:20:00')
+;
+
+-- Insert PlatformPolicy Data
+INSERT INTO PlatformPolicy (title, content, created_by_admin_id, creation_date, last_update_date)
+VALUES
+  ('Terms of Service', 
+   'By using our platform, you agree to these terms and conditions...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'maximilian.mueller@example.com'),
+   '2023-01-15 09:00:00', '2023-06-15 11:30:00'),
+  
+  ('Privacy Policy', 
+   'We are committed to protecting your personal information...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'sophie.schmidt@example.com'),
+   '2023-01-20 14:15:00', '2023-05-20 16:45:00'),
+  
+  ('Cancellation Policy', 
+   'Guests may cancel bookings according to the following rules...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'alexander.schneider@example.com'),
+   '2023-02-05 10:30:00', '2023-07-10 09:20:00'),
+  
+  ('Community Guidelines', 
+   'All users must adhere to our community standards...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'marie.fischer@example.com'),
+   '2023-02-12 11:45:00', '2023-04-18 14:10:00'),
+  
+  ('Payment Policy', 
+   'Accepted payment methods and processing times...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'paul.weber@example.com'),
+   '2023-02-18 13:20:00', '2023-08-22 10:15:00'),
+  
+  ('Host Requirements', 
+   'Minimum standards for listing accommodations on our platform...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'emilia.meyer@example.com'),
+   '2023-03-01 15:00:00', '2023-09-05 13:30:00'),
+  
+  ('Guest Responsibilities', 
+   'Expectations for guests using our accommodations...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'maximilian.mueller@example.com'),
+   '2023-03-10 16:45:00', '2023-10-12 11:20:00'),
+  
+  ('Safety Standards', 
+   'Our platform-wide safety requirements for all listings...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'sophie.schmidt@example.com'),
+   '2023-03-15 09:30:00', '2023-11-18 14:50:00'),
+  
+  ('Refund Policy', 
+   'Conditions under which refunds may be issued...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'alexander.schneider@example.com'),
+   '2023-04-01 11:10:00', '2023-12-05 10:40:00'),
+  
+  ('Accessibility Policy', 
+   'Our commitment to accessible accommodations...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'marie.fischer@example.com'),
+   '2023-04-10 14:25:00', '2024-01-15 09:15:00'),
+  
+  ('Pricing Guidelines', 
+   'Rules for hosts setting prices on our platform...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'paul.weber@example.com'),
+   '2023-04-20 10:50:00', '2024-02-20 16:30:00'),
+  
+  ('Review Policy', 
+   'Standards for writing and moderating reviews...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'emilia.meyer@example.com'),
+   '2023-05-05 13:15:00', '2024-03-10 11:45:00'),
+  
+  ('Dispute Resolution', 
+   'Process for handling conflicts between users...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'maximilian.mueller@example.com'),
+   '2023-05-15 08:40:00', '2024-04-05 14:20:00'),
+  
+  ('Data Protection', 
+   'How we collect, use, and protect your data...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'sophie.schmidt@example.com'),
+   '2023-05-25 16:05:00', '2024-05-12 10:10:00'),
+  
+  ('Intellectual Property', 
+   'Rules regarding content ownership on our platform...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'alexander.schneider@example.com'),
+   '2023-06-05 09:20:00', '2024-06-18 15:30:00'),
+  
+  ('Insurance Requirements', 
+   'Host insurance obligations for listed properties...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'marie.fischer@example.com'),
+   '2023-06-15 12:35:00', '2024-07-22 11:25:00'),
+  
+  ('Pet Policy', 
+   'Rules regarding pets in accommodations...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'paul.weber@example.com'),
+   '2023-06-25 15:50:00', '2024-08-05 09:40:00'),
+  
+  ('Seasonal Pricing Rules', 
+   'Guidelines for seasonal rate adjustments...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'emilia.meyer@example.com'),
+   '2023-07-05 10:05:00', '2024-09-15 14:15:00'),
+  
+  ('Emergency Procedures', 
+   'Protocols for handling emergencies at accommodations...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'maximilian.mueller@example.com'),
+   '2023-07-15 13:30:00', '2024-10-25 16:50:00'),
+  
+  ('Sustainability Policy', 
+   'Our environmental responsibility commitments...',
+   (SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'sophie.schmidt@example.com'),
+   '2023-07-25 08:55:00', '2024-11-05 10:30:00')
+;
+  
