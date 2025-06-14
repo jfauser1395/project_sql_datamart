@@ -119,22 +119,32 @@ CREATE TABLE BannedUser (
     ON UPDATE CASCADE -- If admin_id is updated, update all bans issued by that admin
 );
 
+-- PropertyType Table
+-- Stores different types of properties (e.g., Apartment, House)
+CREATE TABLE PropertyType (
+  property_type_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  property_type_name VARCHAR(30) NOT NULL UNIQUE, -- Name of the property type (Unique name)
+  property_type_description TEXT NULL, -- Optional description of the property type
+  CONSTRAINT pk_property_type PRIMARY KEY (property_type_id) -- Primary Key constraint
+);
+
 -- Property Table
 -- Stores general details about a physical property
 CREATE TABLE Property (
   property_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  property_type_id CHAR(36) NOT NULL, -- Foreign Key referencing PropertyType (Property belongs to a type)
   title VARCHAR(100) NOT NULL, -- Title of the property
   country VARCHAR(100) NOT NULL, -- Country where the property is located
   region VARCHAR(100) NOT NULL, -- State/Region where the property is located
   zip_code VARCHAR(50) NOT NULL, -- Zip/Postal code
   property_address VARCHAR(255) NOT NULL, -- Full address of the property
   square_feet INT NULL, -- Optional field
-  property_type ENUM(
-   'Apartment', 'House', 'Penthouse', 'Commercial', 'Cottage',
-    'Studio', 'Industrial', 'Villa', 'Flat', 'Loft',
-    'Townhouse', 'Retail', 'Barn', 'Cabin', 'Mansion', 'Chalet', 'Bungalow', 'Others'
-  ) NOT NULL, -- PropertyType
-  CONSTRAINT pk_property PRIMARY KEY (property_id) -- Primary Key constraint
+  CONSTRAINT pk_property PRIMARY KEY (property_id), -- Primary Key constraint
+  CONSTRAINT fk_prop_type -- Foreign Key constraint to ensure property_type_id references PropertyType.property_type_id
+    FOREIGN KEY (property_type_id)
+    REFERENCES PropertyType (property_type_id)
+    ON DELETE CASCADE -- If property type is deleted, remove all properties of that type
+    ON UPDATE CASCADE -- Update property_type_id in Property if it changes in PropertyType
 );
 
 -- PropertyAccess Table (Junction Table)
@@ -828,30 +838,93 @@ INSERT INTO BannedUser (user_id, admin_id, ban_reason, ban_date, unban_date)
    'Fake identity documents provided during verification', '2025-07-18 16:20:00', '2026-07-18 16:20:00')
 ;
 
--- Insert Property Data
-INSERT INTO Property (title, country, region, zip_code, property_address, square_feet, property_type)\
- VALUES
-  ('Modern Apartment in Berlin Mitte', 'Germany', 'Berlin', '10115', 'Invalidenstrasse 43, Berlin', 850, 'Apartment'),
-  ('Charming House near Munich', 'Germany', 'Bavaria', '80331', 'Sendlinger Strasse 25, Muenchen', 2200, 'House'),
-  ('Luxury Penthouse in Hamburg', 'Germany', 'Hamburg', '20095', 'Spitalerstrasse 10, Hamburg', 1500, 'Penthouse'),
-  ('Office Space in Frankfurt am Main', 'Germany', 'Hesse', '60311', 'Zeil 90, Frankfurt am Main', 3000, 'Commercial'),
-  ('Rustic Cottage in Black Forest', 'Germany', 'Baden-Wuerttemberg', '79822', 'Feldbergstrasse 2, Schwarzwald', 1200, 'Cottage'),
-  ('Student Studio in Leipzig', 'Germany', 'Saxony', '04109', 'Karl-Liebknecht-Strasse 50, Leipzig', 400, 'Studio'),
-  ('Warehouse near Düsseldorf', 'Germany', 'North Rhine-Westphalia', '40210', 'Graf-Adolf-Strasse 12, Duesseldorf', 5000, 'Industrial'),
-  ('Historic Villa in Dresden', 'Germany', 'Saxony', '01067', 'Koenigstrasse 8, Dresden', 3500, 'Villa'),
-  ('Countryside Home in Lower Saxony', 'Germany', 'Lower Saxony', '30159', 'Bahnhofstrasse 18, Hannover', 1800, 'House'),
-  ('Modern Flat in Stuttgart Center', 'Germany', 'Baden-Wuerttemberg', '70173', 'Koenigstrasse 45, Stuttgart', 950, 'Flat'),
-  ('Alpine Chalet in Garmisch', 'Germany', 'Bavaria', '82467', 'Zugspitzstrasse 1, Garmisch-Partenkirchen', 1600, 'Chalet'),
-  ('Seaside Bungalow in Kiel', 'Germany', 'Schleswig-Holstein', '24103', 'Kaistrasse 16, Kiel', 1100, 'Bungalow'),
-  ('Loft Apartment in Cologne', 'Germany', 'North Rhine-Westphalia', '50667', 'Ehrenstrasse 22, Koeln', 1000, 'Loft'),
-  ('Townhouse in Mainz Old Town', 'Germany', 'Rhineland-Palatinate', '55116', 'Augustinerstrasse 10, Mainz', 1300, 'Townhouse'),
-  ('Penthouse in Freiburg', 'Germany', 'Baden-Wuerttemberg', '79098', 'Greiffeneggring 12, Freiburg', 350, 'Penthouse'),
-  ('Villa near Bremen', 'Germany', 'Bremen', '28195', 'Weserstrasse 5, Bremen', 1400, 'Villa'),
-  ('Skyscraper Office in Stuttgart', 'Germany', 'Baden-Wuerttemberg', '70174', 'Rotebuehlstrasse 60, Stuttgart', 8000, 'Commercial'),
-  ('Lakeview Cabin in Bavaria', 'Germany', 'Bavaria', '83209', 'Seestrasse 18, Prien am Chiemsee', 900, 'Cabin'),
-  ('Art Deco Flat in Nuremberg', 'Germany', 'Bavaria', '90402', 'Koenigstrasse 1, Nuernberg', 850, 'Flat'),
-  ('Luxury Mansion in Wiesbaden', 'Germany', 'Hesse', '65183', 'Wilhelmstrasse 34, Wiesbaden', 6000, 'Mansion')
+-- Insert PropertyType Data with descriptions
+INSERT INTO PropertyType (property_type_name, property_type_description) 
+  VALUES
+   ('Apartment', 'A self-contained housing unit occupying part of a building'),
+   ('House', 'A standalone residential building'),
+   ('Penthouse', 'An apartment on the top floor of a building, often luxurious'),
+   ('Commercial', 'Property used for business or commercial purposes'),
+   ('Cottage', 'A small, cozy house, typically in a rural or semi-rural location'),
+   ('Studio', 'A small apartment combining living, sleeping, and cooking areas'),
+   ('Industrial', 'Property used for manufacturing, production or storage'),
+   ('Villa', 'A large, luxurious country house'),
+   ('Flat', 'A self-contained housing unit within a larger building (UK term for apartment)'),
+   ('Loft', 'An open, adaptable space often converted from industrial use'),
+   ('Townhouse', 'A multi-floor home sharing walls with adjacent properties'),
+   ('Retail', 'Property designed for selling goods directly to consumers'),
+   ('Barn', 'A large farm building for storage or housing livestock'),
+   ('Cabin', 'A small, rustic dwelling typically made of wood'),
+   ('Mansion', 'A very large, impressive house'),
+   ('Chalet', 'A wooden house with a sloping roof, common in mountain areas'),
+   ('Bungalow', 'A small house or cottage typically having a single story'),
+   ('Duplex', 'A building divided into two separate living units'),
+   ('Farmhouse', 'The main house on a farm, often with surrounding land'),
+   ('Others', 'Other types of properties not specifically categorized')
 ;
+
+-- Insert Property Data
+INSERT INTO Property (property_type_id, title, country, region, zip_code, property_address, square_feet)
+VALUES
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Apartment'),
+   'Modern Apartment in Berlin Mitte', 'Germany', 'Berlin', '10115', 'Invalidenstrasse 43, Berlin', 850),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'House'),
+   'Charming House near Munich', 'Germany', 'Bavaria', '80331', 'Sendlinger Strasse 25, Muenchen', 2200),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Penthouse'),
+   'Luxury Penthouse in Hamburg', 'Germany', 'Hamburg', '20095', 'Spitalerstrasse 10, Hamburg', 1500),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Commercial'),
+   'Office Space in Frankfurt am Main', 'Germany', 'Hesse', '60311', 'Zeil 90, Frankfurt am Main', 3000),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Cottage'),
+   'Rustic Cottage in Black Forest', 'Germany', 'Baden-Wuerttemberg', '79822', 'Feldbergstrasse 2, Schwarzwald', 1200),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Studio'),
+   'Student Studio in Leipzig', 'Germany', 'Saxony', '04109', 'Karl-Liebknecht-Strasse 50, Leipzig', 400),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Industrial'),
+   'Warehouse near Düsseldorf', 'Germany', 'North Rhine-Westphalia', '40210', 'Graf-Adolf-Strasse 12, Duesseldorf', 5000),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Villa'),
+   'Historic Villa in Dresden', 'Germany', 'Saxony', '01067', 'Koenigstrasse 8, Dresden', 3500),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'House'),
+   'Countryside Home in Lower Saxony', 'Germany', 'Lower Saxony', '30159', 'Bahnhofstrasse 18, Hannover', 1800),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Flat'),
+   'Modern Flat in Stuttgart Center', 'Germany', 'Baden-Wuerttemberg', '70173', 'Koenigstrasse 45, Stuttgart', 950),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Chalet'),
+   'Alpine Chalet in Garmisch', 'Germany', 'Bavaria', '82467', 'Zugspitzstrasse 1, Garmisch-Partenkirchen', 1600),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Bungalow'),
+   'Seaside Bungalow in Kiel', 'Germany', 'Schleswig-Holstein', '24103', 'Kaistrasse 16, Kiel', 1100),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Loft'),
+   'Loft Apartment in Cologne', 'Germany', 'North Rhine-Westphalia', '50667', 'Ehrenstrasse 22, Koeln', 1000),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Townhouse'),
+   'Townhouse in Mainz Old Town', 'Germany', 'Rhineland-Palatinate', '55116', 'Augustinerstrasse 10, Mainz', 1300),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Penthouse'),
+   'Penthouse in Freiburg', 'Germany', 'Baden-Wuerttemberg', '79098', 'Greiffeneggring 12, Freiburg', 350),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Villa'),
+   'Villa near Bremen', 'Germany', 'Bremen', '28195', 'Weserstrasse 5, Bremen', 1400),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Commercial'),
+   'Skyscraper Office in Stuttgart', 'Germany', 'Baden-Wuerttemberg', '70174', 'Rotebuehlstrasse 60, Stuttgart', 8000),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Cabin'),
+   'Lakeview Cabin in Bavaria', 'Germany', 'Bavaria', '83209', 'Seestrasse 18, Prien am Chiemsee', 900),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Flat'),
+   'Art Deco Flat in Nuremberg', 'Germany', 'Bavaria', '90402', 'Koenigstrasse 1, Nuernberg', 850),
+  
+  ((SELECT property_type_id FROM PropertyType WHERE property_type_name = 'Mansion'),
+   'Luxury Mansion in Wiesbaden', 'Germany', 'Hesse', '65183', 'Wilhelmstrasse 34, Wiesbaden', 6000);
 
 -- Insert PropertyAccess Data
 INSERT INTO PropertyAccess (host_id, property_id)
@@ -895,7 +968,6 @@ INSERT INTO PropertyAccess (host_id, property_id)
 ;
 
 -- Insert CancellationPolicy Data
--- This populates all available cancellation policy options for properties
 -- Policies are categorized by flexibility level and special conditions
 INSERT INTO CancellationPolicy (policy_name, policy_description) 
   VALUES
@@ -1082,12 +1154,10 @@ INSERT INTO Amenity (amenity_name, amenity_description)
   ('Hot Water', 'Reliable hot water supply'),
 
   -- Kitchen amenities
-  ('Kitchen', 'Fully equipped cooking space'),
   ('Refrigerator', 'Full-size refrigerator'),
   ('Microwave', 'Microwave oven'),
   ('Coffee Maker', 'Coffee brewing equipment'),
   ('Dishwasher', 'Built-in dishwasher'),
-  ('Cooking Basics', 'Pots, pans, oil, salt & pepper'),
 
   -- Entertainment
   ('TV', 'Television with standard channels'),
@@ -1098,14 +1168,12 @@ INSERT INTO Amenity (amenity_name, amenity_description)
   ('Smoke Alarm', 'Smoke detection system'),
   ('First Aid Kit', 'Basic medical supplies'),
   ('Fire Extinguisher', 'On-site fire safety equipment'),
-  ('Wheelchair Accessible', 'ADA-compliant access features'),
 
   -- Outdoor & Luxury
   ('Pool', 'Swimming pool access'),
   ('Garden', 'Private outdoor garden area'),
   ('Parking', 'Dedicated parking space'),
-  ('Gym', 'Exercise equipment available'),
-  ('Hot Tub', 'Private jacuzzi/hot tub')
+  ('Gym', 'Exercise equipment available')
 ;
 
 -- Insert AmenityAssignment Data
@@ -1117,7 +1185,7 @@ INSERT INTO AmenityAssignment (accommodation_id, amenity_id)
   ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
   ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating')),
   ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
-  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Kitchen')),
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio in historic Ber%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Microwave')),
 
   -- Munich accommodations
   ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
@@ -1170,8 +1238,7 @@ INSERT INTO AmenityAssignment (accommodation_id, amenity_id)
   -- Cologne accommodations
   ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment with Cologne Cathedral%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
   ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment with Cologne Cathedral%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Air Conditioning')),
-  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Colognes trendy Belgian Quarter%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi')),
-  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Colognes trendy Belgian Quarter%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'Heating'))
+  ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Colognes trendy Belgian Quarter%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi'))
 ;
 
 -- Insert Booking Data
@@ -1544,8 +1611,6 @@ VALUES
    (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%')),
   ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer vacation'), 
    (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer vacation'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft%')),
 
   -- Future Travel Plans
   ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
@@ -1648,6 +1713,10 @@ VALUES
    3200.00, '2023-07-15 16:20:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
    2750.80, '2023-08-20 13:10:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer')),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
+   2300.00, '2023-11-15 16:20:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency')),
+  ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
+   1850.80, '2023-10-20 13:10:00', (SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency')),
 
   -- Julia Wagner
   ((SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
