@@ -1,30 +1,61 @@
--- This SQL script creates a database schema for an AirBnB-like application.
--- All primary keys are typed CHAR(36) for UUIDs these are generated with UUID() function.
+/* 
+===========================================================================================
+Script Name : Airbnb_like_DB.sql
+Author      : Fauser, Juri
+Created     : 2025-06-17
+Purpose     : Create and populate a database schema 
+              for an Airbnb-like platform. This includes 
+              user accounts, properties, bookings, payments,
+              messages, and administrative features.
+Note        : All UUIDs are represented as CHAR(36).
+              All FKs are explicitly typed and constrained.
+              Run this script in sequence. 
+              See ERD reference: /docs/Airbnb_like_DB_ERD.png
+===========================================================================================
+*/
 
+-- ========================================================================================
+-- OVERVIEW
+-- This script creates:
+--   * A normalized schema using superclass-subclass tables for users
+--   * Support for hosts, guests, and admins via discriminators
+--   * Listings, bookings, reviews, payments, and messaging features
+-- ========================================================================================
 
--- Create a new database
+-- ========================================================================================
+-- SECTION 1: Create and Select Database
+-- ========================================================================================
+
+-- Create a new database (if it doesn't already exist)
 CREATE DATABASE IF NOT EXISTS Airbnb_like_DB;
 
 -- Use the newly created database
 USE Airbnb_like_DB;
 
+-- ========================================================================================
+-- SECTION 2: Table Definitions
+-- ========================================================================================
 
--- Superclass Table: User
--- This table stores all common attributes for every user
--- The user_type column acts as a discriminator to identify
--- which subclass table holds additional specific information
+-- ========================================================================================
+-- Table: User 
+-- Description: Superclass table for all users (guests, hosts, admins)
+-- Relationships:
+--   - Referenced by: Administrator, Guest, Host, UserReferral,
+--                    BannedUser, Review, SupportTicket, Notification
+-- ========================================================================================
 CREATE TABLE User (
-  user_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
-  user_type ENUM('host', 'guest', 'admin') NOT NULL, -- Discriminator column
-  first_name VARCHAR(25) NOT NULL, -- First name of the user
-  last_name VARCHAR(25) NOT NULL, -- Last name of the user
-  email VARCHAR(50) NOT NULL UNIQUE, -- Email should be unique
-  phone_number VARCHAR(50) NULL, -- Phone number is optional
-  password_hash VARCHAR(255) NOT NULL UNIQUE, -- Stores the hashed password
-  profile_picture VARCHAR(255) NOT NULL, -- URL or path to profile picture
-  creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Automatically set on creation
-  last_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Updates when the record is modified, can be used to track last login
-  CONSTRAINT pk_user_id PRIMARY KEY (user_id) -- Primary Key constraint
+  user_id CHAR(36) NOT NULL DEFAULT (UUID()),              	 -- Primary Key
+  user_type ENUM('host', 'guest', 'admin') NOT NULL,       	 -- Discriminator: subclass identity
+  first_name VARCHAR(25) NOT NULL,
+  last_name VARCHAR(25) NOT NULL,
+  email VARCHAR(50) NOT NULL UNIQUE,                      	 -- Must be unique
+  phone_number VARCHAR(50) NULL UNIQUE,                      -- Optional contact number
+  password_hash VARCHAR(255) NOT NULL,            	         -- Encrypted password
+  profile_picture VARCHAR(255) NULL,                  	     -- Link to user profile picture
+  creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Account creation timestamp
+  last_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,                          	 -- Tracks last login time
+  CONSTRAINT pk_user_id PRIMARY KEY (user_id)
 );
 
 -- Subclass Table: Admin
