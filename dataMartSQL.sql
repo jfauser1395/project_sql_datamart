@@ -1,5 +1,5 @@
 /* 
-===========================================================================================
+===================================================================================================================
 Script Name : Airbnb_like_DB.sql
 Author      : Fauser, Juri
 Created     : 2025-06-17
@@ -11,20 +11,25 @@ Note        : All UUIDs are represented as CHAR(36).
               All FKs are explicitly typed and constrained.
               Run this script in sequence. 
               See ERD reference: /docs/Airbnb_like_DB_ERD.png
-===========================================================================================
+===================================================================================================================
 */
 
--- ========================================================================================
--- OVERVIEW
--- This script creates:
---   * A normalized schema using superclass-subclass tables for users
---   * Support for hosts, guests, and admins via discriminators
---   * Listings, bookings, reviews, payments, and messaging features
--- ========================================================================================
 
--- ========================================================================================
+/* 
+===================================================================================================================
+  OVERVIEW
+   This script creates:
+   SECTION 1: Database creation
+   SECTION 2: Defines normalized schema in 3NF
+   SECTION 3: Populates tables with dummy data
+  SECTION 4: Queries for test cases
+===================================================================================================================
+*/
+
+
+-- ================================================================================================================
 -- SECTION 1: Create and Select Database
--- ========================================================================================
+-- ================================================================================================================
 
 -- Create a new database (if it doesn't already exist)
 CREATE DATABASE IF NOT EXISTS Airbnb_like_DB;
@@ -32,76 +37,87 @@ CREATE DATABASE IF NOT EXISTS Airbnb_like_DB;
 -- Use the newly created database
 USE Airbnb_like_DB;
 
--- ========================================================================================
--- SECTION 2: Table Definitions
--- ========================================================================================
 
--- ========================================================================================
--- Table: User 
+-- ================================================================================================================
+-- SECTION 2: Table Definitions
+-- ================================================================================================================
+
+-- ================================================================================================================
+-- Table: User, Administrator, Host, Guest
 -- Description: Superclass table for all users (guests, hosts, admins)
 -- Relationships:
 --   - Referenced by: Administrator, Guest, Host, UserReferral,
 --                    BannedUser, Review, SupportTicket, Notification
--- ========================================================================================
+-- ================================================================================================================
 CREATE TABLE User (
-  user_id CHAR(36) NOT NULL DEFAULT (UUID()),              	 -- Primary Key
-  user_type ENUM('host', 'guest', 'admin') NOT NULL,       	 -- Discriminator: subclass identity
+  user_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
+  user_type ENUM('host', 'guest', 'admin') NOT NULL, -- Discriminator: subclass identity
   first_name VARCHAR(25) NOT NULL,
   last_name VARCHAR(25) NOT NULL,
-  email VARCHAR(50) NOT NULL UNIQUE,                      	 -- Must be unique
-  phone_number VARCHAR(50) NULL UNIQUE,                      -- Optional contact number
-  password_hash VARCHAR(255) NOT NULL,            	         -- Encrypted password
-  profile_picture VARCHAR(255) NULL,                  	     -- Link to user profile picture
+  email VARCHAR(50) NOT NULL UNIQUE, -- Must be unique
+  phone_number VARCHAR(50) NULL UNIQUE, -- Optional contact number
+  password_hash VARCHAR(255) NOT NULL, -- Encrypted password
+  profile_picture VARCHAR(255) NULL, -- Link to user profile picture
   creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Account creation timestamp
-  last_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP,                          	 -- Tracks last login time
+  last_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Tracks last login time
   CONSTRAINT pk_user_id PRIMARY KEY (user_id)
 );
 
--- Subclass Table: Admin
--- Stores attributes specific to Admin users.
+-- ================================================================================================================
+-- Table: Administrator
+-- Description: Stores attributes specific to Admin users.
 -- user_id is both the Primary Key and a Foreign Key referencing User.user_id
+-- ================================================================================================================
 CREATE TABLE Administrator (
   admin_id CHAR(36) NOT NULL, -- References User.user_id
   admin_role ENUM('reader', 'writer') NOT NULL DEFAULT 'reader', -- Admin-specific role
   CONSTRAINT pk_admin_user PRIMARY KEY (admin_id), -- Primary Key constraint
   CONSTRAINT fk_admin_user -- Foreign Key constraint to ensure admin_id references user_id in User table
-    FOREIGN KEY (admin_id) 
+    FOREIGN KEY (admin_id)
     REFERENCES User (user_id)
-    ON DELETE CASCADE -- If a User is deleted, the corresponding Admin record is also deleted.
+    ON DELETE CASCADE -- If a User is deleted, the corresponding Admin record is also deleted
     ON UPDATE CASCADE -- If a User.user_id is updated, the corresponding Admin.user_id is updated
 );
 
--- Subclass Table: Guest
--- Stores attributes specific to Guest users.
+-- ================================================================================================================
+-- Table: Guest
+-- Description: Stores attributes specific to Guest users.
 -- user_id is both the Primary Key and a Foreign Key referencing User.user_id
+-- ================================================================================================================
 CREATE TABLE Guest (
   guest_id CHAR(36) NOT NULL, -- References User.user_id
   membership_tier ENUM('free', 'premium') NOT NULL DEFAULT 'free', -- Guest-specific membership tier
   CONSTRAINT pk_guest_user PRIMARY KEY (guest_id), -- Primary Key constraint
   CONSTRAINT fk_guest_user -- Foreign Key constraint to ensure guest_id references user_id in User table
-    FOREIGN KEY (guest_id) 
+    FOREIGN KEY (guest_id)
     REFERENCES User (user_id)
     ON DELETE CASCADE -- If a User is deleted, the corresponding Guest record is also deleted
     ON UPDATE CASCADE -- If a User.user_id is updated, the corresponding Guest.user_id is updated
 );
 
--- Subclass Table: Host
--- Stores attributes specific to Host users.
+-- ================================================================================================================
+-- Table: Host
+-- Description: Stores attributes specific to Host users.
 -- user_id is both the Primary Key and a Foreign Key referencing User.user_id
+-- ================================================================================================================
 CREATE TABLE Host (
   host_id CHAR(36) NOT NULL, -- References User.user_id
   host_tier ENUM('regular', 'prime') NOT NULL DEFAULT 'regular', -- Host-specific tier
   CONSTRAINT pk_host_user PRIMARY KEY (host_id), -- Primary Key constraint
   CONSTRAINT fk_host_user -- Foreign Key constraint to ensure host_id references user_id in User table
-    FOREIGN KEY (host_id) 
+    FOREIGN KEY (host_id)
     REFERENCES User (user_id)
-    ON DELETE CASCADE -- If a User is deleted, the corresponding Host record is also deleted.
+    ON DELETE CASCADE -- If a User is deleted, the corresponding Host record is also deleted
     ON UPDATE CASCADE -- If a User.user_id is updated, the corresponding Host.user_id is updated
 );
 
--- UserReferral Table
--- Tracks user referrals
+
+-- ================================================================================================================
+-- Table: UserReferral
+-- Description: Tracks user referrals
+-- Relationships:
+--   - References: User (referrer_id, referred_id)
+-- ================================================================================================================
 CREATE TABLE UserReferral (
   referral_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   referrer_id CHAR(36) NOT NULL, -- Foreign Key referencing User (The user who referred)
@@ -128,12 +144,17 @@ CREATE TABLE UserReferral (
 CREATE INDEX idx_referral_referrer ON UserReferral(referrer_id);
 CREATE INDEX idx_referral_referred ON UserReferral(referred_id);
 
--- BannedUser Table
--- Tracks users who have been banned
+-- ================================================================================================================
+-- Table: BannedUser
+-- Description: Tracks users who have been banned
+-- Relationships:
+--   - References: User (user_id)
+--   - References: Administrator (admin_id)
+-- ================================================================================================================
 CREATE TABLE BannedUser (
   ban_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
-  user_id CHAR(36) NOT NULL UNIQUE, -- Foreign Key referencing User (The user who is banned) (Added UNIQUE as a user is usually banned only once)
-  admin_id CHAR(36) NULL, -- Optional Foreign Key referencing Admin (Admin who issued the ban) (Made NULLable as maybe automated bans exist)
+  user_id CHAR(36) NOT NULL UNIQUE, -- Foreign Key referencing User (Added UNIQUE as a user is usually banned only once)
+  admin_id CHAR(36) NULL, -- Optional Foreign Key referencing Admin (Made NULLable as maybe automated bans exist)
   ban_reason TEXT NOT NULL, -- Optional reason for the ban
   ban_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date the ban was issued
   unban_date DATETIME NULL, -- Optional date the ban expires or was lifted
@@ -150,8 +171,10 @@ CREATE TABLE BannedUser (
     ON UPDATE CASCADE -- If admin_id is updated, update all bans issued by that admin
 );
 
--- PropertyType Table
--- Stores different types of properties (e.g., Apartment, House)
+-- ================================================================================================================
+-- Table: PropertyType
+-- Description: Stores different types of properties (e.g., Apartment, House)
+-- ================================================================================================================
 CREATE TABLE PropertyType (
   property_type_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   property_type_name VARCHAR(30) NOT NULL UNIQUE, -- Name of the property type (Unique name)
@@ -159,8 +182,12 @@ CREATE TABLE PropertyType (
   CONSTRAINT pk_property_type PRIMARY KEY (property_type_id) -- Primary Key constraint
 );
 
--- Property Table
--- Stores general details about a physical property
+-- ================================================================================================================
+-- Table: Property
+-- Description: Stores general details about a physical property
+-- Relationships:
+--   - References: PropertyType (property_type_id)
+-- ================================================================================================================
 CREATE TABLE Property (
   property_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   property_type_id CHAR(36) NOT NULL, -- Foreign Key referencing PropertyType (Property belongs to a type)
@@ -178,8 +205,13 @@ CREATE TABLE Property (
     ON UPDATE CASCADE -- Update property_type_id in Property if it changes in PropertyType
 );
 
--- PropertyAccess Table (Junction Table)
--- Links Hosts to the Properties they have access to manage
+-- ================================================================================================================
+-- Table: PropertyAccess
+-- Description: Links Hosts to the Properties they have access to manage
+-- Relationships:
+--   - References: Host (host_id)
+--   - References: Property (property_id)
+-- ================================================================================================================
 CREATE TABLE PropertyAccess (
   host_id CHAR(36) NOT NULL, -- Foreign Key referencing Host
   property_id CHAR(36) NOT NULL, -- Foreign Key referencing Property
@@ -196,8 +228,10 @@ CREATE TABLE PropertyAccess (
     ON UPDATE CASCADE -- If property_id is updated, update all links
 );
 
--- CancellationPolicy Table
--- Stores different types of cancellation policies
+-- ================================================================================================================
+-- Table: CancellationPolicy
+-- Description: Stores different types of cancellation policies
+-- ================================================================================================================
 CREATE TABLE CancellationPolicy (
   policy_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   policy_name VARCHAR(100) NOT NULL UNIQUE, -- Name of the policy (Unique name)
@@ -205,8 +239,13 @@ CREATE TABLE CancellationPolicy (
   CONSTRAINT pk_cancellationPolicy PRIMARY KEY (policy_id) -- Primary Key constraint
 );
 
--- Accommodation Table
--- Represents a bookable unit within a property (e.g., a specific room, apartment)
+-- ================================================================================================================
+-- Table: Accommodation
+-- Description: Represents a bookable unit within a property (e.g., a specific room, apartment)
+-- Relationships:
+--   - References: Property (property_id)
+--   - References: CancellationPolicy (policy_id)
+-- ================================================================================================================
 CREATE TABLE Accommodation (
   accommodation_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   property_id CHAR(36) NOT NULL, -- Foreign Key referencing Property (Accommodation belongs to a property)
@@ -230,8 +269,12 @@ CREATE TABLE Accommodation (
   CONSTRAINT chk_accommodation_price CHECK (price_per_night >= 0) -- Price must be non-negative
 );
 
--- AccommodationImage Table
--- Stores images associated with an Accommodation
+-- ================================================================================================================
+-- Table: AccommodationImage
+-- Description: Stores images associated with an Accommodation
+-- Relationships:
+--   - References: Accommodation (accommodation_id)
+-- ================================================================================================================
 CREATE TABLE AccommodationImage (
   image_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
@@ -246,8 +289,10 @@ CREATE TABLE AccommodationImage (
     ON UPDATE CASCADE -- Update accommodation_id in AccommodationImage if it changes in Accommodation
 );
 
--- Amenity Table
--- Stores available amenities (e.g., WiFi, Pool)
+-- ================================================================================================================
+-- Table: Amenity
+-- Description: Stores available amenities (e.g., WiFi, Pool)
+-- ================================================================================================================
 CREATE TABLE Amenity (
   amenity_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   amenity_name VARCHAR(100) NOT NULL UNIQUE, -- Name of the amenity (Unique name)
@@ -255,8 +300,13 @@ CREATE TABLE Amenity (
   CONSTRAINT pk_amenity PRIMARY KEY (amenity_id) -- Primary Key constraint
 );
 
--- AmenityAssignment Table (Junction Table)
--- Links Amenities to the Accommodations that offer them
+-- ================================================================================================================
+-- Table: AmenityAssignment
+-- Description: Links Amenities to the Accommodations that offer them
+-- Relationships:
+--   - References: Accommodation (accommodation_id)
+--   - References: Amenity (amenity_id)
+-- ================================================================================================================
 CREATE TABLE AmenityAssignment (
   accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
   amenity_id CHAR(36) NOT NULL, -- Foreign Key referencing Amenity
@@ -273,8 +323,12 @@ CREATE TABLE AmenityAssignment (
     ON UPDATE CASCADE -- Update amenity_id in AmenityAssignment if it changes in Amenity
 );
 
--- Wishlist Table
--- Stores wishlists created by guests
+-- ================================================================================================================
+-- Table: Wishlist
+-- Description: Stores wishlists created by guests
+-- Relationships:
+--   - References: Guest (guest_id)
+-- ================================================================================================================
 CREATE TABLE Wishlist (
   wishlist_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   guest_id CHAR(36) NOT NULL, -- Foreign Key referencing Guest (A wishlist belongs to a guest)
@@ -287,8 +341,13 @@ CREATE TABLE Wishlist (
     ON UPDATE CASCADE -- Update guest_id in Wishlist if it changes in Guest
 );
 
--- WishlistItem Table (Junction Table)
--- Links Accommodations to Wishlists they are included in
+-- ================================================================================================================
+-- Table: WishlistItem
+-- Description: Links Accommodations to Wishlists they are included in
+-- Relationships:
+--   - References: Wishlist (wishlist_id)
+--   - References: Accommodation (accommodation_id)
+-- ================================================================================================================
 CREATE TABLE WishlistItem (
   wishlist_id CHAR(36) NOT NULL, -- Foreign Key referencing Wishlist
   accommodation_id CHAR(36) NOT NULL, -- Foreign Key referencing Accommodation
@@ -305,8 +364,13 @@ CREATE TABLE WishlistItem (
     ON UPDATE CASCADE -- Update accommodation_id in WishlistItem if it changes in Accommodation
 );
 
--- Booking Table
--- Stores details about property bookings
+-- ================================================================================================================
+-- Table: Booking
+-- Description: Stores details about property bookings
+-- Relationships:
+--   - References: Guest (guest_id)
+--   - References: Accommodation (accommodation_id)
+-- ================================================================================================================
 CREATE TABLE Booking (
   booking_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   guest_id CHAR(36) NOT NULL, -- Foreign Key referencing Guest.guest_id
@@ -335,8 +399,13 @@ CREATE INDEX idx_booking_guest ON Booking(guest_id);
 CREATE INDEX idx_booking_accommodation ON Booking(accommodation_id);
 CREATE INDEX idx_booking_dates ON Booking(check_in_date, check_out_date);
 
--- Review Table
--- Stores reviews left by users about other users or properties/accommodations
+-- ================================================================================================================
+-- Table: Review
+-- Description: Stores reviews left by users about other users or properties/accommodations
+-- Relationships:
+--   - References: User (reviewer_id, reviewee_id)
+--   - References: Booking (booking_id)
+-- ================================================================================================================
 CREATE TABLE Review (
   review_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   reviewer_id CHAR(36) NOT NULL, -- Foreign Key referencing User (the user writing the review)
@@ -369,8 +438,13 @@ CREATE TABLE Review (
 CREATE INDEX idx_review_reviewee ON Review(reviewee_id);
 CREATE INDEX idx_review_booking ON Review(booking_id);
 
--- UserMessage Table
--- Stores messages exchanged between users, potentially linked to bookings
+-- ================================================================================================================
+-- Table: UserMessage
+-- Description: Stores messages exchanged between users, potentially linked to bookings
+-- Relationships:
+--   - References: User (sender_id, recipient_id)
+--   - References: Booking (booking_id)
+-- ================================================================================================================
 CREATE TABLE UserMessage (
   message_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   sender_id CHAR(36) NULL, -- Foreign Key referencing User
@@ -396,16 +470,23 @@ CREATE TABLE UserMessage (
     ON UPDATE CASCADE -- Update booking_id in Message if it changes in Booking
 );
 
--- PaymentMethod table
--- Stores different payment methods available for payouts
+-- ================================================================================================================
+-- Table: PaymentMethod
+-- Description: Stores different payment methods available for payouts
+-- ================================================================================================================
 CREATE TABLE PaymentMethod (
   payment_method_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   payment_name VARCHAR(20) UNIQUE, -- Method of payment (e.g., bank transfer, PayPal)
   CONSTRAINT pk_method PRIMARY KEY (payment_method_id) -- Primary Key constraint
 );
 
--- Payout Table
--- Stores records of payouts made to hosts
+-- ================================================================================================================
+-- Table: Payout
+-- Description: Stores records of payouts made to hosts
+-- Relationships:
+--   - References: Host (host_id)
+--   - References: PaymentMethod (payment_method_id)
+-- ================================================================================================================
 CREATE TABLE Payout (
   payout_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   payment_method_id CHAR(36) NOT NULL, -- Method of payout (e.g., bank transfer, PayPal)
@@ -427,8 +508,14 @@ CREATE TABLE Payout (
   CONSTRAINT chk_payout_amount CHECK (amount >= 0) -- Ensure amount is not negative
 );
 
--- Payment Table
--- Stores payment transactions. Can be linked to bookings or referrals
+-- ================================================================================================================
+-- Table: Payment
+-- Description: Stores payment transactions. Can be linked to bookings or referrals
+-- Relationships:
+--   - References: Booking (booking_id)
+--   - References: UserReferral (referral_id)
+--   - References: PaymentMethod (payment_method_id)
+-- ================================================================================================================
 CREATE TABLE Payment (
   payment_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   payment_method_id CHAR(36) NOT NULL, -- Method of payout (e.g., bank transfer, PayPal)
@@ -460,8 +547,13 @@ CREATE TABLE Payment (
 CREATE INDEX idx_payment_booking ON Payment(booking_id);
 CREATE INDEX idx_payment_status ON Payment(payment_status);
 
--- SupportTicket Table
--- Stores support tickets raised by users
+-- ================================================================================================================
+-- Table: SupportTicket
+-- Description: Stores support tickets raised by users
+-- Relationships:
+--   - References: User (user_id)
+--   - References: Administrator (assigned_admin_id)
+-- ================================================================================================================
 CREATE TABLE SupportTicket (
   ticket_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   user_id CHAR(36) NOT NULL, -- Foreign Key referencing User (User who created the ticket)
@@ -484,8 +576,12 @@ CREATE TABLE SupportTicket (
     ON UPDATE CASCADE -- If admin_id is updated, update all tickets assigned to that admin
 );
 
--- Notification Table
--- Stores notifications sent to users
+-- ================================================================================================================
+-- Table: AppNotification
+-- Description: Stores notifications sent to users
+-- Relationships:
+--   - References: User (user_id)
+-- ================================================================================================================
 CREATE TABLE AppNotification (
   notification_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   user_id CHAR(36) NOT NULL, -- Foreign Key referencing User (Recipient of the notification)
@@ -501,8 +597,12 @@ CREATE TABLE AppNotification (
     ON UPDATE CASCADE -- Update user_id in Notification if it changes in User
 );
 
--- PlatformPolicy Table
--- Stores platform policies and terms
+-- ================================================================================================================
+-- Table: PlatformPolicy
+-- Description: Stores platform policies and terms
+-- Relationships:
+--   - References: Administrator (created_by_admin_id)
+-- ================================================================================================================
 CREATE TABLE PlatformPolicy (
   policy_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   created_by_admin_id CHAR(36) NULL, -- Optional Foreign Key referencing Admin (Admin who created the policy)
@@ -518,6 +618,10 @@ CREATE TABLE PlatformPolicy (
     ON UPDATE CASCADE -- If admin_id is updated, update all policies created by that admin
 );
 
+
+-- ================================================================================================================
+-- SECTION 3: Populate Tables with Dummy Data
+-- ================================================================================================================
 
 -- Insert User Data
 INSERT INTO User (user_type, first_name, last_name, email, phone_number, password_hash, profile_picture, creation_date, last_login) 
@@ -2188,4 +2292,10 @@ VALUES
   'Emergency Procedures', 'Protocols for handling emergencies at accommodations...', '2023-07-15 13:30:00', '2024-10-25 16:50:00'),
   
   ((SELECT a.admin_id FROM User u JOIN Administrator a ON u.user_id = a.admin_id WHERE u.email = 'sophie.schmidt@example.com'),
-  'Sustainability Policy', 'Our environmental responsibility commitments...', '2023-07-25 08:55:00', '2024-11-05 10:30:00');
+  'Sustainability Policy', 'Our environmental responsibility commitments...', '2023-07-25 08:55:00', '2024-11-05 10:30:00')
+;
+
+
+-- ==================================================================================================================
+-- SECTION 4: Testing
+-- ==================================================================================================================
