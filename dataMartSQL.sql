@@ -1376,6 +1376,89 @@ INSERT INTO AmenityAssignment (accommodation_id, amenity_id)
   ((SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Charming flat in Colognes trendy Belgian Quarter%'), (SELECT amenity_id FROM Amenity WHERE amenity_name = 'WiFi'))
 ;
 
+-- Insert Wishlist Data
+INSERT INTO Wishlist (guest_id, wishlist_title)
+VALUES
+  ((SELECT user_id FROM User WHERE email = 'niklas.meier@example.com' AND user_type = 'guest'), 'Summer vacation'),
+  ((SELECT user_id FROM User WHERE email = 'charlotte.hofmann@example.com' AND user_type = 'guest'), 'Future Travel Plans'),
+  ((SELECT user_id FROM User WHERE email = 'ben.hartmann@example.com' AND user_type = 'guest'), 'Cozy Winter Getaways'),
+  ((SELECT user_id FROM User WHERE email = 'johanna.franke@example.com' AND user_type = 'guest'), 'Summer Escapes'),
+  ((SELECT user_id FROM User WHERE email = 'tim.walter@example.com' AND user_type = 'guest'), 'City Breaks and Culture Trips'),
+  ((SELECT user_id FROM User WHERE email = 'amelie.peters@example.com' AND user_type = 'guest'), 'Romantic Getaways'),
+  ((SELECT user_id FROM User WHERE email = 'moritz.kruse@example.com' AND user_type = 'guest'), 'Adventure Travel'),
+  ((SELECT user_id FROM User WHERE email = 'clara.brandt@example.com' AND user_type = 'guest'), 'Luxury Resorts'),
+  ((SELECT user_id FROM User WHERE email = 'noah.schuster@example.com' AND user_type = 'guest'), 'Road Trip Ideas'),
+  ((SELECT user_id FROM User WHERE email = 'luisa.vogel@example.com' AND user_type = 'guest'), 'Mountain Retreats'),
+  ((SELECT user_id FROM User WHERE email = 'julian.seidel@example.com' AND user_type = 'guest'), 'Foodie Destinations'),
+  ((SELECT user_id FROM User WHERE email = 'marieke.hansen@example.com' AND user_type = 'guest'), 'Spa and Wellness'),
+  ((SELECT user_id FROM User WHERE email = 'david.lehmann@example.com' AND user_type = 'guest'), 'Historical Sites'),
+  ((SELECT user_id FROM User WHERE email = 'sophie.koehler@example.com' AND user_type = 'guest'), 'Island Hopping'),
+  ((SELECT user_id FROM User WHERE email = 'emil.bergmann@example.com' AND user_type = 'guest'), 'Ski Resorts'),
+  ((SELECT user_id FROM User WHERE email = 'maja.pohl@example.com' AND user_type = 'guest'), 'Family Vacation Spots'),
+  ((SELECT user_id FROM User WHERE email = 'leo.engel@example.com' AND user_type = 'guest'), 'Backpacking Adventures'),
+  ((SELECT user_id FROM User WHERE email = 'lena.mayer@example.com' AND user_type = 'guest'), 'Wine Country Tours'),
+  ((SELECT user_id FROM User WHERE email = 'erik.winkler@example.com' AND user_type = 'guest'), 'National Parks'),
+  ((SELECT user_id FROM User WHERE email = 'nele.gross@example.com' AND user_type = 'guest'), 'Bucket List Destinations')
+;
+
+-- Insert WishlistItem Data
+INSERT INTO WishlistItem (wishlist_id, accommodation_id)
+VALUES
+  -- Summer vacation 
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer vacation'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer vacation'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart%')),
+
+  -- Future Travel Plans
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge%')),
+
+  -- Cozy Winter Getaways 
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Cozy Winter Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Cozy Winter Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Cozy Winter Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%')),
+
+  -- Summer Beach Escapes 
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Escapes'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Escapes'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Escapes'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment%')),
+
+  -- City Breaks and Culture Trips
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'City Breaks and Culture Trips'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'City Breaks and Culture Trips'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'City Breaks and Culture Trips'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps%')),
+
+  -- Romantic Getaways
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Romantic Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Romantic Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Romantic Getaways'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment%')),
+
+  -- Adventure Travel
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin%')),
+  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
+   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%'))
+;
+
 -- Insert Booking Data
 INSERT INTO Booking (guest_id, accommodation_id, check_in_date, check_out_date, creation_date, booking_status)
   VALUES
@@ -1712,89 +1795,6 @@ VALUES
  (SELECT user_id FROM User WHERE email = 'julia.krueger@example.com'),
 'Dear Julia Krüger, your account has been suspended for providing fake identity documents during verification. Duration: 1 year.', 
 '2025-07-17 16:25:00');
-
--- Insert Wishlist Data
-INSERT INTO Wishlist (guest_id, wishlist_title)
-VALUES
-  ((SELECT user_id FROM User WHERE email = 'niklas.meier@example.com' AND user_type = 'guest'), 'Summer vacation'),
-  ((SELECT user_id FROM User WHERE email = 'charlotte.hofmann@example.com' AND user_type = 'guest'), 'Future Travel Plans'),
-  ((SELECT user_id FROM User WHERE email = 'ben.hartmann@example.com' AND user_type = 'guest'), 'Cozy Winter Getaways'),
-  ((SELECT user_id FROM User WHERE email = 'johanna.franke@example.com' AND user_type = 'guest'), 'Summer Escapes'),
-  ((SELECT user_id FROM User WHERE email = 'tim.walter@example.com' AND user_type = 'guest'), 'City Breaks and Culture Trips'),
-  ((SELECT user_id FROM User WHERE email = 'amelie.peters@example.com' AND user_type = 'guest'), 'Romantic Getaways'),
-  ((SELECT user_id FROM User WHERE email = 'moritz.kruse@example.com' AND user_type = 'guest'), 'Adventure Travel'),
-  ((SELECT user_id FROM User WHERE email = 'clara.brandt@example.com' AND user_type = 'guest'), 'Luxury Resorts'),
-  ((SELECT user_id FROM User WHERE email = 'noah.schuster@example.com' AND user_type = 'guest'), 'Road Trip Ideas'),
-  ((SELECT user_id FROM User WHERE email = 'luisa.vogel@example.com' AND user_type = 'guest'), 'Mountain Retreats'),
-  ((SELECT user_id FROM User WHERE email = 'julian.seidel@example.com' AND user_type = 'guest'), 'Foodie Destinations'),
-  ((SELECT user_id FROM User WHERE email = 'marieke.hansen@example.com' AND user_type = 'guest'), 'Spa and Wellness'),
-  ((SELECT user_id FROM User WHERE email = 'david.lehmann@example.com' AND user_type = 'guest'), 'Historical Sites'),
-  ((SELECT user_id FROM User WHERE email = 'sophie.koehler@example.com' AND user_type = 'guest'), 'Island Hopping'),
-  ((SELECT user_id FROM User WHERE email = 'emil.bergmann@example.com' AND user_type = 'guest'), 'Ski Resorts'),
-  ((SELECT user_id FROM User WHERE email = 'maja.pohl@example.com' AND user_type = 'guest'), 'Family Vacation Spots'),
-  ((SELECT user_id FROM User WHERE email = 'leo.engel@example.com' AND user_type = 'guest'), 'Backpacking Adventures'),
-  ((SELECT user_id FROM User WHERE email = 'lena.mayer@example.com' AND user_type = 'guest'), 'Wine Country Tours'),
-  ((SELECT user_id FROM User WHERE email = 'erik.winkler@example.com' AND user_type = 'guest'), 'National Parks'),
-  ((SELECT user_id FROM User WHERE email = 'nele.gross@example.com' AND user_type = 'guest'), 'Bucket List Destinations')
-;
-
--- Insert WishlistItem Data
-INSERT INTO WishlistItem (wishlist_id, accommodation_id)
-VALUES
-  -- Summer vacation 
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer vacation'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer vacation'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Cozy nest in the heart%')),
-
-  -- Future Travel Plans
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Future Travel Plans'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge%')),
-
-  -- Cozy Winter Getaways 
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Cozy Winter Getaways'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Cozy Winter Getaways'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Traditional Bavarian guesthouse%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Cozy Winter Getaways'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%')),
-
-  -- Summer Beach Escapes 
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Escapes'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Modern loft in Berlin%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Escapes'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Stylish urban loft%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Summer Escapes'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment%')),
-
-  -- City Breaks and Culture Trips
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'City Breaks and Culture Trips'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Historic apartment%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'City Breaks and Culture Trips'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Compact designer studio%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'City Breaks and Culture Trips'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Elegant apartment steps%')),
-
-  -- Romantic Getaways
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Romantic Getaways'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Bavarian luxury apartment%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Romantic Getaways'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Luxury penthouse%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Romantic Getaways'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Designer apartment%')),
-
-  -- Adventure Travel
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Alpine lodge%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Rustic cabin%')),
-  ((SELECT wishlist_id FROM Wishlist WHERE wishlist_title = 'Adventure Travel'), 
-   (SELECT accommodation_id FROM Accommodation WHERE unit_description LIKE '%Authentic Black Forest chalet%'))
-;
 
 -- Insert PaymentMethod Data
 INSERT INTO PaymentMethod (payment_name)
@@ -2299,3 +2299,189 @@ VALUES
 -- ==================================================================================================================
 -- SECTION 4: Testing
 -- ==================================================================================================================
+
+-- Description: Checking for administrator users with a writer role, shown in descending order of account creation
+-- Expected Result: A list of writer-role admins with their details, ordered from the newest to the oldest by creation date
+SELECT 
+  user_id,
+  user_type,
+  first_name,
+  last_name,
+  email, 
+  phone_number,
+  profile_picture, 
+  creation_date,
+  admin_role AS role
+FROM 
+  User AS u 
+JOIN
+  Administrator  AS a ON u.user_id = a.admin_id
+WHERE 
+  a.admin_role = 'writer'
+ORDER BY 
+  u.creation_date DESC
+;
+
+-- Description: Checking for all users who were referred and whose referral status is claimed, along with their referral code and expiry date
+-- Expected Result: A list of referred users with their name, referral code, expiry date, and status, only for claimed referrals
+SELECT
+  r.referral_id,
+  u.first_name,
+  u.last_name,
+  r.referral_code,
+  r.referral_expiry_date,
+  r.referral_status
+FROM
+  User AS u
+JOIN
+  UserReferral AS r ON u.user_id = r.referred_id
+WHERE
+  referral_status = 'claimed'
+ORDER BY
+  referral_status
+;
+
+-- Description: Checking for all users that were banned after July 5, 2025, and the admins responsible for the ban, ordered by unban date (soonest first) 
+-- Expected Result: A list of banned users with their name, ban reason, ban date, unban date, and the name of the admin who banned them
+SELECT
+  b_user.first_name AS banned_user_first_name,
+  b_user.last_name AS banned_user_last_name,
+  ad_user.first_name AS admin_first_name,
+  ad_user.last_name AS admin_last_name,
+  b.ban_reason,
+  b.ban_date,
+  b.unban_date
+FROM
+  BannedUser AS b
+JOIN 
+  User AS b_user ON b.user_id = b_user.user_id
+JOIN 
+  User AS ad_user ON b.admin_id = ad_user.user_id
+WHERE
+  b.ban_date > '2025-07-05'
+ORDER BY
+  b.unban_date
+;
+
+-- Description: Get all host users with their email, host tier, the title and address of property they manage, and the property type 
+-- Expected Result: A list showing each host’s email, tier, property title, address, and the property’s type
+SELECT
+  u.email AS host_email,
+  h.host_tier,
+  p.title AS property_title,
+  p.property_address,
+  pt.property_type_name 
+FROM
+  User AS u 
+JOIN
+  Host AS h ON u.user_id = h.host_id
+JOIN
+  PropertyAccess AS pa ON h.host_id = pa.host_id
+JOIN
+  Property AS p ON p.property_id = pa.property_id
+JOIN 
+  PropertyType AS pt ON pt.property_type_id = p.property_type_id
+;
+
+-- Description: 
+-- Expected Result:
+SELECT
+  a.accommodation_id,
+  a.price_per_night,
+  cp.policy_name,
+  cp.policy_description
+FROM 
+  Accommodation AS a 
+JOIN 
+  CancellationPolicy AS cp ON a.cancellation_policy_id = cp.policy_id 
+WHERE
+  accommodation_tier = 'regular'
+;
+
+-- Description: Get all prime-tier accommodations with their unit description, guest capacity, price, and property address
+-- Expected Result: A list showing each prime accommodation’s description, maximum guests allowed, price per night, and address
+ SELECT
+  a.unit_description,
+  a.max_guest_count, 
+  a.price_per_night, 
+  p.property_address 
+FROM 
+  Accommodation AS a 
+JOIN 
+  Property AS p ON a.property_id = p.property_id 
+WHERE
+  a.accommodation_tier = 'prime'
+;
+
+-- Description: Get the first 20 accommodations with their unit description, guest capacity, price, and associated images, ordered by unit description
+-- Expected Result: A list of up to 20 accommodations showing description, guest limit, price per night, image URL, and image description
+SELECT 
+  a.unit_description, 
+  a.max_guest_count, 
+  price_per_night, 
+  ai.image_url, 
+  ai.image_description
+FROM
+  Accommodation AS a 
+JOIN 
+  AccommodationImage AS ai ON a.accommodation_id = ai.accommodation_id 
+ORDER BY
+  a.unit_description
+LIMIT 20
+;
+
+-- Description: Get the first 10 accommodations with their associated amenities, including amenity names and descriptions
+-- Expected Result: A list of accommodation units showing their description along with the name and description of each assigned amenity
+SELECT
+  a.unit_description,
+  am.amenity_name, 
+  am.amenity_description 
+FROM
+  Accommodation AS a 
+JOIN
+  AmenityAssignment AS ams ON a.accommodation_id = ams.accommodation_id
+JOIN
+  Amenity AS am ON ams.amenity_id = am.amenity_id
+LIMIT 10
+;
+
+-- Description: Get the first 10 guests with their membership tier, wishlist titles, and the descriptions of accommodations in their wishlists
+-- Expected Result: A list showing each guest’s ID, membership tier, wishlist title, and the unit description of accommodations they’ve added
+SELECT
+  g.guest_id,
+  g.membership_tier, 
+  w.wishlist_title, 
+  a.unit_description
+FROM
+  Guest AS g
+JOIN
+  Wishlist AS w ON g.guest_id = w.guest_id 
+JOIN 
+  WishlistItem AS wi ON w.wishlist_id = wi.wishlist_id 
+JOIN
+  Accommodation AS a ON wi.accommodation_id = a.accommodation_id
+LIMIT 10
+;
+-- Description: 
+-- Expected Result:
+
+-- Description: 
+-- Expected Result:
+
+-- Description: 
+-- Expected Result:
+
+-- Description: 
+-- Expected Result:
+
+-- Description: 
+-- Expected Result:
+
+-- Description: 
+-- Expected Result:
+
+-- Description: 
+-- Expected Result:
+
+-- Description: 
+-- Expected Result:
