@@ -476,7 +476,7 @@ CREATE TABLE UserMessage (
 -- ================================================================================================================
 CREATE TABLE PaymentMethod (
   payment_method_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
-  payment_name VARCHAR(20) UNIQUE, -- Method of payment (e.g., bank transfer, PayPal)
+  payment_method_name VARCHAR(20) UNIQUE, -- Method of payment (e.g., bank transfer, PayPal)
   CONSTRAINT pk_method PRIMARY KEY (payment_method_id) -- Primary Key constraint
 );
 
@@ -1797,7 +1797,7 @@ VALUES
 '2025-07-17 16:25:00');
 
 -- Insert PaymentMethod Data
-INSERT INTO PaymentMethod (payment_name)
+INSERT INTO PaymentMethod (payment_method_name)
 VALUES
    ('Bank Transfer'),
    ('PayPal'),
@@ -1824,76 +1824,76 @@ VALUES
 INSERT INTO Payout (payment_method_id, host_id, amount, payout_date)
 VALUES
   -- Max Mustermann
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
    1500.00, '2023-07-10 12:00:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
    1800.50, '2023-08-15 09:30:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
    1650.75, '2023-09-12 14:15:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'max.mustermann@example.com'),
    1920.25, '2023-10-18 11:45:00'),
   
   -- Lena Schmitt 
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'PayPal'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
    2200.75, '2023-07-12 14:15:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'PayPal'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
    1950.25, '2023-08-18 11:45:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
    2400.50, '2023-09-20 16:30:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lena.schmitt@example.com'),
    2100.00, '2023-10-25 10:20:00'),
 
   -- Fabian Huber 
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
    3200.00, '2023-07-15 16:20:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
    2750.80, '2023-08-20 13:10:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Cryptocurrency'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
    2300.00, '2023-11-15 16:20:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Cryptocurrency'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'fabian.huber@example.com'),
    1850.80, '2023-10-20 13:10:00'),
 
   -- Julia Wagner
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
    1450.60, '2023-07-18 10:45:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'julia.wagner@example.com'),
    1600.40, '2023-08-22 15:30:00'),
 
   -- Tom Becker
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
    2300.25, '2023-07-20 11:20:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'tom.becker@example.com'),
    2100.75, '2023-08-25 14:50:00'),
 
   -- Lea Maier
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lea.maier@example.com'),
    1750.90, '2023-07-22 09:15:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'lea.maier@example.com'),
    1850.10, '2023-08-28 16:25:00'),
 
   -- Benno Mueller
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Cryptocurrency'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
    2800.50, '2023-07-25 13:40:00'),
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Cryptocurrency'),
    (SELECT h.host_id FROM User u JOIN Host h ON u.user_id = h.host_id WHERE u.email = 'benno.mueller@example.com'),
    2950.00, '2023-08-30 10:15:00');
 
@@ -1901,105 +1901,105 @@ VALUES
 INSERT INTO Payment (payment_method_id, referral_id, booking_id, amount, payment_date, payment_status)
 VALUES
   -- Credit Card payments
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'), 
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'), 
    (SELECT referral_id FROM UserReferral WHERE referral_code = '684932'), 
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern loft in Berlin%'),
    200.00, '2023-07-01 10:00:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT referral_id FROM UserReferral WHERE referral_code = '217845'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bavarian luxury apartment%'),
    200.00, '2023-07-10 09:15:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming Altbau apartment%'),
    320.00, '2023-07-18 16:45:00', 'failed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT referral_id FROM UserReferral WHERE referral_code = '892345'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Cozy nest in the heart%'),
    200.00, '2023-08-15 12:00:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Comfortable city apartment%'),
    280.00, '2023-09-15 15:10:00', 'pending'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT referral_id FROM UserReferral WHERE referral_code = '901234'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Authentic Black Forest chalet%'),
    200.00, '2023-10-05 11:45:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Credit Card'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Credit Card'),
    (SELECT referral_id FROM UserReferral WHERE referral_code = '567890'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Historic apartment%'),
    200.00, '2023-11-10 09:30:00', 'completed'),
 
   -- PayPal payments
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'PayPal'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact designer studio%'),
    450.00, '2023-12-15 14:30:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'PayPal'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Executive apartment%'),
    620.00, '2023-09-05 08:30:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'PayPal'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Modern studio%'),
    420.00, '2023-11-15 14:15:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'PayPal'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Compact urban studio%'),
    290.00, '2024-01-15 15:45:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'PayPal'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'PayPal'),
    (SELECT referral_id FROM UserReferral WHERE referral_code = '123456'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Elegant apartment steps%'),
    200.00, '2023-12-05 10:50:00', 'completed'),
 
   -- Bank Transfer payments
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Stylish urban loft%'),
    580.00, '2023-08-10 10:20:00', 'refunded'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Rustic cabin%'),
    380.00, '2023-10-18 13:20:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Bright riverside apartment%'),
    510.00, '2023-12-12 12:30:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    (SELECT referral_id FROM UserReferral WHERE referral_code = '345012'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Luxury penthouse%'),
    200.00, '2024-01-10 09:00:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Bank Transfer'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Bank Transfer'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Traditional Bavarian guesthouse%'),
    340.00, '2024-02-22 13:10:00', 'completed'),
 
   -- Cryptocurrency payments
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Cryptocurrency'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Designer apartment%'),
    720.00, '2024-03-10 10:00:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Cryptocurrency'),
    (SELECT referral_id FROM UserReferral WHERE referral_code = '789456'),
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Alpine lodge%'),
    200.00, '2024-02-15 11:20:00', 'completed'),
   
-  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_name = 'Cryptocurrency'),
+  ((SELECT payment_method_id FROM PaymentMethod WHERE payment_method_name = 'Cryptocurrency'),
    NULL,
    (SELECT b.booking_id FROM Booking b JOIN Accommodation a ON b.accommodation_id = a.accommodation_id WHERE a.unit_description LIKE '%Charming flat%'),
    390.00, '2024-03-15 14:30:00', 'pending');
@@ -2364,7 +2364,7 @@ ORDER BY
 ;
 
 -- Description: Get all host users with their email, host tier, the title and address of property they manage, and the property type 
--- Expected Result: A list showing each host’s email, tier, property title, address, and the property’s type
+-- Expected Result: A list showing each hosts email, tier, property title, address, and the propertys type
 SELECT
   u.email AS host_email,
   h.host_tier,
@@ -2399,7 +2399,7 @@ WHERE
 ;
 
 -- Description: Get all prime-tier accommodations with their unit description, guest capacity, price, and property address
--- Expected Result: A list showing each prime accommodation’s description, maximum guests allowed, price per night, and address
+-- Expected Result: A list showing each prime accommodations description, maximum guests allowed, price per night, and address
  SELECT
   a.unit_description,
   a.max_guest_count, 
@@ -2446,7 +2446,7 @@ LIMIT 10
 ;
 
 -- Description: Get the first 10 guests with their membership tier, wishlist titles, and the descriptions of accommodations in their wishlists
--- Expected Result: A list showing each guest’s ID, membership tier, wishlist title, and the unit description of accommodations they’ve added
+-- Expected Result: A list showing each guests ID, membership tier, wishlist title, and the unit description of accommodations theyve added
 SELECT
   g.guest_id,
   g.membership_tier, 
@@ -2462,26 +2462,156 @@ JOIN
   Accommodation AS a ON wi.accommodation_id = a.accommodation_id
 LIMIT 10
 ;
+-- Test Case for Booking table
 -- Description: 
 -- Expected Result:
+SELECT 
+  b.booking_id, 
+  u.first_name, 
+  u.last_name, 
+  g.membership_tier, 
+  a.unit_description, 
+  b.check_in_date, 
+  b.check_out_date 
+FROM
+  User AS u 
+JOIN 
+  Guest AS g ON u.user_id = g.guest_id 
+JOIN 
+  Booking AS b ON g.guest_id = b.guest_id 
+JOIN 
+  Accommodation AS a ON b.accommodation_id = a.accommodation_id
+ORDER BY
+  g.membership_tier
+;
+-- Test Case for Review table
+-- Description: 
+-- Expected Result:
+SELECT 
+  b.booking_id, 
+  rer.first_name AS reviewer_first_name, 
+  rer.last_name AS reviewer_last_name, 
+  re.first_name AS reviewee_first_name, 
+  re.last_name AS reviewer_last_name, 
+  r.rating,
+  r.comment 
+FROM 
+  Review AS r 
+JOIN
+  User AS rer ON r.reviewer_id = rer.user_id 
+JOIN 
+  User AS re ON r.reviewee_id = re.user_id 
+JOIN 
+  Booking AS b ON r.booking_id = b.booking_id
+;
 
+-- Test Case for UserMessage table
 -- Description: 
 -- Expected Result:
+SELECT 
+  m.message_id, 
+  s.email AS sender, 
+  r.email AS recipient, 
+  m.content, 
+  m.sent_date 
+FROM 
+  UserMessage AS m 
+JOIN 
+  User AS s ON m.sender_id = s.user_id 
+JOIN 
+  User AS r ON m.recipient_id = r.user_id
+; 
 
+-- Test Case for Payout and PaymentMethod tables
 -- Description: 
 -- Expected Result:
+SELECT 
+  u.first_name, 
+  u.last_name, 
+  pm.payment_method_name, 
+  p.payout_status, 
+  p.amount, 
+  p.payout_date 
+FROM
+  Payout AS p 
+JOIN 
+  User AS u ON p.host_id = u.user_id 
+JOIN 
+  PaymentMethod AS pm ON p.payment_method_id = pm.payment_method_id 
+ORDER BY
+  p.payout_date
+;
 
+-- Test Case for Payment table
 -- Description: 
 -- Expected Result:
+SELECT 
+  p.payment_id, 
+  b.booking_id, 
+  pm.payment_method_name, 
+  r.referral_code, 
+  p.payment_status, 
+  p.amount AS payment_amount, 
+  p.payment_date 
+FROM 
+  Payment AS p 
+JOIN 
+  Booking AS b ON p.booking_id = b.booking_id 
+JOIN 
+  PaymentMethod AS pm ON p.payment_method_id = pm.payment_method_id 
+JOIN 
+  UserReferral AS r ON p.referral_id = r.referral_id 
+WHERE  
+  r.referral_code IS NOT NULL
+;
 
+-- Test Case for SupportTicket Table
 -- Description: 
 -- Expected Result:
+SELECT 
+  u.user_id, 
+  asad.email, 
+  a.admin_role, 
+  t.ticket_subject, 
+  t.ticket_description, 
+  t.ticket_status, 
+  t.creation_date 
+FROM 
+  SupportTicket AS t 
+JOIN 
+  User AS u ON t.user_id = u.user_id 
+JOIN 
+  User AS asad ON t.assigned_admin_id = asad.user_id 
+JOIN 
+  Administrator AS a ON t.assigned_admin_id = a.admin_id
+;
 
+-- Test Case for AppNotification table
 -- Description: 
 -- Expected Result:
+SELECT 
+  u.email, 
+  n.notification_type, 
+  n.notification_message, 
+  n.is_read, 
+  n.notification_date 
+FROM 
+  AppNotification AS n 
+JOIN 
+  User AS u ON n.user_id = u.user_id
+; 
 
+-- Test Case for PlatformPolicy table
 -- Description: 
 -- Expected Result:
-
--- Description: 
--- Expected Result:
+SELECT 
+  created_by_admin_id, 
+  title,
+  content, 
+  creation_date, 
+  last_update_date 
+FROM 
+  PlatformPolicy 
+ORDER BY 
+  last_update_date
+;
