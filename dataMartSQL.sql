@@ -3,14 +3,11 @@
 Script Name : Airbnb_like_DB.sql
 Author      : Fauser, Juri
 Created     : 2025-06-17
-Purpose     : Create and populate a database schema 
-              for an Airbnb-like platform. This includes 
-              user accounts, properties, bookings, payments,
-              messages, and administrative features.
+Purpose     : Create and populate and thest a database schema 
+              for an Airbnb-like platform.
 Note        : All UUIDs are represented as CHAR(36).
               All FKs are explicitly typed and constrained.
-              Run this script in sequence. 
-              See ERD reference: /docs/Airbnb_like_DB_ERD.png
+              Run this script in sequence.
 ===================================================================================================================
 */
 
@@ -22,7 +19,7 @@ Note        : All UUIDs are represented as CHAR(36).
    SECTION 1: Database creation
    SECTION 2: Defines normalized schema in 3NF
    SECTION 3: Populates tables with dummy data
-  SECTION 4: Queries for test cases
+   SECTION 4: Queries for test cases
 ===================================================================================================================
 */
 
@@ -60,7 +57,7 @@ CREATE TABLE User (
   profile_picture VARCHAR(255) NULL, -- Link to user profile picture
   creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Account creation timestamp
   last_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Tracks last login time
-  CONSTRAINT pk_user_id PRIMARY KEY (user_id)
+  CONSTRAINT pk_user_id PRIMARY KEY (user_id) -- Primary key constraint
 );
 
 -- ================================================================================================================
@@ -70,7 +67,7 @@ CREATE TABLE User (
 -- ================================================================================================================
 CREATE TABLE Administrator (
   admin_id CHAR(36) NOT NULL, -- References User.user_id
-  admin_role ENUM('reader', 'writer') NOT NULL DEFAULT 'reader', -- Admin-specific role
+  admin_role ENUM('reader', 'writer') NOT NULL DEFAULT 'reader', -- Adminspecific role
   CONSTRAINT pk_admin_user PRIMARY KEY (admin_id), -- Primary Key constraint
   CONSTRAINT fk_admin_user -- Foreign Key constraint to ensure admin_id references user_id in User table
     FOREIGN KEY (admin_id)
@@ -86,7 +83,7 @@ CREATE TABLE Administrator (
 -- ================================================================================================================
 CREATE TABLE Guest (
   guest_id CHAR(36) NOT NULL, -- References User.user_id
-  membership_tier ENUM('free', 'premium') NOT NULL DEFAULT 'free', -- Guest-specific membership tier
+  membership_tier ENUM('free', 'premium') NOT NULL DEFAULT 'free', -- Guestspecific membership tier
   CONSTRAINT pk_guest_user PRIMARY KEY (guest_id), -- Primary Key constraint
   CONSTRAINT fk_guest_user -- Foreign Key constraint to ensure guest_id references user_id in User table
     FOREIGN KEY (guest_id)
@@ -102,7 +99,7 @@ CREATE TABLE Guest (
 -- ================================================================================================================
 CREATE TABLE Host (
   host_id CHAR(36) NOT NULL, -- References User.user_id
-  host_tier ENUM('regular', 'prime') NOT NULL DEFAULT 'regular', -- Host-specific tier
+  host_tier ENUM('regular', 'prime') NOT NULL DEFAULT 'regular', -- Hostspecific tier
   CONSTRAINT pk_host_user PRIMARY KEY (host_id), -- Primary Key constraint
   CONSTRAINT fk_host_user -- Foreign Key constraint to ensure host_id references user_id in User table
     FOREIGN KEY (host_id)
@@ -138,11 +135,6 @@ CREATE TABLE UserReferral (
     ON DELETE CASCADE -- If referred user is deleted, remove the referral record
     ON UPDATE CASCADE -- Update referred_id in UserReferral if it changes in User
 );
-
--- Indexes for UserReferral Table
--- These indexes can help speed up queries filtering by referrer or referred user
-CREATE INDEX idx_referral_referrer ON UserReferral(referrer_id);
-CREATE INDEX idx_referral_referred ON UserReferral(referred_id);
 
 -- ================================================================================================================
 -- Table: BannedUser
@@ -190,7 +182,7 @@ CREATE TABLE PropertyType (
 -- ================================================================================================================
 CREATE TABLE Property (
   property_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
-  property_type_id CHAR(36) NOT NULL, -- Foreign Key referencing PropertyType (Property belongs to a type)
+  property_type_id CHAR(36) NOT NULL, -- Foreign Key referencing PropertyType 
   title VARCHAR(100) NOT NULL, -- Title of the property
   country VARCHAR(100) NOT NULL, -- Country where the property is located
   region VARCHAR(100) NOT NULL, -- State/Region where the property is located
@@ -249,7 +241,7 @@ CREATE TABLE CancellationPolicy (
 CREATE TABLE Accommodation (
   accommodation_id CHAR(36) NOT NULL DEFAULT (UUID()), -- Primary Key
   property_id CHAR(36) NOT NULL, -- Foreign Key referencing Property (Accommodation belongs to a property)
-  cancellation_policy_id CHAR(36) NOT NULL, -- Foreign Key referencing CancellationPolicy (Accommodation has a policy)
+  cancellation_policy_id CHAR(36) NOT NULL, -- Foreign Key referencing CancellationPolicy 
   accommodation_tier ENUM('regular', 'prime') NOT NULL DEFAULT 'regular', -- Tier of the accommodation
   max_guest_count INT NOT NULL, -- Maximum number of guests allowed
   unit_description TEXT NOT NULL, -- unit description of the accommodation
@@ -393,12 +385,6 @@ CREATE TABLE Booking (
   CONSTRAINT chk_booking_dates CHECK (check_in_date < check_out_date) -- Ensure end date is after start date
 );
 
--- Indexes for Booking Table
--- These indexes can help speed up queries filtering by guest, accommodation, or date ranges
-CREATE INDEX idx_booking_guest ON Booking(guest_id);
-CREATE INDEX idx_booking_accommodation ON Booking(accommodation_id);
-CREATE INDEX idx_booking_dates ON Booking(check_in_date, check_out_date);
-
 -- ================================================================================================================
 -- Table: Review
 -- Description: Stores reviews left by users about other users or properties/accommodations
@@ -423,7 +409,7 @@ CREATE TABLE Review (
   CONSTRAINT fk_review_reviewee -- Foreign Key constraint to ensure reviewee_id references User.user_id
     FOREIGN KEY (reviewee_id)
     REFERENCES User (user_id)
-    ON DELETE CASCADE -- If user deleted, reviews about them are deleted (Alternative: SET NULL if reviews about deleted users should persist)
+    ON DELETE CASCADE -- If user deleted, reviews about them are deleted 
     ON UPDATE CASCADE, -- Update reviewee_id in Review if it changes in User
   CONSTRAINT fk_review_booking -- Foreign Key constraint to ensure booking_id references Booking.booking_id
     FOREIGN KEY (booking_id) 
@@ -432,11 +418,6 @@ CREATE TABLE Review (
     ON UPDATE CASCADE, -- Update booking_id in Review if it changes in Booking
   CONSTRAINT chk_review_rating CHECK (rating >= 1 AND rating <= 5) -- Ensure rating is within a valid range
 );
-
--- Indexes for Review Table
--- These indexes can help speed up queries filtering by reviewer, reviewee, or booking
-CREATE INDEX idx_review_reviewee ON Review(reviewee_id);
-CREATE INDEX idx_review_booking ON Review(booking_id);
 
 -- ================================================================================================================
 -- Table: UserMessage
@@ -541,11 +522,6 @@ CREATE TABLE Payment (
     ON DELETE CASCADE -- If payment method deleted, remove all payouts using it
     ON UPDATE CASCADE -- Update payment_method_id in Payout if it changes in PaymentMethod
 );
-
--- Indexes for Payment Table
--- These indexes can help speed up queries filtering by referral, booking, or status
-CREATE INDEX idx_payment_booking ON Payment(booking_id);
-CREATE INDEX idx_payment_status ON Payment(payment_status);
 
 -- ================================================================================================================
 -- Table: SupportTicket
