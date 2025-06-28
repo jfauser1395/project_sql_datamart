@@ -1,6 +1,6 @@
 /* 
 ===================================================================================================================
-Script Name : Airbnb_like_DB.sql
+Script Name : Fauser-Juri_32207633_DLBDSPBDM01_P2_S(code).sql
 Author      : Fauser, Juri
 Created     : 2025-06-17
 Purpose     : Create and populate and thest a database schema 
@@ -2439,8 +2439,8 @@ JOIN
 LIMIT 10
 ;
 -- Test Case for Booking table
--- Description: 
--- Expected Result:
+-- Description: Get all bookings with guest details, accommodation info, and stay dates, ordered by guest membership tier
+-- Expected Result: A list showing booking ID, guest name, membership tier, unit description, and check-in/check-out dates
 SELECT 
   b.booking_id, 
   u.first_name, 
@@ -2461,8 +2461,8 @@ ORDER BY
   g.membership_tier
 ;
 -- Test Case for Review table
--- Description: 
--- Expected Result:
+-- Description: Get all reviews with the reviewer and reviewee names, the booking ID, rating, and comment
+-- Expected Result: A list showing booking ID, reviewer name, reviewee name, rating given, and the review comment
 SELECT 
   b.booking_id, 
   rer.first_name AS reviewer_first_name, 
@@ -2482,8 +2482,8 @@ JOIN
 ;
 
 -- Test Case for UserMessage table
--- Description: 
--- Expected Result:
+-- Description: Get all user messages with sender and recipient emails, message content, and the date sent
+-- Expected Result: A list showing message ID, sender email, recipient email, content, and sent date
 SELECT 
   m.message_id, 
   s.email AS sender, 
@@ -2499,8 +2499,8 @@ JOIN
 ; 
 
 -- Test Case for Payout and PaymentMethod tables
--- Description: 
--- Expected Result:
+-- Description: Get all host payouts with usernames, payment method, status, amount, and payout date, ordered by payout date
+-- Expected Result: A list showing each hosts name, the payment method used, payout status, amount, and the date of payout
 SELECT 
   u.first_name, 
   u.last_name, 
@@ -2519,8 +2519,8 @@ ORDER BY
 ;
 
 -- Test Case for Payment table
--- Description: 
--- Expected Result:
+-- Description: Get all payments that are linked to a valid (non-null) referral, including booking and referral details
+-- Expected Result: A list showing payment ID, booking ID, payment method, referral code, payment status, amount, and payment date, excluding entries with no referral code
 SELECT 
   p.payment_id, 
   b.booking_id, 
@@ -2542,8 +2542,8 @@ WHERE
 ;
 
 -- Test Case for SupportTicket Table
--- Description: 
--- Expected Result:
+-- Description: Get all support tickets with user details, the assigned admin’s email and role, and ticket information
+-- Expected Result: A list showing user ID, admin email and role, ticket subject, description, status, and creation date
 SELECT 
   u.user_id, 
   asad.email, 
@@ -2563,8 +2563,8 @@ JOIN
 ;
 
 -- Test Case for AppNotification table
--- Description: 
--- Expected Result:
+-- Description: Get all app notifications with the users email, type of notification, message content, read status, and date
+-- Expected Result: A list showing each users email, notification type, message, whether it was read, and the notification date
 SELECT 
   u.email, 
   n.notification_type, 
@@ -2578,8 +2578,8 @@ JOIN
 ; 
 
 -- Test Case for PlatformPolicy table
--- Description: 
--- Expected Result:
+-- Description: Get all platform policies with their creator ID, title, content, creation date, and last update date, ordered by the most recent updates
+-- Expected Result: A list showing each policys creator, title, content, when it was created, and when it was last updated, sorted by update date
 SELECT 
   created_by_admin_id, 
   title,
